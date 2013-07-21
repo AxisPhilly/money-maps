@@ -17,13 +17,14 @@
   });
 </script>
 
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>  
+<script src="http://d3js.org/topojson.v0.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>      
+
 <!-- App Code -->
 <% if(env === 'production') { %>
   <script type="text/javascript" src="js/app.min.<%= version %>.js"></script>
 <% } else { %>
   <script type="text/javascript" src="js/app.js"></script>
 <% } %>
-
-<script type="text/javascript">
-
-</script>
