@@ -2,15 +2,10 @@ import csv
 import requests
 import re
 
-# load data
-# f = open("data_w_header.csv")
-f = open("composite.txt")
+f = open("data/composite.txt")
 csvfile = csv.reader(f, delimiter='\t', quotechar='"')
 
-# skip header row
 next(csvfile)
-
-# loop through all rows in csv
 
 states_list = {
     "AL": "Alabama",
@@ -276,7 +271,5 @@ for row in csvfile:
                     else:
                         record_bad_address(row)
                         print "Fail:", row
-
-                                # testVar = raw_input("This failed.")
 
 print candidates
