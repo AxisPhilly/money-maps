@@ -1,6 +1,6 @@
 {
-  "name": "when-it-rains",
-  "version": "1.0.2",
+  "name": "money-maps",
+  "version": "0.0.1",
   "dependencies": {
     "express": "3.1.0",
     "ejs": "~0.8.3"
