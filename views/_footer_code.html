@@ -7,20 +7,20 @@
   <!-- Individual JS library files -->
   <script type="text/javascript" src="js/lib/foundation.js"></script>
   <script type="text/javascript" src="js/lib/fastclick.js"></script>
+  <script type="text/javascript" src="js/lib/underscore.js"></script>
+  <script type="text/javascript" src="js/lib/backbone.js"></script>
+  <script type="text/javascript" src="js/lib/topojson.js"></script>
+  <script type="text/javascript" src="js/lib/queue.js"></script>
+  <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
 <% } %>
 
 <!-- Init Foundation and Fast Click-->
 <script type="text/javascript">
   $(document).ready(function(){
-    $(document).foundation();
+    //$(document).foundation();
     FastClick.attach(document.body);
   });
-</script>
-
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>  
-<script src="http://d3js.org/topojson.v0.min.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>      
+</script>     
 
 <!-- App Code -->
 <% if(env === 'production') { %>
