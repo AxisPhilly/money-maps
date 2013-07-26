@@ -3,22 +3,34 @@
 }
 
 path {
-  fill: #f5f5f5;
+  fill: #eff3ff;
   stroke-width: 1.1px;
   stroke: #fff;
   stroke-linejoin: round;    
 }
 
-.d0-4 { fill: #f5f5f5; }
-.d1-4 { fill: #A3C5CC; }
-.d2-4 { fill: #62A8BC; }
-.d3-4 { fill: #2C69AA; }
-.d4-4 { fill: #0A2943; }
-
 .subunit-boundary {
   fill: #000000;
   stroke-width: 5px;
   stroke: red;
+}
+
+.ward, .county {
+  &.break0 {
+    fill: #c6dbef;
+  }
+  &.break1 {
+    fill: #9ecae1;
+  }
+  &.break2 {
+    fill: #6baed6;
+  }
+  &.break3 {
+    fill: #3182bd;
+  }
+  &.break4 {
+    fill: #08519c;
+  }
 }
 
 #select-view {

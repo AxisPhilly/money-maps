@@ -57,11 +57,12 @@ app.CityView = Backbone.View.extend({
 
   render: function() {
     if (this.model.get(this.options.year)) {
-      var data = this.model.get(this.options.year)['ward'];
+      var data = this.model.get(this.options.year)['ward'],
+          max = _.max(data);
 
       var quantize = d3.scale.quantize()
-        .domain([0, 10])
-        .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+        .domain([0, max])
+        .range(d3.range(5).map(function(i) { return "ward break" + i; }));
 
       var svg = d3.select(this.el).append('svg')
             .attr('width', this.width)
@@ -72,16 +73,12 @@ app.CityView = Backbone.View.extend({
           .data(topojson.feature(app.wards, app.wards.objects['philadelphia_wards']).features)
         .enter().append("path")
           .attr("d", this.path)
-          .attr("class", function(d) {});
+          .attr("class", function(d) { return quantize(data[d.id]); });
 
       $('#' + this.options.parentId + ' .city').html(this.el);
     } else {
       var that = this;
-      this.model.fetch({
-        success: function() {
-          that.render();
-        }
-      }, this);
+      this.model.fetch({ success: function() { that.render(); } });
     }
   }
 });
@@ -102,24 +99,35 @@ app.StateView = Backbone.View.extend({
 
   render: function() {
     if (this.model.get(this.options.year)) {
+      var data = this.model.get(this.options.year)['county'];
+          max = _.max(data),
+          fData = d3.map();
+
+          // TODO: Is there a way to modify the values of the topojson
+          // IDs so we don't have to do this everytime?
+          _.each(data, function(value, i) {
+            fData.set(i.toUpperCase(), value);
+          });
+
+      var quantize = d3.scale.quantize()
+        .domain([0, max])
+        .range(d3.range(5).map(function(i) { return "county break" + i; }));
+
       var svg = d3.select(this.el).append('svg')
             .attr('width', this.width)
             .attr('height', this.height);
 
       svg.append("g")
         .selectAll("path")
-          .data(topojson.feature(app.counties, app.counties.objects['pa_counties']).features)
+          .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
         .enter().append("path")
-          .attr("d", this.path);
+          .attr("d", this.path)
+          .attr("class", function(d) { return quantize(fData.get(d.id)); });
 
       $('#' + this.options.parentId + ' .state').html(this.el);
     } else {
       var that = this;
-      this.model.fetch({
-        success: function() {
-          that.render();
-        }
-      }, this);
+      this.model.fetch({ success: function() { that.render(); } });
     }
   }
 });
