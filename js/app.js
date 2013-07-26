@@ -24,6 +24,8 @@ app.CandidateView = Backbone.View.extend({
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
     this.year = 2012;
+    this.forward = false;
+    this.backward = true;
     this.cityView = new app.CityView({
       model: this.model,
       parentId: this.id
@@ -35,7 +37,11 @@ app.CandidateView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: this.year })));
+    this.$el.html(this.template($.extend({}, this.model.toJSON(), {
+      year: this.year,
+      forward: this.forward,
+      backward: this.backward
+    })));
     this.$el.find('.city').html(this.cityView.render(this.year).el);
     this.$el.find('.state').html(this.stateView.render(this.year).el);
 
@@ -49,6 +55,18 @@ app.CandidateView = Backbone.View.extend({
       this.year = this.year + 1;
     } else {
       this.year = this.year - 1;
+    }
+
+    if (!this.model.get(this.year + 1)) {
+      this.forward = false;
+    } else {
+      this.forward = true;
+    }
+
+    if (!this.model.get(this.year - 1)) {
+      this.backward = false;
+    } else {
+      this.backward = true;
     }
 
     this.render();
@@ -199,7 +217,8 @@ app.Router = Backbone.Router.extend({
     });
 
     _.templateSettings = {
-      interpolate : /\{\{(.+?)\}\}/g
+      evaluate: /\{\{(.+?)\}\}/g,
+      interpolate: /\{\{=(.+?)\}\}/g
     };
   }
 });
