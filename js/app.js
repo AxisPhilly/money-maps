@@ -19,14 +19,22 @@ app.CandidateView = Backbone.View.extend({
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
     this.year = 2012;
-    this.cityView = new app.CityView({});
-    this.stateView = new app.StateView({});
+    this.cityView = new app.CityView({
+      year: this.year,
+      model: this.model,
+      parentId: this.id
+    });
+    this.stateView = new app.StateView({
+      year: this.year,
+      model: this.model,
+      parentId: this.id
+    });
   },
 
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));
-    this.$el.find('.city').html(this.cityView.render().el);
-    this.$el.find('.state').html(this.stateView.render().el);
+    this.cityView.render();
+    this.stateView.render();
 
     return this;
   }
@@ -34,6 +42,7 @@ app.CandidateView = Backbone.View.extend({
 
 app.CityView = Backbone.View.extend({
   tagName: 'div',
+  className: 'city',
 
   initialize: function() {
     this.width = 370;
@@ -47,17 +56,33 @@ app.CityView = Backbone.View.extend({
   },
 
   render: function() {
-    var svg = d3.select(this.el).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height);
+    if (this.model.get(this.options.year)) {
+      var data = this.model.get(this.options.year)['ward'];
 
-    svg.append("g")
-      .selectAll("path")
-        .data(topojson.feature(app.wards, app.wards.objects['philadelphia_wards']).features)
-      .enter().append("path")
-        .attr("d", this.path);
+      var quantize = d3.scale.quantize()
+        .domain([0, 10])
+        .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
-    return this;
+      var svg = d3.select(this.el).append('svg')
+            .attr('width', this.width)
+            .attr('height', this.height);
+
+      svg.append("g")
+        .selectAll("path")
+          .data(topojson.feature(app.wards, app.wards.objects['philadelphia_wards']).features)
+        .enter().append("path")
+          .attr("d", this.path)
+          .attr("class", function(d) {});
+
+      $('#' + this.options.parentId + ' .city').html(this.el);
+    } else {
+      var that = this;
+      this.model.fetch({
+        success: function() {
+          that.render();
+        }
+      }, this);
+    }
   }
 });
 
@@ -76,17 +101,26 @@ app.StateView = Backbone.View.extend({
   },
 
   render: function() {
-    var svg = d3.select(this.el).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height);
+    if (this.model.get(this.options.year)) {
+      var svg = d3.select(this.el).append('svg')
+            .attr('width', this.width)
+            .attr('height', this.height);
 
-    svg.append("g")
-      .selectAll("path")
-        .data(topojson.feature(app.counties, app.counties.objects['pa_counties']).features)
-      .enter().append("path")
-        .attr("d", this.path);
+      svg.append("g")
+        .selectAll("path")
+          .data(topojson.feature(app.counties, app.counties.objects['pa_counties']).features)
+        .enter().append("path")
+          .attr("d", this.path);
 
-    return this;
+      $('#' + this.options.parentId + ' .state').html(this.el);
+    } else {
+      var that = this;
+      this.model.fetch({
+        success: function() {
+          that.render();
+        }
+      }, this);
+    }
   }
 });
 
@@ -118,13 +152,16 @@ app.SelectItemView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.html(this.model.get('slug'));
+    this.$el.html(this.model.get('name'));
 
     return this;
   },
 
   add: function() {
-    $('#candidates').append(new app.CandidateView({ model: this.model }).render().el);
+    $('#candidates').append(new app.CandidateView({
+      model: this.model,
+      id: this.model.get('slug') + '-' + String(Math.random()).split('.')[1]
+    }).render().el);
   }
 });
 
