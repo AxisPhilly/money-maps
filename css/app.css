@@ -27,5 +27,16 @@ path {
   #select-view li:before {
     content: "+ "; }
 
-.year-select .backward, .year-select .forward {
-  cursor: pointer; }
+.panel-header {
+  height: 30px; }
+  .panel-header .year-select .backward, .panel-header .year-select .forward {
+    cursor: pointer; }
+  .panel-header .close {
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 11px;
+    padding: 4px 4px 6px 4px;
+    line-height: 11px;
+    color: #fff; }
+    .panel-header .close a {
+      color: #fff; }

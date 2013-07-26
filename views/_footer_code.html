@@ -1,15 +1,22 @@
 <!-- Templates -->
 <script type="text/template" id="candidate-view-template">
-  <div class="year-select">
-    {{ if(backward) { }}
-      <span class="backward" data-direction="backward">&larr;</span> 
-    {{ } }}
-    {{= year }}
-    {{ if(forward) { }}
-      <span class="forward" data-direction="forward">&rarr;</span>
-    {{ } }}
+  <div class="panel-header">
+    <div class="year-select left">
+      {{ if(backward) { }}
+        <span class="backward" data-direction="backward">&larr;</span> 
+      {{ } }}
+      {{= year }}
+      {{ if(forward) { }}
+        <span class="forward" data-direction="forward">&rarr;</span>
+      {{ } }}
+    </div>
+    <div class="close right">
+      <a>&#215;</a>
+    </div>
   </div>
-  {{= name }}
+  <div>
+    {{= name }}
+  <div>
   <div class='city'></div>
   <div class='state'></div>
   <div class='national'></div>

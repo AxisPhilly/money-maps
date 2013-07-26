@@ -42,8 +42,25 @@ path {
   }
 }
 
-.year-select {
-  .backward, .forward {
+.panel-header {
+  height: 30px;
+
+  .year-select {
+    .backward, .forward {
+      cursor: pointer;
+    }
+  }
+
+  .close {
     cursor: pointer;
+    background-color: #ccc;
+    border-radius: 11px;
+    padding: 4px 4px 6px 4px;
+    line-height: 11px;
+    color: #fff;
+
+    a {
+      color: #fff;
+    }
   }
 }

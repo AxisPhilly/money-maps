@@ -18,7 +18,8 @@ app.CandidateView = Backbone.View.extend({
 
   events: {
     'click .forward': 'updateYear',
-    'click .backward': 'updateYear'
+    'click .backward': 'updateYear',
+    'click .close a': 'close'
   },
 
   initialize: function() {
@@ -70,6 +71,10 @@ app.CandidateView = Backbone.View.extend({
     }
 
     this.render();
+  },
+
+  close: function() {
+    this.remove();
   }
 });
 
@@ -185,7 +190,9 @@ app.SelectItemView = Backbone.View.extend({
     return this;
   },
 
-  add: function() {
+  add: function(event) {
+    event.stopPropagation();
+
     this.model.fetch({
       success: function(model) {
         $('#candidates').append(new app.CandidateView({
