@@ -1,35 +1,25 @@
-.background {
-  fill: white;
-}
-
 path {
-  fill: #eff3ff;
+  fill: #ccc;
   stroke-width: 1.1px;
   stroke: #fff;
   stroke-linejoin: round;    
 }
 
-.subunit-boundary {
-  fill: #000000;
-  stroke-width: 5px;
-  stroke: red;
-}
-
 .ward, .county {
   &.break0 {
-    fill: #c6dbef;
+    fill: rgb(107,174,214);
   }
   &.break1 {
-    fill: #9ecae1;
+    fill: rgb(66,146,198);
   }
   &.break2 {
-    fill: #6baed6;
+    fill: rgb(33,113,181);
   }
   &.break3 {
-    fill: #3182bd;
+    fill: rgb(8,81,156);
   }
   &.break4 {
-    fill: #08519c;
+    fill: rgb(8,48,107);
   }
 }
 

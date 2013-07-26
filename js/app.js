@@ -96,11 +96,11 @@ app.StateView = Backbone.View.extend({
   tagName: 'div',
 
   initialize: function() {
-    this.width = 370;
-    this.height = 218;
+    this.width = 300;
+    this.height = 177;
     this.projection = d3.geo.mercator()
           .center([-77.590, 41.02])
-          .scale(3605)
+          .scale(2500)
           .translate([this.width / 2, this.height / 2]);
     this.path = d3.geo.path()
           .projection(this.projection);
