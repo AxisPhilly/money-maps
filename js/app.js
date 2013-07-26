@@ -14,72 +14,81 @@ app.Candidates = Backbone.Collection.extend({
 
 app.CandidateView = Backbone.View.extend({
   tagName: 'div',
-  className: 'candidate',
+  className: 'candidate three columns',
+
+  events: {
+    'click .forward': 'updateYear',
+    'click .backward': 'updateYear'
+  },
 
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
     this.year = 2012;
     this.cityView = new app.CityView({
-      year: this.year,
       model: this.model,
       parentId: this.id
     });
     this.stateView = new app.StateView({
-      year: this.year,
       model: this.model,
       parentId: this.id
     });
   },
 
   render: function() {
-    this.$el.html(this.template(this.model.toJSON()));
-    this.cityView.render();
-    this.stateView.render();
+    this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: this.year })));
+    this.$el.find('.city').html(this.cityView.render(this.year).el);
+    this.$el.find('.state').html(this.stateView.render(this.year).el);
 
     return this;
+  },
+
+  updateYear: function(e) {
+    var direction = $(e.target).data('direction');
+
+    if (direction === 'forward') {
+      this.year = this.year + 1;
+    } else {
+      this.year = this.year - 1;
+    }
+
+    this.render();
   }
 });
 
 app.CityView = Backbone.View.extend({
-  tagName: 'div',
-  className: 'city',
-
   initialize: function() {
-    this.width = 370;
-    this.height = 406;
+    this.width = 300;
+    this.height = 329;
     this.projection = d3.geo.mercator()
           .center([-75.1182, 40.0032])
-          .scale(65000)
+          .scale(50000)
           .translate([this.width / 2, this.height / 2]);
     this.path = d3.geo.path()
           .projection(this.projection);
   },
 
-  render: function() {
-    if (this.model.get(this.options.year)) {
-      var data = this.model.get(this.options.year)['ward'],
-          max = _.max(data);
+  render: function(year) {
+    this.$el.empty();
 
-      var quantize = d3.scale.quantize()
-        .domain([0, max])
-        .range(d3.range(5).map(function(i) { return "ward break" + i; }));
+    var data = this.model.get(year)['ward'],
+        max = _.max(data);
 
-      var svg = d3.select(this.el).append('svg')
-            .attr('width', this.width)
-            .attr('height', this.height);
+    var quantize = d3.scale.quantize()
+      .domain([0, max])
+      .range(d3.range(5).map(function(i) { return "ward break" + i; }));
 
-      svg.append("g")
-        .selectAll("path")
-          .data(topojson.feature(app.wards, app.wards.objects['wards']).features)
-        .enter().append("path")
-          .attr("d", this.path)
-          .attr("class", function(d) { return quantize(data[d.id]); });
+    var svg = d3.select(this.el).append('svg')
+          .attr('width', this.width)
+          .attr('height', this.height);
 
-      $('#' + this.options.parentId + ' .city').html(this.el);
-    } else {
-      var that = this;
-      this.model.fetch({ success: function() { that.render(); } });
-    }
+    svg.append("g")
+      .selectAll("path")
+        .data(topojson.feature(app.wards, app.wards.objects['wards']).features)
+      .enter().append("path")
+        .attr("d", this.path)
+        .attr("class", function(d) { return quantize(data[d.id]); });
+
+    return this;
   }
 });
 
@@ -97,38 +106,35 @@ app.StateView = Backbone.View.extend({
           .projection(this.projection);
   },
 
-  render: function() {
-    if (this.model.get(this.options.year)) {
-      var data = this.model.get(this.options.year)['county'];
-          max = _.max(data),
-          fData = d3.map();
+  render: function(year) {
+    this.$el.empty();
 
-          // TODO: Is there a way to modify the values of the topojson
-          // IDs so we don't have to do this everytime?
-          _.each(data, function(value, i) {
-            fData.set(i.toUpperCase(), value);
-          });
+    var data = this.model.get(year)['county'];
+        max = _.max(data),
+        fData = d3.map();
 
-      var quantize = d3.scale.quantize()
-        .domain([0, max])
-        .range(d3.range(5).map(function(i) { return "county break" + i; }));
+        // TODO: Is there a way to modify the values of the topojson
+        // IDs so we don't have to do this everytime?
+        _.each(data, function(value, i) {
+          fData.set(i.toUpperCase(), value);
+        });
 
-      var svg = d3.select(this.el).append('svg')
-            .attr('width', this.width)
-            .attr('height', this.height);
+    var quantize = d3.scale.quantize()
+      .domain([0, max])
+      .range(d3.range(5).map(function(i) { return "county break" + i; }));
 
-      svg.append("g")
-        .selectAll("path")
-          .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
-        .enter().append("path")
-          .attr("d", this.path)
-          .attr("class", function(d) { return quantize(fData.get(d.id)); });
+    var svg = d3.select(this.el).append('svg')
+          .attr('width', this.width)
+          .attr('height', this.height);
 
-      $('#' + this.options.parentId + ' .state').html(this.el);
-    } else {
-      var that = this;
-      this.model.fetch({ success: function() { that.render(); } });
-    }
+    svg.append("g")
+      .selectAll("path")
+        .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
+      .enter().append("path")
+        .attr("d", this.path)
+        .attr("class", function(d) { return quantize(fData.get(d.id)); });
+
+    return this;
   }
 });
 
@@ -138,10 +144,6 @@ app.NationalView = Backbone.View.extend({
 
 app.SelectView = Backbone.View.extend({
   tagName: 'ul',
-
-  initialize: function() {
-
-  },
 
   render: function() {
     this.collection.each(function(candidate) {
@@ -166,10 +168,14 @@ app.SelectItemView = Backbone.View.extend({
   },
 
   add: function() {
-    $('#candidates').append(new app.CandidateView({
-      model: this.model,
-      id: this.model.get('slug') + '-' + String(Math.random()).split('.')[1]
-    }).render().el);
+    this.model.fetch({
+      success: function(model) {
+        $('#candidates').append(new app.CandidateView({
+          model: model,
+          id: model.get('slug') + '-' + String(Math.random()).split('.')[1]
+        }).render().el);
+      }
+    });
   }
 });
 

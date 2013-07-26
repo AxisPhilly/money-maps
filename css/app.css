@@ -34,3 +34,6 @@ path {
   margin: 2px 4px; }
   #select-view li:before {
     content: "+ "; }
+
+.year-select .backward, .year-select .forward {
+  cursor: pointer; }

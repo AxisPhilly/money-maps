@@ -51,3 +51,9 @@ path {
     }
   }
 }
+
+.year-select {
+  .backward, .forward {
+    cursor: pointer;
+  }
+}
