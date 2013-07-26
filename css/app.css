@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'StateFaceRegular';
+  src: url('../font/stateface-regular-webfont.eot');
+  src: url('../font/stateface-regular-webfont.eot?#iefix') format('embedded-opentype'), url('../font/stateface-regular-webfont.woff') format('woff'), url('../font/stateface-regular-webfont.ttf') format('truetype'), url('../font/stateface-regular-webfont.svg#StateFaceRegular') format('svg');
+  font-weight: normal;
+  font-style: normal; }
+
 path {
   fill: #ccc;
   stroke-width: 1.1px;
@@ -40,3 +47,10 @@ path {
     color: #fff; }
     .panel-header .close a {
       color: #fff; }
+
+.national ul {
+  list-style-type: none; }
+.national .stateface {
+  font-size: 28px; }
+.national .state-title {
+  font-size: 14px; }

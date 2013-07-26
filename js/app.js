@@ -27,13 +27,17 @@ app.CandidateView = Backbone.View.extend({
     this.year = 2012;
     this.forward = false;
     this.backward = true;
+
     this.cityView = new app.CityView({
-      model: this.model,
-      parentId: this.id
+      model: this.model
     });
+
     this.stateView = new app.StateView({
-      model: this.model,
-      parentId: this.id
+      model: this.model
+    });
+
+    this.nationalView = new app.NationalView({
+      model: this.model
     });
   },
 
@@ -43,8 +47,10 @@ app.CandidateView = Backbone.View.extend({
       forward: this.forward,
       backward: this.backward
     })));
+
     this.$el.find('.city').html(this.cityView.render(this.year).el);
     this.$el.find('.state').html(this.stateView.render(this.year).el);
+    this.$el.find('.national').html(this.nationalView.render(this.year).el);
 
     return this;
   },
@@ -158,11 +164,32 @@ app.StateView = Backbone.View.extend({
         .attr("class", function(d) { return quantize(fData.get(d.id)); });
 
     return this;
+
   }
 });
 
 app.NationalView = Backbone.View.extend({
+  tagName: 'ul',
 
+  initialize: function() {
+    this.template = _.template($('#national-view-template').html());
+  },
+
+  render: function(year) {
+    console.log(this.model);
+    var stateList = _.map(this.model.get(year).state, function(value, state) {
+      abbrv = states[state].toLowerCase();
+      return this.template({
+        state: state,
+        abbrv: abbrv,
+        total: value.formatMoney()
+      });
+    }, this);
+
+    this.$el.append(stateList);
+
+    return this;
+  }
 });
 
 app.SelectView = Backbone.View.extend({
@@ -232,3 +259,9 @@ app.Router = Backbone.Router.extend({
 
 // go!
 app.router = new app.Router();
+
+Number.prototype.formatMoney = function(){
+  var c=0, d='.', t=',';
+  var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c), 10) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+  return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+};

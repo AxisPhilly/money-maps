@@ -21,7 +21,15 @@
   <div class='state'></div>
   <div class='national'></div>
 </script>
-
+<script type="text/template" id="national-view-template">
+  <li>
+    <div>
+      <span class="stateface stateface-{{= abbrv }}"></span>
+      <span class="state-title">{{= state }}</span>
+    </div>
+    ${{= total }}
+  </li>
+</script>
 <!-- Libraries -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
 <% if(env === 'production') { %>
@@ -36,6 +44,7 @@
   <script type="text/javascript" src="js/lib/topojson.js"></script>
   <script type="text/javascript" src="js/lib/queue.js"></script>
   <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
+  <script type="text/javascript" src="js/lib/states.js"></script>
 <% } %>
 
 <!-- Init Foundation and Fast Click-->
