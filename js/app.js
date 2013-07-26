@@ -70,7 +70,7 @@ app.CityView = Backbone.View.extend({
 
       svg.append("g")
         .selectAll("path")
-          .data(topojson.feature(app.wards, app.wards.objects['philadelphia_wards']).features)
+          .data(topojson.feature(app.wards, app.wards.objects['wards']).features)
         .enter().append("path")
           .attr("d", this.path)
           .attr("class", function(d) { return quantize(data[d.id]); });

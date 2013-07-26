@@ -13,3 +13,12 @@ counties.zip:
 counties.json: counties.zip
 	ogr2ogr -f "GeoJSON" counties/counties.json counties/PaCounty2013_02.shp
 	topojson -o counties.json --id-property COUNTY_NAM -q 1000 counties/counties.json
+
+wards.zip:
+	curl -o wards.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaPoliticalWards201302.zip
+	unzip wards.zip
+
+wards.json: wards.zip
+	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326" PhiladelphiaPoliticalWards201302/wards.json PhiladelphiaPoliticalWards201302/PhiladelphiaPoliticalWards201302.shp
+	topojson -o wards.json --id-property WARD_NUM -q 1000 PhiladelphiaPoliticalWards201302/wards.json
+	
