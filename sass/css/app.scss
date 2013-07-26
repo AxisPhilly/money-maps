@@ -20,3 +20,22 @@ path {
   stroke-width: 5px;
   stroke: red;
 }
+
+#select-view {
+  ul {
+    list-style-type: none;
+  }
+
+  li {
+    cursor: pointer;
+    color: #fff;
+    display: inline-block;
+    background-color: #555;
+    padding: 4px 10px;
+    margin: 2px 4px;
+
+    &:before {
+      content: "+ ";
+    }
+  }
+}
