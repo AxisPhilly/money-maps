@@ -193,7 +193,7 @@ app.NationalView = Backbone.View.extend({
   },
 
   render: function(year) {
-    if(this.model.get('year')) {
+    if(this.model.get(year)) {
       var stateList = _.map(this.model.get(year).state, function(value, state) {
         abbrv = states[state].toLowerCase();
         return this.template({
