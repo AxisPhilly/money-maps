@@ -24,7 +24,7 @@ app.CandidateView = Backbone.View.extend({
 
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
-    this.year = 2012;
+    this.year = this.options.year || 2012;
     this.forward = false;
     this.backward = true;
 
@@ -255,6 +255,7 @@ app.Router = Backbone.Router.extend({
       app.candidates = new app.Candidates(data);
 
       app.selectView = new app.SelectView({ collection: app.candidates });
+
       $('#select-view').append(app.selectView.render().el);
 
       d3.json('data/counties.json', function(data) {
@@ -263,7 +264,7 @@ app.Router = Backbone.Router.extend({
         d3.json('data/wards_w_districts.json', function(data) {
           app.wards = data;
 
-          Backbone.history.start({ pushState:false, silent:true });
+          Backbone.history.start({ pushState:false, silent:false });
         });
       });
     });
@@ -272,6 +273,33 @@ app.Router = Backbone.Router.extend({
       evaluate: /\{\{(.+?)\}\}/g,
       interpolate: /\{\{=(.+?)\}\}/g
     };
+  },
+
+  routes: {
+    ':candidates': 'index'
+  },
+
+  index: function(candidates) {
+    var candidateList = candidates.split(',');
+
+    _.each(candidateList, function(candidate) {
+      var initials = candidate.split('-')[0],
+          year = candidate.split('-')[1];
+
+      var model = app.candidates.find(function(c) {
+        return c.get('initials') == initials;
+      });
+
+      model.fetch({
+        success: function(model) {
+          $('#candidates').append(new app.CandidateView({
+            model: model,
+            id: model.get('slug') + '-' + String(Math.random()).split('.')[1],
+            year: year
+          }).render().el);
+        }
+      });
+    });
   }
 });
 
