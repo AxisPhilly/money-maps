@@ -99,7 +99,7 @@ app.CityView = Backbone.View.extend({
   render: function(year) {
     this.$el.empty();
 
-    var data = this.model.get(year)['ward'],
+    var data = this.model.get(year) ? this.model.get(year)['ward'] : {},
         max = _.max(data);
 
     var quantize = d3.scale.quantize()
@@ -157,7 +157,7 @@ app.StateView = Backbone.View.extend({
   render: function(year) {
     this.$el.empty();
 
-    var data = this.model.get(year)['county'];
+    var data = this.model.get(year) ? this.model.get(year)['county'] : {},
         max = _.max(data),
         fData = d3.map();
 
@@ -194,16 +194,18 @@ app.NationalView = Backbone.View.extend({
   },
 
   render: function(year) {
-    var stateList = _.map(this.model.get(year).state, function(value, state) {
-      abbrv = states[state].toLowerCase();
-      return this.template({
-        state: state,
-        abbrv: abbrv,
-        total: value.formatMoney()
-      });
-    }, this);
+    if(this.model.get('year')) {
+      var stateList = _.map(this.model.get(year).state, function(value, state) {
+        abbrv = states[state].toLowerCase();
+        return this.template({
+          state: state,
+          abbrv: abbrv,
+          total: value.formatMoney()
+        });
+      }, this);
 
-    this.$el.empty().append(stateList);
+      this.$el.empty().append(stateList);
+    }
 
     return this;
   }
