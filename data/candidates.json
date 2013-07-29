@@ -2,6 +2,7 @@
   {
     "name": "Darrell Clarke",
     "slug": "darrell-clarke",
+    "initials": "dc",
     "title": "Councilman, District 5; Council President",
     "district": 5,
     "party": "D",
@@ -12,6 +13,7 @@
   {
     "name": "Mark Squilla",
     "slug": "mark-squilla",
+    "initials": "ms",
     "title": "Councilman, District 1",
     "district": 1,
     "party": "D",
@@ -22,6 +24,7 @@
   {
     "name": "Kenyatta Johnson",
     "slug": "kenyatta-johnson",
+    "initials": "kj",
     "title": "Councilman, District 2",
     "district": 2,
     "party": "D",
@@ -32,6 +35,7 @@
   {
     "name": "Jannie Blackwell",
     "slug": "jannie-blackwell",
+    "initials": "jb",
     "title": "Councilwoman, District 3",
     "district": 3,
     "party": "D",
@@ -42,6 +46,7 @@
   {
     "name": "Curtis Jones, Jr.",
     "slug": "curtis-jones",
+    "initials": "cj",
     "title": "Councilman, District 4",
     "district": 4,
     "party": "D",
@@ -52,6 +57,7 @@
   {
     "name": "Bobby Henon",
     "slug": "bobby-henon",
+    "initials": "bh",
     "title": "Councilman, District 6",
     "district": 6,
     "party": "D",
@@ -62,6 +68,7 @@
   {
     "name": "Maria Quiñones-Sánchez",
     "slug": "maria-quinones-sanchez",
+    "initials": "mqs",
     "title": "Councilwoman, District 7",
     "district": 7,
     "party": "D",
@@ -72,6 +79,7 @@
   {
     "name": "Cindy Bass",
     "slug": "cindy-bass",
+    "initials": "cb",
     "title": "Councilwoman, District 8",
     "district": 8,
     "party": "D",
@@ -82,6 +90,7 @@
   {
     "name": "Marian Tasco",
     "slug": "marian-tasco",
+    "initials": "mt",
     "title": "Councilwoman, District 9",
     "district": 9,
     "party": "D",
@@ -92,6 +101,7 @@
   {
     "name": "Brian O'Neill",
     "slug": "brian-oneill",
+    "initials": "bo",
     "title": "Councilman, District 10",
     "district": 10,
     "party": "R",
@@ -102,6 +112,7 @@
   {
     "name": "Wilson Goode, Jr.",
     "slug": "wilson-goode",
+    "initials": "wg",
     "title": "Councilman, At-large",
     "district": false,
     "party": "D",
@@ -112,6 +123,7 @@
   {
     "name": "Bill Greenlee",
     "slug": "bill-greenlee",
+    "initials": "bgl",
     "title": "Councilman, At-large",
     "district": false,
     "party": "D",
@@ -122,6 +134,7 @@
   {
     "name": "Bill Green",
     "slug": "bill-green",
+    "initials": "bg",
     "title": "Councilman, At-large",
     "district": false,
     "party": "D",
@@ -132,6 +145,7 @@
   {
     "name": "Dennis O'Brien",
     "slug": "dennis-obrien",
+    "initials": "do",
     "title": "Councilman, At-large",
     "district": false,
     "party": "R",
@@ -142,6 +156,7 @@
   {
     "name": "Jim Kenney",
     "slug": "jim-kenney",
+    "initials": "jk",
     "title": "Councilman, At-large",
     "district": false,
     "party": "D",
@@ -152,6 +167,7 @@
   {
     "name": "Blondell Reynolds Brown",
     "slug": "blondell-reynolds-brown",
+    "initials": "brb",
     "title": "Councilwoman, At-large",
     "district": false,
     "party": "D",
@@ -162,6 +178,7 @@
   {
     "name": "David Oh",
     "slug": "david-oh",
+    "initials": "do",
     "title": "Councilman, At-large",
     "district": false,
     "party": "R",
