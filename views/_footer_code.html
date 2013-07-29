@@ -3,11 +3,11 @@
   <div class="panel-header">
     <div class="year-select left">
       {{ if(backward) { }}
-        <span class="backward" data-direction="backward">&larr;</span> 
+        <span><a class="backward" data-direction="backward">&larr;</a></span> 
       {{ } }}
       {{= year }}
       {{ if(forward) { }}
-        <span class="forward" data-direction="forward">&rarr;</span>
+        <span><a class="forward" data-direction="forward">&rarr;</a></span>
       {{ } }}
     </div>
     <div class="close right">
