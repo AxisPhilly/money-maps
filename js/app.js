@@ -116,6 +116,12 @@ app.CityView = Backbone.View.extend({
         .attr("d", this.path)
         .attr("class", function(d) { return quantize(data[d.id]); });
 
+    svg.append("g")
+      .append("path")
+        .datum(topojson.mesh(app.wards, app.wards.objects.wards, function(a, b) { return a !== b; }))
+        .attr("d", this.path)
+        .attr("class", "boundary");
+
     if(this.model.get('district')) {
       var distNum = this.model.get('district');
       svg.append("g")
@@ -133,6 +139,7 @@ app.CityView = Backbone.View.extend({
         .enter().append('path')
           .attr('d', this.path)
           .attr('class', 'district');
+
     }
 
     return this;
@@ -180,6 +187,12 @@ app.StateView = Backbone.View.extend({
       .enter().append("path")
         .attr("d", this.path)
         .attr("class", function(d) { return quantize(fData.get(d.id)); });
+
+    svg.append("g")
+      .append("path")
+        .datum(topojson.mesh(app.counties, app.counties.objects['counties'], function(a, b) { return a !== b; }))
+        .attr("d", this.path)
+        .attr("class", "boundary");
 
     return this;
   }
