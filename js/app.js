@@ -290,15 +290,17 @@ app.Router = Backbone.Router.extend({
         return c.get('initials') == initials;
       });
 
-      model.fetch({
-        success: function(model) {
-          $('#candidates').append(new app.CandidateView({
-            model: model,
-            id: model.get('slug') + '-' + String(Math.random()).split('.')[1],
-            year: year
-          }).render().el);
-        }
-      });
+      if (model) {
+        model.fetch({
+          success: function(model) {
+            $('#candidates').append(new app.CandidateView({
+              model: model,
+              id: model.get('slug') + '-' + String(Math.random()).split('.')[1],
+              year: year
+            }).render().el);
+          }
+        });
+      }
     });
   }
 });
