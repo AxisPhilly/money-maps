@@ -112,10 +112,29 @@ app.CityView = Backbone.View.extend({
 
     svg.append("g")
       .selectAll("path")
-        .data(topojson.feature(app.wards, app.wards.objects['wards']).features)
+        .data(topojson.feature(app.wards, app.wards.objects.wards).features)
       .enter().append("path")
         .attr("d", this.path)
         .attr("class", function(d) { return quantize(data[d.id]); });
+
+    if(this.model.get('district')) {
+      var distNum = this.model.get('district');
+      svg.append("g")
+        .selectAll("path")
+          .data(function() {
+            // We only want to draw the district of the selected councilperson
+            var active = { type: "GeometryCollection", geometries: [] };
+            for(var i=0; i<app.wards.objects.districts.geometries.length; i++) {
+              if(app.wards.objects.districts.geometries[i].id == distNum) {
+                active.geometries.push(app.wards.objects.districts.geometries[i]);
+              }
+            }
+            return topojson.feature(app.wards, active).features;
+          })
+        .enter().append('path')
+          .attr('d', this.path)
+          .attr('class', 'district');
+    }
 
     return this;
   }
@@ -164,7 +183,6 @@ app.StateView = Backbone.View.extend({
         .attr("class", function(d) { return quantize(fData.get(d.id)); });
 
     return this;
-
   }
 });
 
@@ -241,7 +259,7 @@ app.Router = Backbone.Router.extend({
       d3.json('data/counties.json', function(data) {
         app.counties = data;
 
-        d3.json('data/wards.json', function(data) {
+        d3.json('data/wards_w_districts.json', function(data) {
           app.wards = data;
 
           Backbone.history.start({ pushState:false, silent:true });

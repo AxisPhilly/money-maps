@@ -26,6 +26,6 @@ districts.zip:
 	curl -o districts.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaCouncilDistricts_2000.zip
 	unzip districts.zip -d districts
 
-districts.json: districts.zip
-	for i in `seq 1 10`; do ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326" -where "DIST_NUM = '$$i'" districts/old_district_$$i.json districts/PhiladelphiaCouncilDistricts_2000.shp; done;
-	for i in `seq 1 10`; do topojson -o old_district_$$i.json districts/old_district_$$i.json; done;
+wards_w_districts.json: districts.zip wards.json
+	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326"  districts/districts.json districts/PhiladelphiaCouncilDistricts_2000.shp
+	topojson -o wards_w_districts.json --id-property WARD_NUM,DIST_NUM -q 1000 PhiladelphiaPoliticalWards201302/waon districts/districts.json

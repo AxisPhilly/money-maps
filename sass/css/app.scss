@@ -11,7 +11,6 @@
 
 path {
   fill: #ccc;
-  stroke-width: 1.1px;
   stroke: #fff;
   stroke-linejoin: round;    
 }
@@ -31,6 +30,15 @@ path {
   }
   &.break4 {
     fill: rgb(8,48,107);
+  }
+}
+
+.district {
+  fill: none;
+  stroke: none;
+
+  &.active {
+    stroke: red;
   }
 }
 

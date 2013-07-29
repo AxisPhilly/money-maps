@@ -3,6 +3,7 @@
     "name": "Darrell Clarke",
     "slug": "darrell-clarke",
     "title": "Councilman, District 5; Council President",
+    "district": 5,
     "party": "D",
     "orgs": [
 
@@ -12,6 +13,7 @@
     "name": "Mark Squilla",
     "slug": "mark-squilla",
     "title": "Councilman, District 1",
+    "district": 1,
     "party": "D",
     "orgs": [
 
@@ -21,6 +23,7 @@
     "name": "Kenyatta Johnson",
     "slug": "kenyatta-johnson",
     "title": "Councilman, District 2",
+    "district": 2,
     "party": "D",
     "orgs": [
 
@@ -30,6 +33,7 @@
     "name": "Jannie Blackwell",
     "slug": "jannie-blackwell",
     "title": "Councilwoman, District 3",
+    "district": 3,
     "party": "D",
     "orgs": [
 
@@ -39,6 +43,7 @@
     "name": "Curtis Jones, Jr.",
     "slug": "curtis-jones",
     "title": "Councilman, District 4",
+    "district": 4,
     "party": "D",
     "orgs": [
 
@@ -48,6 +53,7 @@
     "name": "Bobby Henon",
     "slug": "bobby-henon",
     "title": "Councilman, District 6",
+    "district": 6,
     "party": "D",
     "orgs": [
 
@@ -57,6 +63,7 @@
     "name": "Maria Quiñones-Sánchez",
     "slug": "maria-quinones-sanchez",
     "title": "Councilwoman, District 7",
+    "district": 7,
     "party": "D",
     "orgs": [
 
@@ -66,6 +73,7 @@
     "name": "Cindy Bass",
     "slug": "cindy-bass",
     "title": "Councilwoman, District 8",
+    "district": 8,
     "party": "D",
     "orgs": [
 
@@ -75,6 +83,7 @@
     "name": "Marian Tasco",
     "slug": "marian-tasco",
     "title": "Councilwoman, District 9",
+    "district": 9,
     "party": "D",
     "orgs": [
 
@@ -84,6 +93,7 @@
     "name": "Brian O'Neill",
     "slug": "brian-oneill",
     "title": "Councilman, District 10",
+    "district": 10,
     "party": "R",
     "orgs": [
 
@@ -93,6 +103,7 @@
     "name": "Wilson Goode, Jr.",
     "slug": "wilson-goode",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "D",
     "orgs": [
 
@@ -102,6 +113,7 @@
     "name": "Bill Greenlee",
     "slug": "bill-greenlee",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "D",
     "orgs": [
 
@@ -111,6 +123,7 @@
     "name": "Bill Green",
     "slug": "bill-green",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "D",
     "orgs": [
 
@@ -120,6 +133,7 @@
     "name": "Dennis O'Brien",
     "slug": "dennis-obrien",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "R",
     "orgs": [
 
@@ -129,6 +143,7 @@
     "name": "Jim Kenney",
     "slug": "jim-kenney",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "D",
     "orgs": [
 
@@ -138,6 +153,7 @@
     "name": "Blondell Reynolds Brown",
     "slug": "blondell-reynolds-brown",
     "title": "Councilwoman, At-large",
+    "district": false,
     "party": "D",
     "orgs": [
 
@@ -147,6 +163,7 @@
     "name": "David Oh",
     "slug": "david-oh",
     "title": "Councilman, At-large",
+    "district": false,
     "party": "R",
     "orgs": [
 
