@@ -35,11 +35,7 @@ path {
 
 .district {
   fill: none;
-  stroke: none;
-
-  &.active {
-    stroke: red;
-  }
+  stroke: red;
 }
 
 #select-view {

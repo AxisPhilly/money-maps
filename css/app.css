@@ -23,9 +23,7 @@ path {
 
 .district {
   fill: none;
-  stroke: none; }
-  .district.active {
-    stroke: red; }
+  stroke: red; }
 
 #select-view ul {
   list-style-type: none; }
