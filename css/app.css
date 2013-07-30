@@ -55,12 +55,15 @@ path {
     padding: 4px 4px 6px 4px;
     line-height: 11px;
     color: #fff; }
+    .panel-header .close:hover {
+      background-color: #333; }
     .panel-header .close a {
       color: #fff; }
 
 .national table {
   margin: 0 auto;
-  border: 0; }
+  border: 0;
+  width: 100%; }
   .national table td {
     padding: 6px;
     border-bottom: 1px dashed #333; }
@@ -69,6 +72,7 @@ path {
 .national .stateface {
   font-size: 28px; }
 .national .state-title {
-  font-size: 14px; }
+  font-size: 14px;
+  width: 50%; }
 .national .total {
   font-size: 14px; }

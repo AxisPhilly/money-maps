@@ -82,6 +82,10 @@ path {
     line-height: 11px;
     color: #fff;
 
+    &:hover {
+      background-color: #333;
+    }
+
     a {
       color: #fff;
     }
@@ -92,6 +96,7 @@ path {
   table {
     margin: 0 auto;
     border: 0;
+    width: 100%;
 
     td {
       padding: 6px;
@@ -109,6 +114,7 @@ path {
 
   .state-title {
     font-size: 14px;
+    width: 50%;
   }
 
   .total {
