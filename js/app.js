@@ -295,8 +295,9 @@ app.ShareView = Backbone.View.extend({
       return memo + candidate + ',';
     }, '');
 
-    window.location.hash = urlHash;
-    $('#shareModal').find('.link').html(window.location.origin + window.location.hash);
+    location.hash = '';
+    location.hash = urlHash;
+    $('#shareModal').find('.link').html(location.origin + location.hash);
     $('#shareModal').foundation('reveal', 'open');
   }
 });
