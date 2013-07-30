@@ -207,14 +207,22 @@ app.NationalView = Backbone.View.extend({
 
   render: function(year) {
     if(this.model.get(year)) {
-      var stateList = _.map(this.model.get(year).state, function(value, state) {
-        abbrv = states[state].toLowerCase();
-        return this.template({
-          state: state,
-          abbrv: abbrv,
-          total: value.formatMoney()
-        });
-      }, this);
+      var stateList = _.chain(this.model.get(year).state)
+        .map(function(value, state) {
+          return { state: state, total: value };
+        })
+        .sortBy(function(item) {
+          return -item.total;
+        })
+        .map(function(item) {
+          var abbrv = states[item.state].toLowerCase();
+          return this.template({
+            state: item.state,
+            abbrv: abbrv,
+            total: item.total.formatMoney()
+          });
+        }, this)
+        .value();
 
       this.$el.empty().append(stateList);
     }
