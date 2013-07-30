@@ -285,22 +285,18 @@ app.ShareView = Backbone.View.extend({
 
     $('#candidates').children().each(function(index, candidate){
       var $panel = $(candidate),
-          id = $panel.attr('id'),
-          idParts = id.split('-'),
-          slug = idParts[0] + '-' + idParts[1],
+          initials = $panel.find('.panel-header').data('initials'),
           year = $panel.find('.year').text();
-          model = app.candidates.find(function(c) {
-            return c.get('slug') == slug;
-          });
 
-      candidateList.push(model.get('initials') + '-' + year);
+      candidateList.push(initials + '-' + year);
     });
 
     var urlHash = _.reduce(candidateList, function(memo, candidate){
       return memo + candidate + ',';
-    }, '#');
+    }, '');
 
-    $('#shareModal').find('.link').html(window.location + urlHash);
+    window.location.hash = urlHash;
+    $('#shareModal').find('.link').html(window.location.origin + window.location.hash);
     $('#shareModal').foundation('reveal', 'open');
   }
 });
