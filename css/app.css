@@ -6,20 +6,25 @@
   font-style: normal; }
 
 path {
-  fill: #ccc;
-  stroke: #fff;
-  stroke-linejoin: round; }
+  fill: #f6eff7;
+  stroke-width: 0; }
+
+.boundary {
+  fill: none;
+  stroke: #999;
+  stroke-opacity: 1;
+  stroke-width: 1; }
 
 .ward.break0, .county.break0 {
-  fill: #6baed6; }
+  fill: #d0d1e6; }
 .ward.break1, .county.break1 {
-  fill: #4292c6; }
+  fill: #a6bddb; }
 .ward.break2, .county.break2 {
-  fill: #2171b5; }
+  fill: #67a9cf; }
 .ward.break3, .county.break3 {
-  fill: #08519c; }
+  fill: #1c9099; }
 .ward.break4, .county.break4 {
-  fill: #08306b; }
+  fill: #016c59; }
 
 .district {
   fill: none;
