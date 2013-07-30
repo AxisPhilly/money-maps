@@ -48,9 +48,9 @@ app.CandidateView = Backbone.View.extend({
       backward: this.backward
     })));
 
-    this.$el.find('.city').html(this.cityView.render(this.year).el);
-    this.$el.find('.state').html(this.stateView.render(this.year).el);
-    this.$el.find('.national').html(this.nationalView.render(this.year).el);
+    this.$el.find('.city').html(this.cityView.render(this.year).el).fadeIn();
+    this.$el.find('.state').html(this.stateView.render(this.year).el).fadeIn();
+    this.$el.find('.national').html(this.nationalView.render(this.year).el).fadeIn();
 
     return this;
   },
