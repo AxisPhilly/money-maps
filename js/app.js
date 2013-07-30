@@ -79,7 +79,9 @@ app.CandidateView = Backbone.View.extend({
   },
 
   close: function() {
-    this.remove();
+    this.$el.slideUp(function(){
+      this.remove();
+    });
   }
 });
 
