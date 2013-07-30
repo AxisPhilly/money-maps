@@ -28,7 +28,8 @@ path {
 
 .district {
   fill: none;
-  stroke: red; }
+  stroke: red;
+  stroke-width: 1px; }
 
 #select-view ul {
   list-style-type: none; }
@@ -57,9 +58,17 @@ path {
     .panel-header .close a {
       color: #fff; }
 
-.national ul {
-  list-style-type: none; }
+.national table {
+  margin: 0 auto;
+  border: 0; }
+  .national table td {
+    padding: 6px;
+    border-bottom: 1px dashed #333; }
+  .national table tr:last-child td {
+    border-bottom: 0; }
 .national .stateface {
   font-size: 28px; }
 .national .state-title {
+  font-size: 14px; }
+.national .total {
   font-size: 14px; }

@@ -199,7 +199,7 @@ app.StateView = Backbone.View.extend({
 });
 
 app.NationalView = Backbone.View.extend({
-  tagName: 'ul',
+  tagName: 'table',
 
   initialize: function() {
     this.template = _.template($('#national-view-template').html());

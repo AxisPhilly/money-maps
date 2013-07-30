@@ -89,8 +89,18 @@ path {
 }
 
 .national {
-  ul {
-    list-style-type: none;
+  table {
+    margin: 0 auto;
+    border: 0;
+
+    td {
+      padding: 6px;
+      border-bottom: 1px dashed #333;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
   }
 
   .stateface { 
@@ -98,6 +108,10 @@ path {
   }
 
   .state-title {
+    font-size: 14px;
+  }
+
+  .total {
     font-size: 14px;
   }
 }
