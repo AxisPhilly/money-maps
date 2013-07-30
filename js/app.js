@@ -111,14 +111,14 @@ app.CityView = Backbone.View.extend({
 
     svg.append("g")
       .selectAll("path")
-        .data(topojson.feature(app.wards, app.wards.objects.wards).features)
+        .data(topojson.feature(app.philly, app.philly.objects.wards).features)
       .enter().append("path")
         .attr("d", this.path)
         .attr("class", function(d) { return quantize(data[d.id]); });
 
     svg.append("g")
       .append("path")
-        .datum(topojson.mesh(app.wards, app.wards.objects.wards, function(a, b) { return a !== b; }))
+        .datum(topojson.mesh(app.philly, app.philly.objects.wards, function(a, b) { return a !== b; }))
         .attr("d", this.path)
         .attr("class", "boundary");
 
@@ -129,12 +129,12 @@ app.CityView = Backbone.View.extend({
           .data(function() {
             // We only want to draw the district of the selected councilperson
             var active = { type: "GeometryCollection", geometries: [] };
-            for(var i=0; i<app.wards.objects.districts.geometries.length; i++) {
-              if(app.wards.objects.districts.geometries[i].id == distNum) {
-                active.geometries.push(app.wards.objects.districts.geometries[i]);
+            for(var i=0; i<app.philly.objects.districts.geometries.length; i++) {
+              if(app.philly.objects.districts.geometries[i].id == distNum) {
+                active.geometries.push(app.philly.objects.districts.geometries[i]);
               }
             }
-            return topojson.feature(app.wards, active).features;
+            return topojson.feature(app.philly, active).features;
           })
         .enter().append('path')
           .attr('d', this.path)
@@ -275,7 +275,7 @@ app.Router = Backbone.Router.extend({
         app.counties = data;
 
         d3.json('data/wards_w_districts.json', function(data) {
-          app.wards = data;
+          app.philly = data;
 
           Backbone.history.start({ pushState:false, silent:false });
         });
