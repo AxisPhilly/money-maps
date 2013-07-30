@@ -273,11 +273,43 @@ app.SelectItemView = Backbone.View.extend({
   }
 });
 
+app.ShareView = Backbone.View.extend({
+  events: {
+    'click #share-custom': 'shareCustom'
+  },
+
+  // Generate sharable link based on active panels
+  shareCustom: function(event) {
+    event.preventDefault();
+    var candidateList = [];
+
+    $('#candidates').children().each(function(index, candidate){
+      var $panel = $(candidate),
+          id = $panel.attr('id'),
+          idParts = id.split('-'),
+          slug = idParts[0] + '-' + idParts[1],
+          year = $panel.find('.year').text();
+          model = app.candidates.find(function(c) {
+            return c.get('slug') == slug;
+          });
+
+      candidateList.push(model.get('initials') + '-' + year);
+    });
+
+    var urlHash = _.reduce(candidateList, function(memo, candidate){
+      return memo + candidate + ',';
+    }, '#');
+
+    $('#shareModal').find('.link').html(window.location + urlHash);
+    $('#shareModal').foundation('reveal', 'open');
+  }
+});
+
 app.Router = Backbone.Router.extend({
   initialize: function() {
     d3.json('data/candidates.json', function(data){
       app.candidates = new app.Candidates(data);
-
+      app.shareView = new app.ShareView({ el: '#share-view' });
       app.selectView = new app.SelectView({ collection: app.candidates });
 
       $('#select-view').append(app.selectView.render().el);
