@@ -69,6 +69,8 @@ path {
     border-bottom: 1px dashed #333; }
   .national table tr:last-child td {
     border-bottom: 0; }
+.national td.stateface {
+  text-align: center; }
 .national .stateface {
   font-size: 28px; }
 .national .state-title {
