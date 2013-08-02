@@ -14,7 +14,7 @@ app.Candidates = Backbone.Collection.extend({
 
 app.CandidateView = Backbone.View.extend({
   tagName: 'div',
-  className: 'candidate row',
+  className: 'candidate twelve columns',
 
   events: {
     'click .forward': 'updateYear',

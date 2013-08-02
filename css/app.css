@@ -45,12 +45,15 @@ path {
     content: "+ "; }
 
 .panel-header {
-  height: 30px; }
+  height: 100px;
+  background-color: #ddd;
+  padding: 40px; }
   .panel-header .year-select .backward, .panel-header .year-select .forward {
     cursor: pointer; }
   .panel-header .close {
+    width: 20px;
     cursor: pointer;
-    background-color: #ccc;
+    background-color: #777;
     border-radius: 11px;
     padding: 4px 4px 6px 4px;
     line-height: 11px;

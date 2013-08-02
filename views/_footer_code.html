@@ -1,7 +1,11 @@
 <!-- Templates -->
 <script type="text/template" id="candidate-view-template">
-  <div class="panel-header" data-initials="{{= initials }}">
-    <div class="year-select left">
+  <div class="panel-header row" data-initials="{{= initials }}">
+    <div class="five columns">
+      {{= name }}
+      <em>{{= title }}</em>
+    </div>
+    <div class="year-select five columns">
       {{ if(backward) { }}
         <span><a class="backward" data-direction="backward">&larr;</a></span> 
       {{ } }}
@@ -10,17 +14,26 @@
         <span><a class="forward" data-direction="forward">&rarr;</a></span>
       {{ } }}
     </div>
-    <div class="close right">
+    <div class='close two columns'>
       <a>&#215;</a>
     </div>
   </div>
-  <div>
-    {{= name }}
-    <em>{{= title }}</em>
-  <div>
-  <div class='city four columns'></div>
-  <div class='state four columns'></div>
-  <div class='national four columns'></div>
+  <div class='data row'>
+    <div class='city four columns'>
+      <span class='map-header'>Philadelphia</span>
+    </div>
+    <div class='four columns'>
+      <div class='state'>
+        <span class='map-header'>Pennsylvania</span>
+      </div>
+      <div class='national'>
+        <span class='map-header'>United States</span>
+      </div>
+    </div>
+    <div class='four columns'>
+      table and stuff
+    </div>
+  </div>
 </script>
 <script type="text/template" id="national-view-template">
   <tr>
