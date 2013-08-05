@@ -31,6 +31,20 @@ path {
   stroke: red;
   stroke-width: 1px; }
 
+#app-container {
+  font-family: Helvetica, sans-serif; }
+
+#candidates {
+  margin-top: 25px; }
+
+#share-custom {
+  border: none;
+  border-radius: 10px;
+  font-weight: normal;
+  font-size: 14px;
+  box-shadow: none;
+  margin-top: 22px; }
+
 #select-view ul {
   list-style-type: none; }
 #select-view li {
@@ -47,9 +61,24 @@ path {
 .panel-header {
   height: 100px;
   background-color: #ddd;
-  padding: 40px; }
+  padding: 12px 10px; }
   .panel-header .year-select .backward, .panel-header .year-select .forward {
     cursor: pointer; }
+  .panel-header .selector {
+    font-size: 24px; }
+  .panel-header .column-header {
+    display: block;
+    color: #A4A4A8;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    letter-spacing: 2px; }
+  .panel-header .title {
+    display: block;
+    font-size: 12px; }
+  .panel-header .arrow {
+    font-size: 22px;
+    font-weight: bold; }
   .panel-header .close {
     width: 20px;
     cursor: pointer;

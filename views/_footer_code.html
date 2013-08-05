@@ -1,22 +1,27 @@
 <!-- Templates -->
 <script type="text/template" id="candidate-view-template">
   <div class="panel-header row" data-initials="{{= initials }}">
-    <div class="five columns">
-      {{= name }}
-      <em>{{= title }}</em>
+    <div class="three columns">
+      <span class="column-header">Candidate</span>
+      <span class="selector">{{= name }}</span>
+      <em class="title">{{= title }}</em>
     </div>
-    <div class="year-select five columns">
+    <div class="year-select seven columns">
+      <span class="column-header">Year</span>
       {{ if(backward) { }}
-        <span><a class="backward" data-direction="backward">&larr;</a></span> 
+        <span><a class="arrow backward" data-direction="backward">&larr;</a></span> 
       {{ } }}
-      <span class="year">{{= year }}</span>
+      <span class="year selector">{{= year }}</span>
       {{ if(forward) { }}
-        <span><a class="forward" data-direction="forward">&rarr;</a></span>
+        <span><a class="arrow forward" data-direction="forward">&rarr;</a></span>
       {{ } }}
     </div>
-    <div class='close two columns'>
-      <a>&#215;</a>
+    <div id="share-view" class="one columns">
+      <a class="radius button" href="#" id="share-custom">Share</a>
     </div>
+    <!--<div class='close one columns'>
+      <a>&#215;</a>
+    </div>-->
   </div>
   <div class='data row'>
     <div class='city four columns'>
@@ -49,7 +54,7 @@
   </tr>
 </script>
 <div id="shareModal" class="reveal-modal small">
-  <p>Use this link to share your configuration:</p>
+  <p>Share link:</p>
   <span class="link"></span>
   <a class="close-reveal-modal">&#215;</a>
 </div>
@@ -64,6 +69,7 @@
   <script type="text/javascript" src="js/lib/foundation.reveal.js"></script>
   <script type="text/javascript" src="js/lib/fastclick.js"></script>
   <script type="text/javascript" src="js/lib/underscore.js"></script>
+  <script type="text/javascript" src="js/lib/chosen.jquery.min.js"></script>
   <script type="text/javascript" src="js/lib/backbone.js"></script>
   <script type="text/javascript" src="js/lib/topojson.js"></script>
   <script type="text/javascript" src="js/lib/queue.js"></script>
