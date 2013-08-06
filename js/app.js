@@ -235,34 +235,32 @@ app.NationalView = Backbone.View.extend({
 });
 
 app.SelectView = Backbone.View.extend({
-  tagName: 'ul',
+  tagName: 'select',
+
+  attributes: {
+    'data-placeholder': 'Select a candidate'
+  },
+
+  events: {
+    'change': 'add'
+  },
 
   render: function() {
+    // Insert a blank option first
+    this.$el.append('<option></option>');
+
     this.collection.each(function(candidate) {
       this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
     }, this);
 
     return this;
-  }
-});
-
-app.SelectItemView = Backbone.View.extend({
-  tagName: 'li',
-
-  events: {
-    'click': 'add'
-  },
-
-  render: function() {
-    this.$el.html(this.model.get('name'));
-
-    return this;
   },
 
   add: function(event) {
-    event.stopPropagation();
+    var slug = this.$el.find(':selected').val(),
+        model = app.candidates.findWhere({ slug: slug });
 
-    this.model.fetch({
+    model.fetch({
       success: function(model) {
         $('#candidates').append(new app.CandidateView({
           model: model,
@@ -270,6 +268,16 @@ app.SelectItemView = Backbone.View.extend({
         }).render().el);
       }
     });
+  }
+});
+
+app.SelectItemView = Backbone.View.extend({
+  tagName: 'option',
+
+  render: function() {
+    this.$el.html(this.model.get('name')).val(this.model.get('slug'));
+
+    return this;
   }
 });
 
@@ -308,8 +316,11 @@ app.Router = Backbone.Router.extend({
       app.candidates = new app.Candidates(data);
       app.shareView = new app.ShareView({ el: '#share-view' });
       app.selectView = new app.SelectView({ collection: app.candidates });
-
-      $('#select-view').append(app.selectView.render().el);
+    
+      $('#select-view')
+          .append(app.selectView.render().el)
+          .find('select')
+          .chosen({ disable_search_threshold: 15 });
 
       d3.json('data/counties.json', function(data) {
         app.counties = data;

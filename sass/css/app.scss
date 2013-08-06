@@ -62,26 +62,6 @@ path {
   margin-top: 22px;
 }
 
-#select-view {
-  ul {
-    list-style-type: none;
-  }
-
-  li {
-    font-size: 15px;
-    cursor: pointer;
-    color: #fff;
-    display: inline-block;
-    background-color: #555;
-    padding: 4px 6px;
-    margin: 2px 4px;
-
-    &:before {
-      content: "+ ";
-    }
-  }
-}
-
 .panel-header {
   height: 100px;
   background-color: #ddd;
