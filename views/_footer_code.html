@@ -1,21 +1,11 @@
 <!-- Templates -->
-<script type="text/template" id="candidate-view-template">
-  <div class="panel-header row" data-initials="{{= initials }}">
+<script type="text/template" id="panel-view-template">
+  <div class="panel-header row">
     <div class="three columns">
       <span class="column-header">Candidate</span>
-      <span class="selector">{{= name }}</span>
-      <em class="title">{{= title }}</em>
+      <div class="candidate-select-view"></div>
     </div>
-    <div class="year-select seven columns">
-      <span class="column-header">Year</span>
-      {{ if(backward) { }}
-        <span><a class="arrow backward" data-direction="backward">&larr;</a></span> 
-      {{ } }}
-      <span class="year selector">{{= year }}</span>
-      {{ if(forward) { }}
-        <span><a class="arrow forward" data-direction="forward">&rarr;</a></span>
-      {{ } }}
-    </div>
+    <div class="year-select-view seven columns"></div>
     <div id="share-view" class="one columns">
       <a class="radius button" href="#" id="share-custom">Share</a>
     </div>
@@ -23,6 +13,19 @@
       <a>&#215;</a>
     </div>-->
   </div>
+  <div class="candidate row"></div>
+</script>
+<script type="text/template" id="year-select-view-template">
+  <span class="column-header">Year</span>
+  {{ if(backward) { }}
+    <span><a class="arrow backward" data-direction="backward">&larr;</a></span> 
+  {{ } }}
+  <span class="year selector">{{= year }}</span>
+  {{ if(forward) { }}
+    <span><a class="arrow forward" data-direction="forward">&rarr;</a></span>
+  {{ } }}
+</script>
+<script type="text/template" id="candidate-view-template">
   <div class='data row'>
     <div class='city four columns'>
       <span class='map-header'>Philadelphia</span>

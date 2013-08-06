@@ -49,10 +49,6 @@ path {
   font-family: Helvetica, sans-serif;
 }
 
-#candidates {
-  margin-top: 25px;
-}
-
 #share-custom {
   border: none;
   border-radius: 10px;
@@ -67,7 +63,19 @@ path {
   background-color: #ddd;
   padding: 12px 10px;
 
-  .year-select {
+  .chosen-single {
+    width: 200px;
+  }
+
+  .chosen-drop {
+    width: 200px;
+  }
+
+  .chosen-results .active-result {
+    font-size: 16px;
+  }
+
+  .year-select-view {
     .backward, .forward {
       cursor: pointer;
     }

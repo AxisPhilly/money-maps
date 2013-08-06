@@ -34,9 +34,6 @@ path {
 #app-container {
   font-family: Helvetica, sans-serif; }
 
-#candidates {
-  margin-top: 25px; }
-
 #share-custom {
   border: none;
   border-radius: 10px;
@@ -49,7 +46,13 @@ path {
   height: 100px;
   background-color: #ddd;
   padding: 12px 10px; }
-  .panel-header .year-select .backward, .panel-header .year-select .forward {
+  .panel-header .chosen-single {
+    width: 200px; }
+  .panel-header .chosen-drop {
+    width: 200px; }
+  .panel-header .chosen-results .active-result {
+    font-size: 16px; }
+  .panel-header .year-select-view .backward, .panel-header .year-select-view .forward {
     cursor: pointer; }
   .panel-header .selector {
     font-size: 24px; }

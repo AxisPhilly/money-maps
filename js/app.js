@@ -12,51 +12,70 @@ app.Candidates = Backbone.Collection.extend({
   model: app.Candidate
 });
 
-app.CandidateView = Backbone.View.extend({
+app.PanelView = Backbone.View.extend({
   tagName: 'div',
-  className: 'candidate twelve columns',
+  className: 'panel-view',
 
   events: {
+    'change select': 'selectCandidate',
     'click .forward': 'updateYear',
-    'click .backward': 'updateYear',
-    'click .close a': 'close'
+    'click .backward': 'updateYear'
   },
 
   initialize: function() {
-    this.template = _.template($('#candidate-view-template').html());
+    this.template = _.template($('#panel-view-template').html());
     this.year = this.options.year || 2012;
     this.forward = false;
     this.backward = true;
 
-    this.cityView = new app.CityView({
-      model: this.model
-    });
-
-    this.stateView = new app.StateView({
-      model: this.model
-    });
-
-    this.nationalView = new app.NationalView({
-      model: this.model
-    });
+    this.yearSelectView = new app.YearSelectView();
   },
 
   render: function() {
-    this.$el.html(this.template($.extend({}, this.model.toJSON(), {
-      year: this.year,
-      forward: this.forward,
-      backward: this.backward
-    })));
+    this.$el.html(this.template({}));
 
-    this.$el.find('.city').html(this.cityView.render(this.year).el).fadeIn();
-    this.$el.find('.state').html(this.stateView.render(this.year).el).fadeIn();
-    this.$el.find('.national').html(this.nationalView.render(this.year).el).fadeIn();
+    this.candidateSelectView = new app.CandidateSelectView({ collection: this.collection });
+    this.$el.find('.candidate-select-view')
+      .append(this.candidateSelectView.render().el)
+      .find('select')
+      .chosen({ disable_search_threshold: 15 });
 
     return this;
   },
 
-  updateYear: function(e) {
-    var direction = $(e.target).data('direction');
+  selectCandidate: function(e) {
+    if(this.candidateView) {
+      this.year = 2012;
+    }
+
+    var slug = this.$el.find(':selected').val();
+    this.model = app.candidates.findWhere({ slug: slug });
+
+    var that = this;
+    this.model.fetch({
+      success: function(model) {
+        that.candidateView = new app.CandidateView({
+          model: model,
+          id: model.get('slug') + '-' + String(Math.random()).split('.')[1]
+        });
+
+        that.$el.find('.candidate').html(that.candidateView.render(that.year).el);
+      }
+    });
+
+    this.$el.find('.year-select-view')
+      .html(this.yearSelectView.render({
+        backward: this.backward,
+        forward: this.forward,
+        year: this.year
+      }).el);
+
+  },
+
+  updateYear: function(event) {
+    event.stopPropagation();
+
+    var direction = $(event.target).data('direction');
 
     if (direction === 'forward') {
       this.year = this.year + 1;
@@ -75,7 +94,47 @@ app.CandidateView = Backbone.View.extend({
       this.backward = false;
     }
 
-    this.render();
+    this.$el.find('.candidate').html(this.candidateView.render(this.year).el);
+    this.$el.find('.year-select-view')
+      .html(this.yearSelectView.render({
+        backward: this.backward,
+        forward: this.forward,
+        year: this.year
+      }).el);
+  }
+});
+
+app.CandidateView = Backbone.View.extend({
+  tagName: 'div',
+  className: 'twelve columns',
+
+  events: {
+    'click .close a': 'close'
+  },
+
+  initialize: function() {
+    this.template = _.template($('#candidate-view-template').html());
+
+    this.cityView = new app.CityView({
+      model: this.model
+    });
+
+    this.stateView = new app.StateView({
+      model: this.model
+    });
+
+    this.nationalView = new app.NationalView({
+      model: this.model
+    });
+  },
+
+  render: function(year) {
+    this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
+    this.$el.find('.city').html(this.cityView.render(year).el);
+    this.$el.find('.state').html(this.stateView.render(year).el);
+    this.$el.find('.national').html(this.nationalView.render(year).el);
+
+    return this;
   },
 
   close: function() {
@@ -234,19 +293,15 @@ app.NationalView = Backbone.View.extend({
   }
 });
 
-app.SelectView = Backbone.View.extend({
+app.CandidateSelectView = Backbone.View.extend({
   tagName: 'select',
 
   attributes: {
     'data-placeholder': 'Select a candidate'
   },
 
-  events: {
-    'change': 'add'
-  },
-
   render: function() {
-    // Insert a blank option first
+    // Insert a blank option first so we can have a placeholder value=
     this.$el.append('<option></option>');
 
     this.collection.each(function(candidate) {
@@ -254,20 +309,6 @@ app.SelectView = Backbone.View.extend({
     }, this);
 
     return this;
-  },
-
-  add: function(event) {
-    var slug = this.$el.find(':selected').val(),
-        model = app.candidates.findWhere({ slug: slug });
-
-    model.fetch({
-      success: function(model) {
-        $('#candidates').append(new app.CandidateView({
-          model: model,
-          id: model.get('slug') + '-' + String(Math.random()).split('.')[1]
-        }).render().el);
-      }
-    });
   }
 });
 
@@ -277,6 +318,17 @@ app.SelectItemView = Backbone.View.extend({
   render: function() {
     this.$el.html(this.model.get('name')).val(this.model.get('slug'));
 
+    return this;
+  }
+});
+
+app.YearSelectView = Backbone.View.extend({
+  initialize: function() {
+    this.template = _.template($('#year-select-view-template').html());
+  },
+
+  render: function(options) {
+    this.$el.html(this.template(options));
     return this;
   }
 });
@@ -314,13 +366,10 @@ app.Router = Backbone.Router.extend({
   initialize: function() {
     d3.json('data/candidates.json', function(data){
       app.candidates = new app.Candidates(data);
-      app.shareView = new app.ShareView({ el: '#share-view' });
-      app.selectView = new app.SelectView({ collection: app.candidates });
-    
-      $('#select-view')
-          .append(app.selectView.render().el)
-          .find('select')
-          .chosen({ disable_search_threshold: 15 });
+      //app.shareView = new app.ShareView({ el: '#share-view' });
+      app.panels = [];
+      app.panels.push(new app.PanelView({ collection: app.candidates }));
+      $('#app-container').append(app.panels[0].render().el);
 
       d3.json('data/counties.json', function(data) {
         app.counties = data;
@@ -344,7 +393,7 @@ app.Router = Backbone.Router.extend({
   },
 
   index: function(candidates) {
-    var candidateList = candidates.split(',');
+    /*var candidateList = candidates.split(',');
 
     _.each(candidateList, function(candidate) {
       var initials = candidate.split('-')[0],
@@ -365,7 +414,7 @@ app.Router = Backbone.Router.extend({
           }
         });
       }
-    });
+    });*/
   }
 });
 
