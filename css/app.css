@@ -46,10 +46,26 @@ path {
   height: 100px;
   background-color: #ddd;
   padding: 12px 10px; }
-  .panel-header .chosen-single {
-    width: 200px; }
+  .panel-header .chosen-container {
+    padding: 0; }
+  .panel-header .chosen-default, .panel-header .chosen-container-active.chosen-with-drop .chosen-single {
+    color: #444;
+    border: none;
+    background: none;
+    box-shadow: none; }
+  .panel-header .chosen-single, .panel-header .chosen-single span {
+    font-size: 24px;
+    padding: 0;
+    width: 240px;
+    border: none;
+    background: none;
+    box-shadow: none; }
   .panel-header .chosen-drop {
-    width: 200px; }
+    width: 240px;
+    border: none;
+    background: none;
+    box-shadow: none;
+    background: #ccc; }
   .panel-header .chosen-results .active-result {
     font-size: 16px; }
   .panel-header .year-select-view .backward, .panel-header .year-select-view .forward {
