@@ -46,7 +46,8 @@ app.PanelView = Backbone.View.extend({
   events: {
     'change select': 'selectCandidate',
     'click .forward': 'updateYear',
-    'click .backward': 'updateYear'
+    'click .backward': 'updateYear',
+    'click .share': 'share',
   },
 
   initialize: function() {
@@ -64,20 +65,22 @@ app.PanelView = Backbone.View.extend({
       .find('select')
       .chosen({ disable_search_threshold: 15 });
 
-    this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
-
     return this;
   },
 
   selectCandidate: function(e) {
     if(this.candidateView) {
-      this.year = 2012;
+      this.yearSelect.set('year', 2012);
+    } else {
+      this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
+      this.$el.find('.share').addClass('active');
     }
 
-    var slug = this.$el.find(':selected').val();
+    var slug = this.$el.find(':selected').val(),
+        that = this;
+        
     this.model = app.candidates.findWhere({ slug: slug });
-
-    var that = this;
+        
     this.model.fetch({
       success: function(model) {
         that.candidateView = new app.CandidateView({
@@ -95,6 +98,15 @@ app.PanelView = Backbone.View.extend({
     var direction = $(event.target).data('direction');
     this.yearSelect.validateYear(this.model, direction);
     this.$el.find('.candidate').html(this.candidateView.render(this.yearSelect.get('year')).el);
+  },
+
+  share: function() {
+    event.preventDefault();
+
+    var slug = '#' + this.model.get('initials') + '-' + this.yearSelect.get('year');
+
+    $('#shareModal').find('.link').html(location.origin + slug);
+    $('#shareModal').foundation('reveal', 'open');
   }
 });
 
@@ -329,7 +341,7 @@ app.ShareView = Backbone.View.extend({
     event.preventDefault();
     var candidateList = [];
 
-    $('#candidates').children().each(function(index, candidate){
+    $('.candidates').children().each(function(index, candidate){
       var $panel = $(candidate),
           initials = $panel.find('.panel-header').data('initials'),
           year = $panel.find('.year').text();

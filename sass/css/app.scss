@@ -49,13 +49,18 @@ path {
   font-family: Helvetica, sans-serif;
 }
 
-#share-custom {
+.share {
   border: none;
   border-radius: 10px;
   font-weight: normal;
   font-size: 14px;
   box-shadow: none;
   margin-top: 22px;
+  display: none;
+
+  &.active {
+    display: block;
+  }
 }
 
 .panel-header {
