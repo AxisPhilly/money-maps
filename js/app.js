@@ -8,6 +8,33 @@ app.Candidate = Backbone.Model.extend({
   }
 });
 
+app.YearSelect = Backbone.Model.extend({
+  defaults: {
+    forward: false,
+    backward: true,
+    year: 2012
+  },
+
+  validateYear: function(candidate, direction) {
+    if (direction === 'forward') {
+      this.set('year', this.get('year') + 1);
+    } else {
+      this.set('year', this.get('year') - 1);
+    }
+
+    this.set('forward', true);
+    this.set('backward', true);
+
+    if (!candidate.get(this.get('year') + 1)) {
+      this.set('forward', false);
+    }
+
+    if (!candidate.get(this.get('year') - 1)) {
+      this.set('backward', false);
+    }
+  }
+});
+
 app.Candidates = Backbone.Collection.extend({
   model: app.Candidate
 });
@@ -24,11 +51,8 @@ app.PanelView = Backbone.View.extend({
 
   initialize: function() {
     this.template = _.template($('#panel-view-template').html());
-    this.year = this.options.year || 2012;
-    this.forward = false;
-    this.backward = true;
-
-    this.yearSelectView = new app.YearSelectView();
+    this.yearSelect = new app.YearSelect({ year: this.options.year || 2012 });
+    this.yearSelectView = new app.YearSelectView({ model: this.yearSelect });
   },
 
   render: function() {
@@ -39,6 +63,8 @@ app.PanelView = Backbone.View.extend({
       .append(this.candidateSelectView.render().el)
       .find('select')
       .chosen({ disable_search_threshold: 15 });
+
+    this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
 
     return this;
   },
@@ -59,48 +85,16 @@ app.PanelView = Backbone.View.extend({
           id: model.get('slug') + '-' + String(Math.random()).split('.')[1]
         });
 
-        that.$el.find('.candidate').html(that.candidateView.render(that.year).el);
+        that.$el.find('.candidate').html(that.candidateView.render(that.yearSelect.get('year')).el);
       }
     });
-
-    this.$el.find('.year-select-view')
-      .html(this.yearSelectView.render({
-        backward: this.backward,
-        forward: this.forward,
-        year: this.year
-      }).el);
-
   },
 
   updateYear: function(event) {
     event.stopPropagation();
-
     var direction = $(event.target).data('direction');
-
-    if (direction === 'forward') {
-      this.year = this.year + 1;
-    } else {
-      this.year = this.year - 1;
-    }
-
-    this.forward = true;
-    this.backward = true;
-
-    if (!this.model.get(this.year + 1)) {
-      this.forward = false;
-    }
-
-    if (!this.model.get(this.year - 1)) {
-      this.backward = false;
-    }
-
-    this.$el.find('.candidate').html(this.candidateView.render(this.year).el);
-    this.$el.find('.year-select-view')
-      .html(this.yearSelectView.render({
-        backward: this.backward,
-        forward: this.forward,
-        year: this.year
-      }).el);
+    this.yearSelect.validateYear(this.model, direction);
+    this.$el.find('.candidate').html(this.candidateView.render(this.yearSelect.get('year')).el);
   }
 });
 
@@ -114,18 +108,9 @@ app.CandidateView = Backbone.View.extend({
 
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
-
-    this.cityView = new app.CityView({
-      model: this.model
-    });
-
-    this.stateView = new app.StateView({
-      model: this.model
-    });
-
-    this.nationalView = new app.NationalView({
-      model: this.model
-    });
+    this.cityView = new app.CityView({ model: this.model });
+    this.stateView = new app.StateView({ model: this.model });
+    this.nationalView = new app.NationalView({ model: this.model });
   },
 
   render: function(year) {
@@ -301,7 +286,7 @@ app.CandidateSelectView = Backbone.View.extend({
   },
 
   render: function() {
-    // Insert a blank option first so we can have a placeholder value=
+    // Insert a blank option first so we can have a placeholder value
     this.$el.append('<option></option>');
 
     this.collection.each(function(candidate) {
@@ -325,10 +310,11 @@ app.SelectItemView = Backbone.View.extend({
 app.YearSelectView = Backbone.View.extend({
   initialize: function() {
     this.template = _.template($('#year-select-view-template').html());
+    this.model.on('change', this.render, this);
   },
 
-  render: function(options) {
-    this.$el.html(this.template(options));
+  render: function() {
+    this.$el.html(this.template(this.model.attributes));
     return this;
   }
 });
