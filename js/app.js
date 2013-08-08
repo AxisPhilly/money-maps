@@ -144,11 +144,11 @@ app.CandidateView = Backbone.View.extend({
 
 app.CityView = Backbone.View.extend({
   initialize: function() {
-    this.width = 300;
-    this.height = 329;
+    this.width = 360;
+    this.height = 429;
     this.projection = d3.geo.mercator()
           .center([-75.1182, 40.0032])
-          .scale(50000)
+          .scale(64000)
           .translate([this.width / 2, this.height / 2]);
     this.path = d3.geo.path()
           .projection(this.projection);
@@ -209,11 +209,11 @@ app.StateView = Backbone.View.extend({
   tagName: 'div',
 
   initialize: function() {
-    this.width = 300;
-    this.height = 177;
+    this.width = 360;
+    this.height = 245;
     this.projection = d3.geo.mercator()
           .center([-77.590, 41.02])
-          .scale(2500)
+          .scale(3600)
           .translate([this.width / 2, this.height / 2]);
     this.path = d3.geo.path()
           .projection(this.projection);
