@@ -8,6 +8,10 @@ app.Candidate = Backbone.Model.extend({
   }
 });
 
+app.Candidates = Backbone.Collection.extend({
+  model: app.Candidate
+});
+
 app.YearSelect = Backbone.Model.extend({
   defaults: {
     forward: false,
@@ -35,8 +39,10 @@ app.YearSelect = Backbone.Model.extend({
   }
 });
 
-app.Candidates = Backbone.Collection.extend({
-  model: app.Candidate
+app.Panel = Backbone.Model.extend({});
+
+app.Panels = Backbone.Collection.extend({
+  model: app.Panel
 });
 
 app.PanelView = Backbone.View.extend({
@@ -52,14 +58,16 @@ app.PanelView = Backbone.View.extend({
 
   initialize: function() {
     this.template = _.template($('#panel-view-template').html());
-    this.yearSelect = new app.YearSelect({ year: this.options.year || 2012 });
-    this.yearSelectView = new app.YearSelectView({ model: this.yearSelect });
+    this.yearSelectView = new app.YearSelectView({ model: this.model.get('yearSelect') });
+    this.candidateSelectView = new app.CandidateSelectView({ collection: this.model.get('candidates') });
+    this.model.on('change', this.render, this);
+    this.model.on('change:candidate', this.setYear, this);
+    this.model.on('change:candidate', this.showShare, this);
   },
 
   render: function() {
     this.$el.html(this.template({}));
 
-    this.candidateSelectView = new app.CandidateSelectView({ collection: this.collection });
     this.$el.find('.candidate-select-view')
       .append(this.candidateSelectView.render().el)
       .find('select')
@@ -68,36 +76,37 @@ app.PanelView = Backbone.View.extend({
     return this;
   },
 
-  selectCandidate: function(e) {
-    if(this.candidateView) {
-      this.yearSelect.set('year', 2012);
-    } else {
-      this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
-      this.$el.find('.share').addClass('active');
-    }
+  renderCandidateView: function() {
+    var year = this.model.get('yearSelect').get('year');
 
-    var slug = this.$el.find(':selected').val(),
-        that = this;
-        
-    this.model = app.candidates.findWhere({ slug: slug });
-        
-    this.model.fetch({
-      success: function(model) {
-        that.candidateView = new app.CandidateView({
-          model: model,
-          id: model.get('slug') + '-' + String(Math.random()).split('.')[1]
-        });
-
-        that.$el.find('.candidate').html(that.candidateView.render(that.yearSelect.get('year')).el);
-      }
+    this.candidateView = new app.CandidateView({
+      model: this.model.get('candidate')
     });
+
+    this.$el.find('.candidate').html(this.candidateView.render(year).el);
+  },
+
+  selectCandidate: function(e) {
+    var slug = this.$el.find(':selected').val();
+    this.model.set('candidate', this.model.get('candidates').findWhere({ slug: slug }));
+    this.model.get('candidate').on('sync', this.renderCandidateView, this);
+    this.model.get('candidate').fetch();
+  },
+
+  setYear: function() {
+    this.model.get('yearSelect').set('year', 2012);
+    this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
+  },
+
+  showShare: function() {
+    this.$el.find('.share').addClass('active');
   },
 
   updateYear: function(event) {
     event.stopPropagation();
     var direction = $(event.target).data('direction');
-    this.yearSelect.validateYear(this.model, direction);
-    this.$el.find('.candidate').html(this.candidateView.render(this.yearSelect.get('year')).el);
+    this.model.get('yearSelect').validateYear(this.model.get('candidate'), direction);
+    this.$el.find('.candidate').html(this.candidateView.render(this.model.get('yearSelect').get('year')).el);
   },
 
   share: function() {
@@ -107,6 +116,47 @@ app.PanelView = Backbone.View.extend({
 
     $('#shareModal').find('.link').html(location.origin + slug);
     $('#shareModal').foundation('reveal', 'open');
+  }
+});
+
+app.CandidateSelectView = Backbone.View.extend({
+  tagName: 'select',
+
+  attributes: {
+    'data-placeholder': 'Select a candidate'
+  },
+
+  render: function() {
+    // Insert a blank option first so we can have a placeholder value
+    this.$el.append('<option></option>');
+
+    this.collection.each(function(candidate) {
+      this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
+    }, this);
+
+    return this;
+  }
+});
+
+app.SelectItemView = Backbone.View.extend({
+  tagName: 'option',
+
+  render: function() {
+    this.$el.html(this.model.get('name')).val(this.model.get('slug'));
+
+    return this;
+  }
+});
+
+app.YearSelectView = Backbone.View.extend({
+  initialize: function() {
+    this.template = _.template($('#year-select-view-template').html());
+    this.model.on('change', this.render, this);
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.attributes));
+    return this;
   }
 });
 
@@ -123,6 +173,7 @@ app.CandidateView = Backbone.View.extend({
     this.cityView = new app.CityView({ model: this.model });
     this.stateView = new app.StateView({ model: this.model });
     this.nationalView = new app.NationalView({ model: this.model });
+    this.model.on('change', this.render, this);
   },
 
   render: function(year) {
@@ -290,47 +341,6 @@ app.NationalView = Backbone.View.extend({
   }
 });
 
-app.CandidateSelectView = Backbone.View.extend({
-  tagName: 'select',
-
-  attributes: {
-    'data-placeholder': 'Select a candidate'
-  },
-
-  render: function() {
-    // Insert a blank option first so we can have a placeholder value
-    this.$el.append('<option></option>');
-
-    this.collection.each(function(candidate) {
-      this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
-    }, this);
-
-    return this;
-  }
-});
-
-app.SelectItemView = Backbone.View.extend({
-  tagName: 'option',
-
-  render: function() {
-    this.$el.html(this.model.get('name')).val(this.model.get('slug'));
-
-    return this;
-  }
-});
-
-app.YearSelectView = Backbone.View.extend({
-  initialize: function() {
-    this.template = _.template($('#year-select-view-template').html());
-    this.model.on('change', this.render, this);
-  },
-
-  render: function() {
-    this.$el.html(this.template(this.model.attributes));
-    return this;
-  }
-});
-
 app.ShareView = Backbone.View.extend({
   events: {
     'click #share-custom': 'shareCustom'
@@ -365,9 +375,13 @@ app.Router = Backbone.Router.extend({
     d3.json('data/candidates.json', function(data){
       app.candidates = new app.Candidates(data);
       //app.shareView = new app.ShareView({ el: '#share-view' });
-      app.panels = [];
-      app.panels.push(new app.PanelView({ collection: app.candidates }));
-      $('#app-container').append(app.panels[0].render().el);
+
+      app.panels = new app.Panels(new app.Panel({
+        candidates: app.candidates,
+        yearSelect: new app.YearSelect({ year: 2012 })
+      }));
+
+      $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);
 
       d3.json('data/counties.json', function(data) {
         app.counties = data;

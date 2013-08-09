@@ -40,10 +40,7 @@ path {
   font-weight: normal;
   font-size: 14px;
   box-shadow: none;
-  margin-top: 22px;
-  display: none; }
-  .share.active {
-    display: block; }
+  margin-top: 22px; }
 
 .panel-header {
   height: 100px;
