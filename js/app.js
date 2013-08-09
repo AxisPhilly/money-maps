@@ -60,7 +60,6 @@ app.PanelView = Backbone.View.extend({
     this.template = _.template($('#panel-view-template').html());
     this.yearSelectView = new app.YearSelectView({ model: this.model.get('yearSelect') });
     this.candidateSelectView = new app.CandidateSelectView({ collection: this.model.get('candidates') });
-    this.model.on('change', this.render, this);
     this.model.on('change:candidate', this.setYear, this);
     this.model.on('change:candidate', this.showShare, this);
   },
