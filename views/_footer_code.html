@@ -17,13 +17,9 @@
 </script>
 <script type="text/template" id="year-select-view-template">
   <span class="column-header">Year</span>
-  {{ if(backward) { }}
-    <span><a class="arrow backward" data-direction="backward">&larr;</a></span> 
-  {{ } }}
+    <span><a class="arrow backward {{ if(backward) { }} active {{ } }}" data-direction="backward" data-status="{{ if(backward) { }}active{{ } }}">&larr;</a></span> 
   <span class="year selector">{{= year }}</span>
-  {{ if(forward) { }}
-    <span><a class="arrow forward" data-direction="forward">&rarr;</a></span>
-  {{ } }}
+    <span><a class="arrow forward {{ if(forward) { }} active {{ } }}" data-direction="forward" data-status="{{ if(forward) { }}active{{ } }}">&rarr;</a></span>
 </script>
 <script type="text/template" id="candidate-view-template">
   <div class='data row'>

@@ -99,7 +99,12 @@ path {
 
   .year-select-view {
     .backward, .forward {
-      cursor: pointer;
+      color: #fff;
+
+      &.active {
+        color: #0a4662;
+        cursor: pointer;
+      }
     }
   }
 

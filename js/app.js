@@ -5,6 +5,11 @@ if (typeof app === 'undefined' || !app) {
 app.Candidate = Backbone.Model.extend({
   url: function() {
     return 'data/' + this.get('slug') + '.json';
+  },
+
+  getMostRecentYear: function() {
+    var max = _.max(_.keys(this.get('contributions')));
+    return max;
   }
 });
 
@@ -29,11 +34,11 @@ app.YearSelect = Backbone.Model.extend({
     this.set('forward', true);
     this.set('backward', true);
 
-    if (!candidate.get(this.get('year') + 1)) {
+    if (!candidate.get('contributions')[this.get('year') + 1]) {
       this.set('forward', false);
     }
 
-    if (!candidate.get(this.get('year') - 1)) {
+    if (!candidate.get('contributions')[this.get('year') - 1]) {
       this.set('backward', false);
     }
   }
@@ -76,7 +81,8 @@ app.PanelView = Backbone.View.extend({
   },
 
   renderCandidateView: function() {
-    var year = this.model.get('yearSelect').get('year');
+    var year = this.model.get('candidate').getMostRecentYear();
+    this.model.get('yearSelect').set('year', Number(year));
 
     this.candidateView = new app.CandidateView({
       model: this.model.get('candidate')
@@ -103,6 +109,9 @@ app.PanelView = Backbone.View.extend({
 
   updateYear: function(event) {
     event.stopPropagation();
+
+    if(!$(event.target).data('status')) { return; }
+
     var direction = $(event.target).data('direction');
     this.model.get('yearSelect').validateYear(this.model.get('candidate'), direction);
     this.$el.find('.candidate').html(this.candidateView.render(this.model.get('yearSelect').get('year')).el);
@@ -207,7 +216,7 @@ app.CityView = Backbone.View.extend({
   render: function(year) {
     this.$el.empty();
 
-    var data = this.model.get(year) ? this.model.get(year)['ward'] : {},
+    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['ward'] : {},
         max = _.max(data);
 
     var quantize = d3.scale.quantize()
@@ -272,7 +281,7 @@ app.StateView = Backbone.View.extend({
   render: function(year) {
     this.$el.empty();
 
-    var data = this.model.get(year) ? this.model.get(year)['county'] : {},
+    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['county'] : {},
         max = _.max(data),
         fData = d3.map();
 

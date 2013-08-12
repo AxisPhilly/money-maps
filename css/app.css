@@ -6,7 +6,7 @@
   font-style: normal; }
 
 path {
-  fill: #f6eff7;
+  fill: #edf8fb;
   stroke-width: 0; }
 
 .boundary {
@@ -16,15 +16,15 @@ path {
   stroke-width: 1; }
 
 .ward.break0, .county.break0 {
-  fill: #d0d1e6; }
+  fill: #bfd3e6; }
 .ward.break1, .county.break1 {
-  fill: #a6bddb; }
+  fill: #9ebcda; }
 .ward.break2, .county.break2 {
-  fill: #67a9cf; }
+  fill: #8c96c6; }
 .ward.break3, .county.break3 {
-  fill: #1c9099; }
+  fill: #8856a7; }
 .ward.break4, .county.break4 {
-  fill: #016c59; }
+  fill: #810f7c; }
 
 .district {
   fill: none;
@@ -32,7 +32,7 @@ path {
   stroke-width: 1px; }
 
 #app-container {
-  font-family: Helvetica, sans-serif; }
+  font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif; }
 
 .share {
   border: none;
@@ -59,7 +59,8 @@ path {
     width: 240px;
     border: none;
     background: none;
-    box-shadow: none; }
+    box-shadow: none;
+    font-weight: bold; }
   .panel-header .chosen-drop {
     width: 240px;
     border: none;
@@ -69,7 +70,10 @@ path {
   .panel-header .chosen-results .active-result {
     font-size: 16px; }
   .panel-header .year-select-view .backward, .panel-header .year-select-view .forward {
-    cursor: pointer; }
+    color: #fff; }
+    .panel-header .year-select-view .backward.active, .panel-header .year-select-view .forward.active {
+      color: #0a4662;
+      cursor: pointer; }
   .panel-header .selector {
     font-size: 24px; }
   .panel-header .column-header {
@@ -77,7 +81,7 @@ path {
     color: #A4A4A8;
     text-transform: uppercase;
     font-size: 14px;
-    font-family: Helvetica, sans-serif;
+    font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
     letter-spacing: 2px; }
   .panel-header .title {
     display: block;
