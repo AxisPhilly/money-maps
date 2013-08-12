@@ -10,7 +10,7 @@
  }
 
 path {
-  fill: rgb(246,239,247);
+  fill: rgb(237, 248, 251);
   stroke-width: 0;
 }
 
@@ -23,19 +23,19 @@ path {
 
 .ward, .county {
   &.break0 {
-    fill: rgb(208,209,230);
+    fill: rgb(191, 211, 230);
   }
   &.break1 {
-    fill: rgb(166,189,219);
+    fill: rgb(158, 188, 218);
   }
   &.break2 {
-    fill: rgb(103,169,207);
+    fill: rgb(140, 150, 198);
   }
   &.break3 {
-    fill: rgb(28,144,153);
+    fill: rgb(136, 86, 167);
   }
   &.break4 {
-    fill: rgb(1,108,89);
+    fill: rgb(129, 15, 124);
   }
 }
 
