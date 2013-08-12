@@ -24,7 +24,21 @@ app.YearSelect = Backbone.Model.extend({
     year: 2012
   },
 
-  validateYear: function(candidate, direction) {
+  validateYear: function(candidate) {
+    if (!candidate.get('contributions')[this.get('year') + 1] || this.get('year') + 1 == 2013) {
+      this.set('forward', false);
+    } else {
+      this.set('forward', true);
+    }
+
+    if (!candidate.get('contributions')[this.get('year') - 1]) {
+      this.set('backward', false);
+    } else {
+      this.set('backward', true);
+    }
+  },
+
+  validateDirection: function(candidate, direction) {
     if (direction === 'forward') {
       this.set('year', this.get('year') + 1);
     } else {
@@ -34,7 +48,7 @@ app.YearSelect = Backbone.Model.extend({
     this.set('forward', true);
     this.set('backward', true);
 
-    if (!candidate.get('contributions')[this.get('year') + 1]) {
+    if (!candidate.get('contributions')[this.get('year') + 1] || this.get('year') + 1 == 2013) {
       this.set('forward', false);
     }
 
@@ -83,6 +97,7 @@ app.PanelView = Backbone.View.extend({
   renderCandidateView: function() {
     var year = this.model.get('candidate').getMostRecentYear();
     this.model.get('yearSelect').set('year', Number(year));
+    this.redrawYear();
 
     this.candidateView = new app.CandidateView({
       model: this.model.get('candidate')
@@ -98,8 +113,12 @@ app.PanelView = Backbone.View.extend({
     this.model.get('candidate').fetch();
   },
 
+  redrawYear: function() {
+    this.model.get('yearSelect').validateYear(this.model.get('candidate'));
+    this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
+  },
+
   setYear: function() {
-    this.model.get('yearSelect').set('year', 2012);
     this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
   },
 
@@ -113,7 +132,7 @@ app.PanelView = Backbone.View.extend({
     if(!$(event.target).data('status')) { return; }
 
     var direction = $(event.target).data('direction');
-    this.model.get('yearSelect').validateYear(this.model.get('candidate'), direction);
+    this.model.get('yearSelect').validateDirection(this.model.get('candidate'), direction);
     this.$el.find('.candidate').html(this.candidateView.render(this.model.get('yearSelect').get('year')).el);
   },
 
