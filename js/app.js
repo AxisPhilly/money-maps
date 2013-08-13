@@ -69,15 +69,22 @@ app.BaseView = Backbone.View.extend({
     Backbone.View.prototype.initialize.apply(this, arguments);
   },
 
-  getContributions: function(element) {
+  getContributions: function(element, callback) {
     var attributes = this.extractAttributes(element),
         url = this.constructUrl(attributes);
 
-    console.log(url);
+    $.ajax({
+      url: url,
+      success: function(resp){
+        if(callback && typeof callback === 'function') {
+          callback(resp);
+        }
+      }
+    });
   },
 
   constructUrl: function(a) {
-    var baseUrl = 'http://cf-contributions.axisphilly.org';
+    var baseUrl = 'http://localhost:3000/contribution';
     
     return baseUrl + '/' + a.slug + '/' + a.year + '/' + a.location;
   },
@@ -420,7 +427,9 @@ app.NationalView = app.BaseView.extend({
 
   prepGetContributions: function(event) {
     event.stopPropagation();
-    this.getContributions($(event.currentTarget));
+    this.getContributions($(event.currentTarget), function(contributions) {
+      console.log(contributions);
+    });
   }
 });
 
