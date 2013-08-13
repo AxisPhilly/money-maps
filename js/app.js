@@ -251,7 +251,10 @@ app.CityView = Backbone.View.extend({
         .data(topojson.feature(app.philly, app.philly.objects.wards).features)
       .enter().append("path")
         .attr("d", this.path)
-        .attr("class", function(d) { return quantize(data[d.id]); });
+        .attr("class", function(d) { return quantize(data[d.id]); })
+        .attr("data-slug", this.model.get('slug'))
+        .attr("data-year", year)
+        .attr("data-location", function(d) { return d.id; });
 
     svg.append("g")
       .append("path")
@@ -323,7 +326,10 @@ app.StateView = Backbone.View.extend({
         .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
       .enter().append("path")
         .attr("d", this.path)
-        .attr("class", function(d) { return quantize(fData.get(d.id)); });
+        .attr("class", function(d) { return quantize(fData.get(d.id)); })
+        .attr("data-slug", this.model.get('slug'))
+        .attr("data-year", year)
+        .attr("data-location", function(d) { return d.id.toLowerCase(); });
 
     svg.append("g")
       .append("path")
@@ -343,8 +349,8 @@ app.NationalView = Backbone.View.extend({
   },
 
   render: function(year) {
-    if(this.model.get(year)) {
-      var stateList = _.chain(this.model.get(year).state)
+    if(this.model.get('contributions')[year]) {
+      var stateList = _.chain(this.model.get('contributions')[year].state)
         .map(function(value, state) {
           return { state: state, total: value };
         })
@@ -356,7 +362,9 @@ app.NationalView = Backbone.View.extend({
           return this.template({
             state: item.state,
             abbrv: abbrv,
-            total: item.total.formatMoney()
+            total: item.total.formatMoney(),
+            slug: this.model.get('slug'),
+            year: year
           });
         }, this)
         .value();
