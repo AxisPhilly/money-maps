@@ -32,24 +32,30 @@
       </div>
       <div class='national'>
         <span class='map-header'>United States</span>
+        <table></table>
       </div>
     </div>
-    <div class='four columns'>
+    <div class='contributions four columns'>
       table and stuff
     </div>
   </div>
 </script>
 <script type="text/template" id="national-view-template">
-  <tr data-slug="{{= slug }}" data-year="{{= year }}" data-location="{{= abbrv }}">
-    <td class="stateface">
-      <span class="stateface stateface-{{= abbrv }}"></span>
-    </td>
-    <td class="state-title">
-      {{= state }}
-    </td>
-    <td class="total">
-      ${{= total }}
-    </td>
+  <td class="stateface">
+    <span class="stateface stateface-{{= abbrv }}"></span>
+  </td>
+  <td class="state-title">
+    {{= state }}
+  </td>
+  <td class="total">
+    ${{= total }}
+  </td>
+</script>
+<script type="text/template" id="contribution-view-template">
+  <tr>
+    <td>{{= date }}</td>
+    <td>{{= contributor }}</td>
+    <td>${{= amount }}</td>
   </tr>
 </script>
 <div id="shareModal" class="reveal-modal small">

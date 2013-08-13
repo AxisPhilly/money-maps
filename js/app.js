@@ -58,6 +58,12 @@ app.YearSelect = Backbone.Model.extend({
   }
 });
 
+app.Contribution = Backbone.Model.extend({});
+
+app.contributions = Backbone.Collection.extend({
+  model: app.Contribution
+});
+
 app.Panel = Backbone.Model.extend({});
 
 app.Panels = Backbone.Collection.extend({
@@ -294,7 +300,9 @@ app.CityView = app.BaseView.extend({
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id; })
         .on("click", function() {
-          that.getContributions(this);
+          that.getContributions(this, function(contributions) {
+            app.contributionView = new app.ContributionView({ collection: contributions });
+          });
         });
 
     svg.append("g")
@@ -374,7 +382,9 @@ app.StateView = app.BaseView.extend({
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
-          that.getContributions(this);
+          that.getContributions(this, function(contributions) {
+            app.contributionView = new app.ContributionView({ collection: contributions });
+          });
         });
 
     svg.append("g")
@@ -390,14 +400,6 @@ app.StateView = app.BaseView.extend({
 app.NationalView = app.BaseView.extend({
   tagName: 'table',
 
-  initialize: function() {
-    this.template = _.template($('#national-view-template').html());
-  },
-
-  events: {
-    'click tr': 'prepGetContributions'
-  },
-
   render: function(year) {
     if(this.model.get('contributions')[year]) {
       var stateList = _.chain(this.model.get('contributions')[year].state)
@@ -409,27 +411,74 @@ app.NationalView = app.BaseView.extend({
         })
         .map(function(item) {
           var abbrv = states[item.state].toLowerCase();
-          return this.template({
+          return new app.NationalViewItem({ data: {
             state: item.state,
             abbrv: abbrv,
             total: item.total.formatMoney(),
             slug: this.model.get('slug'),
             year: year
-          });
-        }, this)
-        .value();
+          }}).render().el;
+        }, this).value();
 
-      this.$el.empty().append(stateList);
+      this.$el.html(stateList);
+
+      return this;
     }
+  }
+});
 
+app.NationalViewItem = app.BaseView.extend({
+  tagName: 'tr',
+
+  events: {
+    'click td': 'prepGetContributions'
+  },
+
+  attributes: function() {
+    return {
+      'data-slug': this.options.data.slug,
+      'data-year': this.options.data.year,
+      'data-location': this.options.data.abbrv
+    };
+  },
+
+  initialize: function() {
+    this.template = _.template($('#national-view-template').html());
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.options.data));
+    
+    // ughhhh....
+    var that = this;
+    window.setTimeout(function() { that.delegateEvents(); }, 1);
+    
     return this;
   },
 
   prepGetContributions: function(event) {
     event.stopPropagation();
-    this.getContributions($(event.currentTarget), function(contributions) {
-      console.log(contributions);
+    this.getContributions($(event.currentTarget).parent(), function(contributions) {
+      app.contributionView = new app.ContributionView({ collection: contributions });
     });
+  }
+});
+
+app.ContributionView = app.BaseView.extend({
+  tagName: 'table',
+
+  initialize: function() {
+    this.template = _.template($('#contribution-view-template').html());
+    $('.contributions').html(this.render().el);
+  },
+
+  render: function() {
+    var items = this.collection.map(function(c) {
+      return (this.template(c));
+    }, this);
+
+    this.$el.append(items);
+    return this;
   }
 });
 
