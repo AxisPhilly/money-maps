@@ -64,7 +64,36 @@ app.Panels = Backbone.Collection.extend({
   model: app.Panel
 });
 
-app.PanelView = Backbone.View.extend({
+app.BaseView = Backbone.View.extend({
+  initialize: function(options){
+    Backbone.View.prototype.initialize.apply(this, arguments);
+  },
+
+  getContributions: function(element) {
+    var attributes = this.extractAttributes(element),
+        url = this.constructUrl(attributes);
+
+    console.log(url);
+  },
+
+  constructUrl: function(a) {
+    var baseUrl = 'http://cf-contributions.axisphilly.org';
+    
+    return baseUrl + '/' + a.slug + '/' + a.year + '/' + a.location;
+  },
+
+  extractAttributes: function(element) {
+    var $element = $(element);
+
+    return {
+      slug: $element.data('slug'),
+      year: $element.data('year'),
+      location: $element.data('location')
+    };
+  }
+});
+
+app.PanelView = app.BaseView.extend({
   tagName: 'div',
   className: 'panel-view',
 
@@ -146,7 +175,7 @@ app.PanelView = Backbone.View.extend({
   }
 });
 
-app.CandidateSelectView = Backbone.View.extend({
+app.CandidateSelectView = app.BaseView.extend({
   tagName: 'select',
 
   attributes: {
@@ -165,7 +194,7 @@ app.CandidateSelectView = Backbone.View.extend({
   }
 });
 
-app.SelectItemView = Backbone.View.extend({
+app.SelectItemView = app.BaseView.extend({
   tagName: 'option',
 
   render: function() {
@@ -175,7 +204,7 @@ app.SelectItemView = Backbone.View.extend({
   }
 });
 
-app.YearSelectView = Backbone.View.extend({
+app.YearSelectView = app.BaseView.extend({
   initialize: function() {
     this.template = _.template($('#year-select-view-template').html());
     this.model.on('change', this.render, this);
@@ -187,7 +216,7 @@ app.YearSelectView = Backbone.View.extend({
   }
 });
 
-app.CandidateView = Backbone.View.extend({
+app.CandidateView = app.BaseView.extend({
   tagName: 'div',
   className: 'twelve columns',
 
@@ -220,7 +249,7 @@ app.CandidateView = Backbone.View.extend({
   }
 });
 
-app.CityView = Backbone.View.extend({
+app.CityView = app.BaseView.extend({
   initialize: function() {
     this.width = 360;
     this.height = 429;
@@ -246,6 +275,8 @@ app.CityView = Backbone.View.extend({
           .attr('width', this.width)
           .attr('height', this.height);
 
+    var that = this;
+
     svg.append("g")
       .selectAll("path")
         .data(topojson.feature(app.philly, app.philly.objects.wards).features)
@@ -254,7 +285,10 @@ app.CityView = Backbone.View.extend({
         .attr("class", function(d) { return quantize(data[d.id]); })
         .attr("data-slug", this.model.get('slug'))
         .attr("data-year", year)
-        .attr("data-location", function(d) { return d.id; });
+        .attr("data-location", function(d) { return d.id; })
+        .on("click", function() {
+          that.getContributions(this);
+        });
 
     svg.append("g")
       .append("path")
@@ -286,7 +320,7 @@ app.CityView = Backbone.View.extend({
   }
 });
 
-app.StateView = Backbone.View.extend({
+app.StateView = app.BaseView.extend({
   tagName: 'div',
 
   initialize: function() {
@@ -321,6 +355,8 @@ app.StateView = Backbone.View.extend({
           .attr('width', this.width)
           .attr('height', this.height);
 
+    var that = this;
+
     svg.append("g")
       .selectAll("path")
         .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
@@ -329,7 +365,10 @@ app.StateView = Backbone.View.extend({
         .attr("class", function(d) { return quantize(fData.get(d.id)); })
         .attr("data-slug", this.model.get('slug'))
         .attr("data-year", year)
-        .attr("data-location", function(d) { return d.id.toLowerCase(); });
+        .attr("data-location", function(d) { return d.id.toLowerCase(); })
+        .on("click", function() {
+          that.getContributions(this);
+        });
 
     svg.append("g")
       .append("path")
@@ -341,11 +380,15 @@ app.StateView = Backbone.View.extend({
   }
 });
 
-app.NationalView = Backbone.View.extend({
+app.NationalView = app.BaseView.extend({
   tagName: 'table',
 
   initialize: function() {
     this.template = _.template($('#national-view-template').html());
+  },
+
+  events: {
+    'click tr': 'prepGetContributions'
   },
 
   render: function(year) {
@@ -373,10 +416,15 @@ app.NationalView = Backbone.View.extend({
     }
 
     return this;
+  },
+
+  prepGetContributions: function(event) {
+    event.stopPropagation();
+    this.getContributions($(event.currentTarget));
   }
 });
 
-app.ShareView = Backbone.View.extend({
+app.ShareView = app.BaseView.extend({
   events: {
     'click #share-custom': 'shareCustom'
   },
