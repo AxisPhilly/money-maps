@@ -120,9 +120,14 @@ app.PanelView = app.BaseView.extend({
   initialize: function() {
     this.template = _.template($('#panel-view-template').html());
     this.yearSelectView = new app.YearSelectView({ model: this.model.get('yearSelect') });
-    this.candidateSelectView = new app.CandidateSelectView({ collection: this.model.get('candidates') });
+    this.shareView = new app.ShareView({});
     this.model.on('change:candidate', this.setYear, this);
     this.model.on('change:candidate', this.showShare, this);
+
+    this.candidateSelectView = new app.CandidateSelectView({
+      collection: this.model.get('candidates'),
+      active: this.model.get('candidate').get('slug') || ''
+    });
   },
 
   render: function() {
@@ -133,11 +138,17 @@ app.PanelView = app.BaseView.extend({
       .find('select')
       .chosen({ disable_search_threshold: 15 });
 
+    // if year was provided on initalization, which is the case for sharable links
+    var year = this.model.get('yearSelect').get('year');
+    if(this.model.get('candidate')) { this.renderCandidateView(year); }
+
     return this;
   },
 
-  renderCandidateView: function() {
-    var year = this.model.get('candidate').getMostRecentYear();
+  renderCandidateView: function(selectedYear) {
+    var mostRecentYear = this.model.get('candidate').getMostRecentYear();
+    var year = typeof selectedYear === 'string' ? selectedYear : mostRecentYear;
+
     this.model.get('yearSelect').set('year', Number(year));
     this.redrawYear();
 
@@ -181,7 +192,7 @@ app.PanelView = app.BaseView.extend({
   share: function() {
     event.preventDefault();
 
-    var slug = '#' + this.model.get('initials') + '-' + this.yearSelect.get('year');
+    var slug = '#' + this.model.get('candidate').get('initials') + '-' + this.model.get('yearSelect').get('year');
 
     $('#shareModal').find('.link').html(location.origin + slug);
     $('#shareModal').foundation('reveal', 'open');
@@ -199,8 +210,16 @@ app.CandidateSelectView = app.BaseView.extend({
     // Insert a blank option first so we can have a placeholder value
     this.$el.append('<option></option>');
 
+    if(this.options.active) {
+      var selectedSlug = this.options.active;
+    }
+
     this.collection.each(function(candidate) {
-      this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
+      if(candidate.get('slug') === selectedSlug) {
+        this.$el.append(new app.SelectItemView({ model: candidate, active: true }).render().el);
+      } else {
+        this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
+      }
     }, this);
 
     return this;
@@ -209,6 +228,12 @@ app.CandidateSelectView = app.BaseView.extend({
 
 app.SelectItemView = app.BaseView.extend({
   tagName: 'option',
+
+  attributes: function() {
+    return {
+      'selected': this.options.active
+    };
+  },
 
   render: function() {
     this.$el.html(this.model.get('name')).val(this.model.get('slug'));
@@ -515,14 +540,6 @@ app.Router = Backbone.Router.extend({
   initialize: function() {
     d3.json('data/candidates.json', function(data){
       app.candidates = new app.Candidates(data);
-      //app.shareView = new app.ShareView({ el: '#share-view' });
-
-      app.panels = new app.Panels(new app.Panel({
-        candidates: app.candidates,
-        yearSelect: new app.YearSelect({ year: 2012 })
-      }));
-
-      $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);
 
       d3.json('data/counties.json', function(data) {
         app.counties = data;
@@ -542,32 +559,45 @@ app.Router = Backbone.Router.extend({
   },
 
   routes: {
+    '': 'index',
     ':candidates': 'index'
   },
 
   index: function(candidates) {
-    /*var candidateList = candidates.split(',');
+    if (candidates) {
+      var candidateList = candidates.split(',');
 
-    _.each(candidateList, function(candidate) {
-      var initials = candidate.split('-')[0],
-          year = candidate.split('-')[1];
+      _.each(candidateList, function(candidate) {
+        var initials = candidate.split('-')[0],
+            year = candidate.split('-')[1],
+            model = app.candidates.find(function(c) { return c.get('initials') == initials; });
 
-      var model = app.candidates.find(function(c) {
-        return c.get('initials') == initials;
+        if (model) {
+          model.fetch({
+            dataType: 'json',
+            success: function(model) {
+              app.panels = new app.Panels(new app.Panel({
+                candidate: model,
+                candidates: app.candidates,
+                yearSelect: new app.YearSelect({ year: year })
+              }));
+
+              $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);
+            },
+            error: function(model, resp) {
+              console.log('fail');
+            }
+          });
+        }
       });
+    } else {
+      app.panels = new app.Panels(new app.Panel({
+        candidates: app.candidates,
+        yearSelect: new app.YearSelect({ year: 2012 })
+      }));
 
-      if (model) {
-        model.fetch({
-          success: function(model) {
-            $('#candidates').append(new app.CandidateView({
-              model: model,
-              id: model.get('slug') + '-' + String(Math.random()).split('.')[1],
-              year: year
-            }).render().el);
-          }
-        });
-      }
-    });*/
+      $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);
+    }
   }
 });
 
