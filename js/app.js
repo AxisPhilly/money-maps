@@ -124,9 +124,14 @@ app.PanelView = app.BaseView.extend({
     this.model.on('change:candidate', this.setYear, this);
     this.model.on('change:candidate', this.showShare, this);
 
+    var selected;
+    if (this.model.get('candidate')) {
+      selected = this.model.get('candidate').get('slug');
+    }
+
     this.candidateSelectView = new app.CandidateSelectView({
       collection: this.model.get('candidates'),
-      active: this.model.get('candidate').get('slug') || ''
+      active: selected
     });
   },
 
@@ -307,7 +312,7 @@ app.CityView = app.BaseView.extend({
 
     var quantize = d3.scale.quantize()
       .domain([0, max])
-      .range(d3.range(5).map(function(i) { return "ward break" + i; }));
+      .range(d3.range(5).map(function(i) { return "break" + i; }));
 
     var svg = d3.select(this.el).append('svg')
           .attr('width', this.width)
@@ -320,7 +325,7 @@ app.CityView = app.BaseView.extend({
         .data(topojson.feature(app.philly, app.philly.objects.wards).features)
       .enter().append("path")
         .attr("d", this.path)
-        .attr("class", function(d) { return quantize(data[d.id]); })
+        .attr("class", function(d) { return 'ward ' + quantize(data[d.id]); })
         .attr("data-slug", this.model.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id; })
@@ -389,7 +394,7 @@ app.StateView = app.BaseView.extend({
 
     var quantize = d3.scale.quantize()
       .domain([0, max])
-      .range(d3.range(5).map(function(i) { return "county break" + i; }));
+      .range(d3.range(5).map(function(i) { return "break" + i; }));
 
     var svg = d3.select(this.el).append('svg')
           .attr('width', this.width)
@@ -402,7 +407,7 @@ app.StateView = app.BaseView.extend({
         .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
       .enter().append("path")
         .attr("d", this.path)
-        .attr("class", function(d) { return quantize(fData.get(d.id)); })
+        .attr("class", function(d) { return "county " + quantize(fData.get(d.id)); })
         .attr("data-slug", this.model.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })

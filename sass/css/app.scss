@@ -19,9 +19,12 @@ path {
   stroke: #999;
   stroke-opacity: 1;
   stroke-width: 1;
+  cursor: pointer;
 }
 
 .ward, .county {
+  cursor: pointer;
+
   &.break0 {
     fill: rgb(191, 211, 230);
   }
@@ -159,6 +162,10 @@ path {
     td {
       padding: 6px;
       border-bottom: 1px dashed #333;
+    }
+
+    tr {
+      cursor: pointer;
     }
 
     tr:last-child td {
