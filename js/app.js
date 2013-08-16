@@ -90,7 +90,7 @@ app.BaseView = Backbone.View.extend({
   },
 
   constructUrl: function(a) {
-    var baseUrl = 'http://localhost:3000/contribution';
+    var baseUrl = 'http://cf-contributions.axisphilly.org/contribution';
     
     return baseUrl + '/' + a.slug + '/' + a.year + '/' + a.location;
   },
@@ -277,9 +277,9 @@ app.CandidateView = app.BaseView.extend({
 
   render: function(year) {
     this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
-    this.$el.find('.city').html(this.cityView.render(year).el);
-    this.$el.find('.state').html(this.stateView.render(year).el);
-    this.$el.find('.national').html(this.nationalView.render(year).el);
+    this.$el.find('.city .map-container').html(this.cityView.renderMap(year).el);
+    this.$el.find('.state .map-container').html(this.stateView.renderMap(year).el);
+    this.$el.find('.national .table-container').html(this.nationalView.renderTable(year).el);
 
     return this;
   },
@@ -304,7 +304,11 @@ app.CityView = app.BaseView.extend({
           .projection(this.projection);
   },
 
-  render: function(year) {
+  renderTitle: function() {
+
+  },
+
+  renderMap: function(year) {
     this.$el.empty();
 
     var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['ward'] : {},
@@ -379,7 +383,7 @@ app.StateView = app.BaseView.extend({
           .projection(this.projection);
   },
 
-  render: function(year) {
+  renderMap: function(year) {
     this.$el.empty();
 
     var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['county'] : {},
@@ -430,7 +434,7 @@ app.StateView = app.BaseView.extend({
 app.NationalView = app.BaseView.extend({
   tagName: 'table',
 
-  render: function(year) {
+  renderTable: function(year) {
     if(this.model.get('contributions')[year]) {
       var stateList = _.chain(this.model.get('contributions')[year].state)
         .map(function(value, state) {
