@@ -153,6 +153,23 @@ path {
   }
 }
 
+.contributions {
+  max-height: 500px;
+  overflow: auto;
+
+  table {
+    margin: 0 auto;
+    border: 0;
+    width: 100%;
+  }
+
+  td {
+    font-size: 14px;
+    padding: 6px;
+    border-bottom: 1px dashed #333;
+  }
+}
+
 .national {
   table {
     margin: 0 auto;

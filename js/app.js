@@ -60,8 +60,31 @@ app.YearSelect = Backbone.Model.extend({
 
 app.Contribution = Backbone.Model.extend({});
 
-app.contributions = Backbone.Collection.extend({
-  model: app.Contribution
+app.Contributions = Backbone.Collection.extend({
+  model: app.Contribution,
+  comparator: function(item) {
+    return -item.get('amount');
+  },
+
+  format: function() {
+    this.formatDate();
+    this.formatMoney();
+
+    return this;
+  },
+
+  formatDate: function() {
+    this.each(function(contribution) {
+      var fDate = moment(contribution.get('date')).format('MM/DD/YYYY');
+      contribution.set('fDate', fDate);
+    });
+  },
+
+  formatMoney: function() {
+    this.each(function(contribution) {
+      contribution.set('fAmount', Number(contribution.get('amount')).formatMoney());
+    });
+  }
 });
 
 app.Panel = Backbone.Model.extend({});
@@ -335,7 +358,8 @@ app.CityView = app.BaseView.extend({
         .attr("data-location", function(d) { return d.id; })
         .on("click", function() {
           that.getContributions(this, function(contributions) {
-            app.contributionView = new app.ContributionView({ collection: contributions });
+            app.contributions = new app.Contributions(contributions);
+            app.contributionView = new app.ContributionView({ collection: app.contributions });
           });
         });
 
@@ -417,7 +441,8 @@ app.StateView = app.BaseView.extend({
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
           that.getContributions(this, function(contributions) {
-            app.contributionView = new app.ContributionView({ collection: contributions });
+            app.contributions = new app.Contributions(contributions);
+            app.contributionView = new app.ContributionView({ collection: app.contributions });
           });
         });
 
@@ -493,7 +518,8 @@ app.NationalViewItem = app.BaseView.extend({
   prepGetContributions: function(event) {
     event.stopPropagation();
     this.getContributions($(event.currentTarget).parent(), function(contributions) {
-      app.contributionView = new app.ContributionView({ collection: contributions });
+      app.contributions = new app.Contributions(contributions);
+      app.contributionView = new app.ContributionView({ collection: app.contributions });
     });
   }
 });
@@ -507,8 +533,8 @@ app.ContributionView = app.BaseView.extend({
   },
 
   render: function() {
-    var items = this.collection.map(function(c) {
-      return (this.template(c));
+    var items = this.collection.format().map(function(c) {
+      return (this.template(c.attributes));
     }, this);
 
     this.$el.append(items);

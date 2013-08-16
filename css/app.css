@@ -105,6 +105,18 @@ path {
     .panel-header .close a {
       color: #fff; }
 
+.contributions {
+  max-height: 500px;
+  overflow: auto; }
+  .contributions table {
+    margin: 0 auto;
+    border: 0;
+    width: 100%; }
+  .contributions td {
+    font-size: 14px;
+    padding: 6px;
+    border-bottom: 1px dashed #333; }
+
 .national table {
   margin: 0 auto;
   border: 0;

@@ -57,9 +57,9 @@
 </script>
 <script type="text/template" id="contribution-view-template">
   <tr>
-    <td>{{= date }}</td>
+    <td>{{= fDate }}</td>
     <td>{{= contributor }}</td>
-    <td>${{= amount }}</td>
+    <td>${{= fAmount }}</td>
   </tr>
 </script>
 <div id="shareModal" class="reveal-modal small">
@@ -81,7 +81,7 @@
   <script type="text/javascript" src="js/lib/chosen.jquery.min.js"></script>
   <script type="text/javascript" src="js/lib/backbone.js"></script>
   <script type="text/javascript" src="js/lib/topojson.js"></script>
-  <script type="text/javascript" src="js/lib/queue.js"></script>
+  <script type="text/javascript" src="js/lib/moment.min.js"></script>
   <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
   <script type="text/javascript" src="js/lib/states.js"></script>
 <% } %>
