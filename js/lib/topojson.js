@@ -1,3 +1,5 @@
+/**! Copyright (c) 2012, Michael Bostock  https://github.com/mbostock/topojson/blob/master/LICENSE */
+
 topojson = (function() {
 
   function merge(topology, arcs) {
