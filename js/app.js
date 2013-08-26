@@ -137,7 +137,7 @@ app.PanelView = app.BaseView.extend({
     'change select': 'selectCandidate',
     'click .forward': 'updateYear',
     'click .backward': 'updateYear',
-    'click .share': 'share',
+    'click .share': 'share'
   },
 
   initialize: function() {
@@ -334,7 +334,7 @@ app.CityView = app.BaseView.extend({
   renderMap: function(year) {
     this.$el.empty();
 
-    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['ward'] : {},
+    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].ward : {},
         max = _.max(data);
 
     var quantize = d3.scale.quantize()
@@ -410,7 +410,7 @@ app.StateView = app.BaseView.extend({
   renderMap: function(year) {
     this.$el.empty();
 
-    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year]['county'] : {},
+    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].county : {},
         max = _.max(data),
         fData = d3.map();
 
@@ -432,7 +432,7 @@ app.StateView = app.BaseView.extend({
 
     svg.append("g")
       .selectAll("path")
-        .data(topojson.feature(app.counties, app.counties.objects['counties']).features)
+        .data(topojson.feature(app.counties, app.counties.objects.counties).features)
       .enter().append("path")
         .attr("d", this.path)
         .attr("class", function(d) { return "county " + quantize(fData.get(d.id)); })
@@ -448,7 +448,7 @@ app.StateView = app.BaseView.extend({
 
     svg.append("g")
       .append("path")
-        .datum(topojson.mesh(app.counties, app.counties.objects['counties'], function(a, b) { return a !== b; }))
+        .datum(topojson.mesh(app.counties, app.counties.objects.counties, function(a, b) { return a !== b; }))
         .attr("d", this.path)
         .attr("class", "boundary");
 
@@ -640,7 +640,7 @@ app.Router = Backbone.Router.extend({
 app.router = new app.Router();
 
 Number.prototype.formatMoney = function(){
-  var c=0, d='.', t=',';
-  var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c), 10) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+  var cV=0, dV='.', tV=',';
+  var n = this, c = isNaN(cV = Math.abs(cV)) ? 2 : cV, d = dV === undefined ? "," : dV, t = tV === undefined ? "." : tV, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c), 10) + "", j = (j = i.length) > 3 ? j % 3 : 0;
   return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
