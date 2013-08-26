@@ -28,7 +28,15 @@ module.exports = function(grunt) {
         files: {
           'www/js/app.libraries.min.<%= pkg.version %>.js': [
             'js/lib/fastclick.js',
-            'js/lib/foundation.js'
+            'js/lib/foundation.js',
+            'js/lib/foundation.reveal.js',
+            'js/lib/underscore.js',
+            'js/lib/chosen.jquery.min.js',
+            'js/lib/backbone.js',
+            'js/lib/states.js',
+            'js/lib/moment.min.js',
+            'js/lib/topojson.js',
+            'js/lib/d3.v3.min.js',
           ]
         }
       }
@@ -36,7 +44,9 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: [
-          'css/lib/site.css'
+          'css/lib/site.css',
+          'css/lib/chosen.min.css',
+          'css/lib/stateface.css'
           ],
         dest: 'www/css/app.libraries.<%= pkg.version %>.css'
       }
@@ -67,7 +77,8 @@ module.exports = function(grunt) {
           {expand: true, src: ['js/lib/*'], dest: 'www/'},
           {expand: true, src: ['img/lib/**'], dest: 'www/'},
           {expand: true, src: ['img/**'], dest: 'www/'},
-          {expand: true, src: ['data/**'], dest: 'www/'}
+          {expand: true, src: ['data/**'], dest: 'www/'},
+          {expand: true, src: ['font/**'], dest: 'www/'}
 
         ]
       }
@@ -94,12 +105,20 @@ module.exports = function(grunt) {
           dest: '<%= pkg.name %>/css'
         },
         {
+          src: 'www/css/lib/*',
+          dest: '<%= pkg.name %>/css'
+        },
+        {
           src: 'www/data/*',
           dest: '<%= pkg.name %>/data'
         },
         {
           src: 'www/img/*',
           dest: '<%= pkg.name %>/img'
+        },
+        {
+          src: 'www/font/*',
+          dest: '<%= pkg.name %>/font'
         }
       ]
     }
