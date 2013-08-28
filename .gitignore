@@ -3,7 +3,7 @@ node_modules
 *.env
 venv
 composite.txt
-counties/
-counties.zip
-wards.zip
-PhiladelphiaPoliticalWards201302/
+data/shp
+data/zip
+data/json
+data/csv

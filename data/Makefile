@@ -1,54 +1,75 @@
-all: composite.txt
-
 clean:
-	rm -r counties/ counties.zip districts/ districts.zip
+	rm -r zip/ shp/ json/ csv/
 
-composite.txt:
+zip/counties.zip:
+	curl -o zip/counties.zip http://www.pasda.psu.edu/data/padot/boundary_layers/PaCounty2013_02.zip
+
+zip/wards.zip:
+	curl -o zip/wards.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaPoliticalWards201302.zip
+
+zip/districts.zip:
+	curl -o zip/districts.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaCouncilDistricts_2000.zip
+
+zip/pa_municipalities.zip:
+	curl -o zip/pa_municipalities.zip http://www.pasda.psu.edu/data/padot/boundary_layers/PaMunicipalities2013_03.zip
+
+zip/nj_boundaries.zip:
+	curl -o zip/nj_boundaries.zip https://njgin.state.nj.us/oit/gis/download/bounds_nj_shp.zip	
+
+shp/PhiladelphiaCouncilDistricts_2000.shp: zip/districts.zip
+	unzip zip/districts.zip -d shp
+	touch PhiladelphiaCouncilDistricts_2000.shp
+
+shp/PaCounty2013_02.shp: zip/counties.zip
+	unzip zip/counties.zip -d shp
+
+shp/PaMunicipalities2013_03.shp: zip/pa_municipalities.zip
+	unzip zip/pa_municipalities.zip -d shp
+
+shp/nj_munis.shp: zip/nj_boundaries.zip
+	unzip zip/nj_boundaries.zip -d shp
+
+shp/PhiladelphiaPoliticalWards201302/PhiladelphiaPoliticalWards201302.shp: zip/wards.zip
+	unzip zip/wards.zip -d shp
+
+shp/pa_counties_trimmed.shp: shp/PaCounty2013_02.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT COUNTY_NAM as county, COUNTY_NUM as county_num FROM PaCounty2013_02 WHERE COUNTY_NUM IN ('09', '15', '67', '46', '23')" shp/pa_counties_trimmed.shp shp/PaCounty2013_02.shp
+
+shp/pa_munis_trimmed.shp: shp/PaMunicipalities2013_03.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUNICIPAL1 as muni, c.COUNTY_NAM as county FROM PaMunicipalities2013_03 LEFT JOIN 'shp/PaCounty2013_02.dbf'.PaCounty2013_02 c ON PaMunicipalities2013_03.COUNTY = c.COUNTY_NUM WHERE COUNTY IN ('09', '15', '67', '46', '23')" shp/pa_munis_trimmed.shp shp/PaMunicipalities2013_03.shp
+
+shp/nj_counties_trimmed.shp: shp/nj_counties.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT COUNTY as county FROM nj_counties WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_counties_trimmed.shp shp/nj_counties.shp
+
+shp/nj_munis_trimmed.shp: shp/nj_munis.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUN as muni, COUNTY as county FROM nj_munis WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_munis_trimmed.shp shp/nj_munis.shp
+
+csv/composite.txt:
 	curl -o composite.txt ftp://ftp.phila-records.com/CF%20DATA%20COMPOSITE%20AS%20OF%2003%2001%202013/CF%20DATA%20COMPOSITE%20AS%20OF%2003%2001%202013.txt
 
-counties.zip:
-	curl -o counties.zip http://www.pasda.psu.edu/data/padot/boundary_layers/PaCounty2013_02.zip
-	unzip counties.zip -d counties
+csv/pa_counties.csv: shp/PaCounty2013_02.shp shp/pa_counties_trimmed.shp
+	mkdir csv
+	ogr2ogr -f "CSV" csv/pa_counties.csv shp/pa_counties_trimmed.shp
 
-counties.json: counties.zip
-	ogr2ogr -f "GeoJSON" counties/counties.json counties/PaCounty2013_02.shp
-	topojson -o counties.json --id-property COUNTY_NAM -q 1000 counties/counties.json
+json/counties.json: shp/PaCounty2013_02.shp
+	mkdir json
+	ogr2ogr -f "GeoJSON" json/counties.json shp/PaCounty2013_02.shp
+	topojson -o json/counties.json --id-property COUNTY_NAM -q 1000 json/counties.json
 
-wards.zip:
-	curl -o wards.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaPoliticalWards201302.zip
-	unzip wards.zip
+json/wards.json: shp/PhiladelphiaPoliticalWards201302/PhiladelphiaPoliticalWards201302.shp
+	mkdir json
+	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326" json/wards.json shp/PhiladelphiaPoliticalWards201302.shp
+	topojson -o json/wards.json --id-property WARD_NUM -q 1000 json/wards.json
 
-wards.json: wards.zip
-	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326" PhiladelphiaPoliticalWards201302/wards.json PhiladelphiaPoliticalWards201302/PhiladelphiaPoliticalWards201302.shp
-	topojson -o wards.json --id-property WARD_NUM -q 1000 PhiladelphiaPoliticalWards201302/wards.json
+json/wards_w_districts.json: shp/PhiladelphiaCouncilDistricts_2000.shp json/wards.json
+	mkdir json
+	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326" json/districts.json shp/PhiladelphiaCouncilDistricts_2000.shp
+	topojson -o json/wards_w_districts.json --id-property WARD_NUM,DIST_NUM -q 1000 PhiladelphiaPoliticalWards201302/waon json/districts.json
 
-districts.zip:
-	curl -o districts.zip http://www.pasda.psu.edu/philacity/data/PhiladelphiaCouncilDistricts_2000.zip
-	unzip districts.zip -d districts
-
-wards_w_districts.json: districts.zip wards.json
-	ogr2ogr -f "GeoJSON" -t_srs "EPSG:4326"  districts/districts.json districts/PhiladelphiaCouncilDistricts_2000.shp
-	topojson -o wards_w_districts.json --id-property WARD_NUM,DIST_NUM -q 1000 PhiladelphiaPoliticalWards201302/waon districts/districts.json
-
-pa_municipalities.zip:
-	curl -o pa_municipalities.zip http://www.pasda.psu.edu/data/padot/boundary_layers/PaMunicipalities2013_03.zip
-	unzip pa_municipalities.zip -d pa_municipalities
-
-pa_muni_trimmed.shp: pa_municipalities.zip
-	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUNICIPAL1 as muni, COUNTY as county_num FROM PaMunicipalities2013_03 WHERE COUNTY IN ('09', '15', '67', '46', '23')" pa_municipalities/pa_muni_trimmed.shp pa_municipalities/PaMunicipalities2013_03.shp
-
-pa_counties_trimmed.shp: counties.zip
-	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT COUNTY_NAM as county, COUNTY_NUM as county_num FROM PaCounty2013_02" counties/pa_counties_trimmed.shp counties/PaCounty2013_02.shp
-
-pa_counties.csv: counties.zip
-	ogr2ogr -f "CSV" counties/pa_counties.csv	counties/pa_counties_trimmed.shp
-
-nj_boundaries.zip:
-	curl -o nj_boundaries.zip https://njgin.state.nj.us/oit/gis/download/bounds_nj_shp.zip	
-	unzip nj_boundaries.zip -d nj_boundaries
-
-nj_muni_trimmed.shp: nj_boundaries.zip
-	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUN as muni, COUNTY as county FROM nj_munis WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON')" nj_boundaries/nj_muni_trimmed.shp nj_boundaries/nj_munis.shp
-
-munis.json: pa_muni_trimmed.shp pa_counties_trimmed.shp pa_counties.csv
-	topojson -o munis.json -q 1000 --id-property=county_num -e counties/pa_counties.csv -p county_name=county,muni -- pa_municipalities/pa_muni_trimmed.shp
+json/munis.json: shp/pa_munis_trimmed.shp shp/pa_counties_trimmed.shp shp/nj_munis_trimmed.shp shp/nj_counties_trimmed.shp csv/pa_counties.csv
+	mkdir json
+	ogr2ogr shp/counties.shp shp/pa_counties_trimmed.shp
+	ogr2ogr -update -append shp/counties.shp shp/nj_counties_trimmed.shp -nln counties
+	ogr2ogr shp/munis.shp shp/pa_munis_trimmed.shp
+	ogr2ogr -update -append shp/munis.shp shp/nj_munis_trimmed.shp -nln munis
+	topojson -o json/munis.json -q 1000 --id-property=muni,county -p county_name=county,muni_name=muni -- shp/munis.shp shp/counties.shp
