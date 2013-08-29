@@ -1,11 +1,4 @@
 import csv
-import requests
-import re
-
-f = open("data/composite.txt")
-csvfile = csv.reader(f, delimiter='\t', quotechar='"')
-
-next(csvfile)
 
 states_list = {
     "AL": "Alabama",
@@ -130,28 +123,6 @@ campaign_list = {
 
 candidates = {}
 
-def state_to_two_letter(state):
-    try:
-        states_list[state]
-        return state
-    except KeyError:
-        try:
-            states_list_reverse[state]
-            return states_list_reverse[state]
-        except KeyError:
-            return state
-
-
-def is_non_pa_state(states_list, state):
-    if state == "PA":
-        return False
-    else:
-        try:
-            states_list[state]
-            return True
-        except KeyError:
-            return False
-
 
 def get_candidate_slug(campaign, campaign_list):
     try:
@@ -164,112 +135,113 @@ def in_united_states(country):
     return country == "United States"
 
 
-def new_jersey_address_shift(zipcode, address):
-    if len(zipcode) >= 5:
-        return address+" "+row[9][0:5]
-    else:
-        return address
-
-
 def record_bad_address(row):
-    with open('bad_address_list.csv', 'a') as csvfile:
-        write = csv.writer(csvfile, delimiter='|')
-        write.writerow([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7],
-                        row[8], row[9], row[10], row[11], row[12], row[13], row[14],
-                        row[15], row[16], row[17], row[18], row[19], row[20], row[21], row[22], 'FALSE', 'FALSE'])
+    with open('data/bad_address_list.csv', 'a') as csvfile:
+        write = csv.writer(csvfile, delimiter='\t')
+        write.writerow([row[0], row[1], row[2], row[3], row[4], row[5], year])
 
-for row in csvfile:
-    if len(row) > 3:
-        if row[3] == "CFR - Schedule I - Part D - All Other Contributions (Over $250.00)" or row[3] == "CFR - Schedule I - Part A - Contributions Received From Political Committees ($50.01 to $250.00)" or row[3] == "CFR - Schedule I - Part B - All Other Contributions ($50.01 - $250.00)" or row[3] == "CFR - Schedule I - Part C - Contributions Received From Political Committees (Over $250.00)":
-            # fix mispelling
-            if row[7] == "PHILADELHIA" or "Phila." or "Phila" or "phila" or "PHILA" or "PHILA.":
-                row[7] == "Philadelphia"
-            address = re.sub(r'[^\w]', ' ', row[5]+" "+row[6]+" "+row[7]+" "+row[8])
-            if row[8] == "NJ":
-                address = new_jersey_address_shift(row[9], address)
-            campaign = row[0]
-            year = row[1]
-            try:
-                amount = float(row[18])
-            except ValueError:
-                pass
-            city, state, county = "", "", ""
-            candidate = get_candidate_slug(campaign, campaign_list)
-            if candidate:
-                r = requests.get('http://localhost:8080/maps/api/geocode/json?sensor=false%20&address='+address)
-                if row[20] != "Y":
-                    if (len(r.json()['results']) > 0):
-                        s = r.json()['results'][0]['geometry']['location']
-                        lon, lat = str(s['lng']), str(s['lat'])
-                        r = requests.get('http://localhost:8080/coordinates2politics/'+lat+','+lon)
-                        s = r.json()[0]['politics']
-                        state = state_to_two_letter(row[8])                    
-                        if is_non_pa_state(states_list, state):
-                            state = states_list[state]
+for year in range(2007,2013):
+    year = str(year)
+    f = open("data/CFR-"+str(year)+".csv")
+    csvfile = csv.reader(f, delimiter=',', quotechar='"')
+    next(csvfile)
+    count = 0
+    for row in csvfile:
+        print row
+        campaign = row[5]
+        try:
+            amount = float(str(row[2]).replace(",", "").replace("$", ""))
+        except ValueError:
+            pass
+        occupation, muni, ward, country, county, city, state, lat, lon = "", "", "", "", "", "", "", "", ""
+        candidate = get_candidate_slug(campaign, campaign_list)
+        if candidate:
+            r = requests.get('http://localhost:8080/maps/api/geocode/json?sensor=false%20&address='+row[1])
+            if (len(r.json()['results']) > 0):
+                s = r.json()['results'][0]['geometry']['location']
+                lon, lat = str(s['lng']), str(s['lat'])
+                r = requests.get('http://localhost:8080/coordinates2politics/'+lat+','+lon)
+                s = r.json()[0]['politics']
+                if s:
+                    for each in s:
+                        try:
+                            if each['friendly_type'] == "county":
+                                county = each['name']
+                        except KeyError:
+                            pass
+                        try:
+                            if each['friendly_type'] == "country":
+                                country = each['name']
+                        except KeyError:
+                            pass                                
+                        try:
+                            if each['friendly_type'] == "city":
+                                city = each['name']
+                        except KeyError:
+                            pass
+                        try:
+                            if 'ward' in each:
+                                ward = each['ward']
+                        except KeyError:
+                            pass
+                        try:
+                            if 'muni' in each:
+                                muni = each['muni']
+                        except KeyError:
+                            pass                            
+                        try:
+                            if each['friendly_type'] == "state":
+                                state = each['name']
+                        except KeyError:
+                            pass
+                    if in_united_states(country):
+                        if candidate not in candidates:
+                            candidates[candidate] = {}
+                        if year not in candidates[candidate]:
+                            candidates[candidate][year] = {}
+                        if 'state' not in candidates[candidate][year]:
+                            candidates[candidate][year]['state'] = {}
+                        if state not in candidates[candidate][year]['state']:
+                            candidates[candidate][year]['state'][state] = amount
                         else:
-                            if s:
-                                for each in s:
-                                    try:
-                                        if each['friendly_type'] == "county":
-                                            county = each['name']
-                                    except KeyError:
-                                        pass
-                                    try:
-                                        if each['friendly_type'] == "country":
-                                            country = each['name']
-                                    except KeyError:
-                                        pass                                
-                                    try:
-                                        if each['friendly_type'] == "city":
-                                            city = each['name']
-                                    except KeyError:
-                                        pass
-                                    try:
-                                        if 'ward' in each:
-                                            ward = each['ward']
-                                    except KeyError:
-                                        pass
-                                    try:
-                                        if each['friendly_type'] == "state":
-                                            state = each['name']
-                                    except KeyError:
-                                        pass
-                        if in_united_states(country):
-                            if candidate not in candidates:
-                                candidates[candidate] = {}
-                            if year not in candidates[candidate]:
-                                candidates[candidate][year] = {}
-                            if 'state' not in candidates[candidate][year]:
-                                candidates[candidate][year]['state'] = {}
-                            if state not in candidates[candidate][year]['state']:
-                                candidates[candidate][year]['state'][state] = amount
+                            candidates[candidate][year]['state'][state] += amount
+                        if 'muni' not in candidates[candidate][year]:
+                            candidates[candidate][year]['muni'] = {}
+                        if muni not in candidates[candidate][year]['muni']:
+                            candidates[candidate][year]['muni'][muni] = amount
+                        else:
+                            candidates[candidate][year]['muni'][muni] += amount                            
+                        if state == "Pennsylvania":
+                            if 'county' not in candidates[candidate][year]:
+                                candidates[candidate][year]['county'] = {}
+                            if county not in candidates[candidate][year]['county']:
+                                candidates[candidate][year]['county'][county] = amount
                             else:
-                                candidates[candidate][year]['state'][state] += amount
-                            if state == "Pennsylvania":
-                                if 'county' not in candidates[candidate][year]:
-                                    candidates[candidate][year]['county'] = {}
-                                if county not in candidates[candidate][year]['county']:
-                                    candidates[candidate][year]['county'][county] = amount
+                                candidates[candidate][year]['county'][county] += amount
+                            if city == "Philadelphia":
+                                if 'ward' not in candidates[candidate][year]:
+                                    candidates[candidate][year]['ward'] = {}
+                                if ward not in candidates[candidate][year]['ward']:
+                                    candidates[candidate][year]['ward'][ward] = amount
                                 else:
-                                    candidates[candidate][year]['county'][county] += amount
-                                if city == "Philadelphia":
-                                    if 'ward' not in candidates[candidate][year]:
-                                        candidates[candidate][year]['ward'] = {}
-                                    if ward not in candidates[candidate][year]['ward']:
-                                        candidates[candidate][year]['ward'][ward] = amount
-                                    else:
-                                        candidates[candidate][year]['ward'][ward] += amount
-                            print "Pass:", row
-                            output = open("json.csv", "w")
-                            output.write(str(candidates))
-                            output.close()
-                            if state == "" or state == " " or state == None:
-                                testVar = raw_input("This passed.")
-                        else:
-                            record_bad_address(row)  
-                            print "Fail:", row                
-                    else:
-                        record_bad_address(row)
-                        print "Fail:", row
+                                    candidates[candidate][year]['ward'][ward] += amount
+                        print "Pass:", row
+                        output = open("data/json.csv", "w")
+                        output.write(str(candidates))
+                        output.close()
 
+                        with open('data/good_address_list.csv', 'a') as csvfile:
+                            write = csv.writer(csvfile, delimiter='\t')
+                            write.writerow([row[0], row[1], row[2], row[3], row[4], row[5], year, lat, lon, ward, county, state, candidate, muni])
+                    else:
+                        print "Fail:", row
+                        record_bad_address(row)
+                else:
+                    record_bad_address(row)  
+                    print "Fail:", row
+            else:
+                record_bad_address(row)  
+                print "Fail:", row                    
+        else:
+            print "Not in campaign_list"  
 print candidates
