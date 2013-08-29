@@ -137,7 +137,8 @@ app.PanelView = app.BaseView.extend({
     'change select': 'selectCandidate',
     'click .forward': 'updateYear',
     'click .backward': 'updateYear',
-    'click .share': 'share'
+    'click .share': 'share',
+    'click .map-select li': 'selectScale',
   },
 
   initialize: function() {
@@ -146,6 +147,7 @@ app.PanelView = app.BaseView.extend({
     this.shareView = new app.ShareView({});
     this.model.on('change:candidate', this.setYear, this);
     this.model.on('change:candidate', this.showShare, this);
+    this.model.on('change:scale', this.renderCandidateView, this);
 
     var selected;
     if (this.model.get('candidate')) {
@@ -181,7 +183,8 @@ app.PanelView = app.BaseView.extend({
     this.redrawYear();
 
     this.candidateView = new app.CandidateView({
-      model: this.model.get('candidate')
+      model: this.model.get('candidate'),
+      scale: this.model.get('scale')
     });
 
     this.$el.find('.candidate').html(this.candidateView.render(year).el);
@@ -194,6 +197,14 @@ app.PanelView = app.BaseView.extend({
     this.model.get('candidate').fetch();
   },
 
+  selectScale: function(e) {
+    event.preventDefault();
+
+    var scale = $(e.target).data('scale');
+
+    this.model.set('scale', scale);
+  },
+
   redrawYear: function() {
     this.model.get('yearSelect').validateYear(this.model.get('candidate'));
     this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
@@ -201,10 +212,6 @@ app.PanelView = app.BaseView.extend({
 
   setYear: function() {
     this.$el.find('.year-select-view').html(this.yearSelectView.render().el);
-  },
-
-  showShare: function() {
-    this.$el.find('.share').addClass('active');
   },
 
   updateYear: function(event) {
@@ -215,6 +222,10 @@ app.PanelView = app.BaseView.extend({
     var direction = $(event.target).data('direction');
     this.model.get('yearSelect').validateDirection(this.model.get('candidate'), direction);
     this.$el.find('.candidate').html(this.candidateView.render(this.model.get('yearSelect').get('year')).el);
+  },
+
+  showShare: function() {
+    this.$el.find('.share').addClass('active');
   },
 
   share: function() {
@@ -292,17 +303,26 @@ app.CandidateView = app.BaseView.extend({
 
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
-    this.cityView = new app.CityView({ model: this.model });
-    this.stateView = new app.StateView({ model: this.model });
-    this.nationalView = new app.NationalView({ model: this.model });
+    
+    this.scaleMap = {
+      city: new app.CityView({ model: this.model }),
+      state: new app.StateView({ model: this.model }),
+      national: new app.NationalView({ model: this.model })
+    };
+
     this.model.on('change', this.render, this);
   },
 
   render: function(year) {
     this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
-    this.$el.find('.city .map-container').html(this.cityView.renderMap(year).el);
-    this.$el.find('.state .map-container').html(this.stateView.renderMap(year).el);
-    this.$el.find('.national .table-container').html(this.nationalView.renderTable(year).el);
+
+    var activeView = this.scaleMap[this.options.scale];
+
+    this.$el.find('.map-container').html(activeView.renderMap(year).el);
+
+    //this.$el.find('.map-container').html(this.cityView.renderMap(year).el);
+    //this.$el.find('.state .map-container').html(this.stateView.renderMap(year).el);
+    //this.$el.find('.national .table-container').html(this.nationalView.renderTable(year).el);
 
     return this;
   },
@@ -459,7 +479,7 @@ app.StateView = app.BaseView.extend({
 app.NationalView = app.BaseView.extend({
   tagName: 'table',
 
-  renderTable: function(year) {
+  renderMap: function(year) {
     if(this.model.get('contributions')[year]) {
       var stateList = _.chain(this.model.get('contributions')[year].state)
         .map(function(value, state) {
@@ -628,7 +648,8 @@ app.Router = Backbone.Router.extend({
     } else {
       app.panels = new app.Panels(new app.Panel({
         candidates: app.candidates,
-        yearSelect: new app.YearSelect({ year: 2012 })
+        yearSelect: new app.YearSelect({ year: 2012 }),
+        scale: 'city'
       }));
 
       $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);

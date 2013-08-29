@@ -1,7 +1,7 @@
 <!-- Templates -->
 <script type="text/template" id="panel-view-template">
   <div class="row">
-    <div class="panel-header three columns">
+    <div class="panel-header four columns">
       
       <div class="row">
         <div class="twelve columns">
@@ -13,6 +13,16 @@
       <div class="row">
         <div class="year-select-view twelve columns"></div>
       </div>
+
+      <div class="row">
+        <div class="twelve columns">
+          <ul class="map-select">
+            <li><a href="#" data-scale="city">City</a></li>
+            <li><a href="#" data-scale="state">Regional</a></li>
+            <li><a href="#" data-scale="national">National</a></li>
+          </ul>
+        </div>
+      </div>
       
       <div class="row">
         <div class="twelve columns">
@@ -20,8 +30,14 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class='contributions twelve columns'>
+          <div class='table-container'><em>Click a region to show contributions from that region for the selected candidate and year.</em></div>
+        </div>
+      </div>
+
     </div>
-    <div class="candidate nine columns"></div>
+    <div class="candidate eight columns"></div>
   </div>
 </script>
 <script type="text/template" id="year-select-view-template">
@@ -32,24 +48,8 @@
 </script>
 <script type="text/template" id="candidate-view-template">
   <div class='data row'>
-    <div class='city four columns'>
-      <span class='map-header'>Philadelphia</span>
+    <div class='city twelve columns'>
       <div class='map-container'></div>
-    </div>
-    <div class='four columns'>
-      <div class='state'>
-        <span class='map-header'>Pennsylvania</span>
-        <div class='map-container'></div>
-      </div>
-      <div class='national'>
-        <span class='map-header'>United States</span>
-        <div class='table-container'>
-          <table></table>
-        </div>
-      </div>
-    </div>
-    <div class='contributions four columns'>
-      <div class='table-container'><em>Click a region to show contributions from that region for the selected candidate and year.</em></div>
     </div>
   </div>
 </script>
