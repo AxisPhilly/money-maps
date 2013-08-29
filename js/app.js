@@ -306,6 +306,7 @@ app.CandidateView = app.BaseView.extend({
     
     this.scaleMap = {
       city: new app.CityView({ model: this.model }),
+      region: new app.RegionView({ model: this.model }),
       state: new app.StateView({ model: this.model }),
       national: new app.NationalView({ model: this.model })
     };
@@ -408,6 +409,60 @@ app.CityView = app.BaseView.extend({
           .attr('class', 'district');
 
     }
+
+    return this;
+  }
+});
+
+app.RegionView = app.BaseView.extend({
+  tagName: 'div',
+
+  initialize: function() {
+    this.width = 650;
+    this.height = 450;
+    this.projection = d3.geo.mercator()
+          .center([-75.1282, 40.0032])
+          .scale(15000)
+          .translate([this.width / 2, this.height / 2]);
+    this.path = d3.geo.path()
+          .projection(this.projection);
+  },
+
+  renderMap: function(year) {
+    this.$el.empty();
+
+    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].muni : {},
+        max = _.max(data);
+
+    var quantize = d3.scale.quantize()
+      .domain([0, max])
+      .range(d3.range(5).map(function(i) { return "break" + i; }));
+
+    var svg = d3.select(this.el).append('svg')
+          .attr('width', this.width)
+          .attr('height', this.height);
+
+    svg.append("g")
+      .selectAll("path")
+        .data(topojson.feature(app.region, app.region.objects.munis).features)
+      .enter().append("path")
+        .attr("d", this.path)
+        .attr("class", function(d) { return 'muni ' + quantize(data[d.id]); })
+        .attr("data-slug", this.model.get('slug'))
+        .attr("data-year", year)
+        .attr("data-location", function(d) { return d.id; });
+
+    svg.append("g")
+      .append("path")
+        .datum(topojson.mesh(app.region, app.region.objects.munis, function(a, b) { return a !== b; }))
+        .attr("d", this.path)
+        .attr("class", "boundary");
+
+    svg.append("g")
+      .append("path")
+        .datum(topojson.mesh(app.region, app.region.objects.counties, function(a, b) { return a !== b; }))
+        .attr("d", this.path)
+        .attr("class", "county-boundary");
 
     return this;
   }
@@ -602,7 +657,11 @@ app.Router = Backbone.Router.extend({
         d3.json('data/wards_w_districts.json', function(data) {
           app.philly = data;
 
-          Backbone.history.start({ pushState:false, silent:false });
+          d3.json('data/munis.json', function(data){
+            app.region = data;
+
+            Backbone.history.start({ pushState:false, silent:false });
+          });
         });
       });
     });

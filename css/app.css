@@ -16,17 +16,23 @@ path {
   stroke-width: 1;
   cursor: pointer; }
 
-.ward, .county {
+.county-boundary {
+  fill: none;
+  stroke: #333;
+  stroke-opacity: 1;
+  stroke-width: 1.5; }
+
+.ward, .county, .muni {
   cursor: pointer; }
-  .ward.break0, .county.break0 {
+  .ward.break0, .county.break0, .muni.break0 {
     fill: #bfd3e6; }
-  .ward.break1, .county.break1 {
+  .ward.break1, .county.break1, .muni.break1 {
     fill: #9ebcda; }
-  .ward.break2, .county.break2 {
+  .ward.break2, .county.break2, .muni.break2 {
     fill: #8c96c6; }
-  .ward.break3, .county.break3 {
+  .ward.break3, .county.break3, .muni.break3 {
     fill: #8856a7; }
-  .ward.break4, .county.break4 {
+  .ward.break4, .county.break4, .muni.break4 {
     fill: #810f7c; }
 
 .district {
