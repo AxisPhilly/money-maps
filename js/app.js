@@ -138,7 +138,7 @@ app.PanelView = app.BaseView.extend({
     'click .forward': 'updateYear',
     'click .backward': 'updateYear',
     'click .share': 'share',
-    'click .map-select li': 'selectScale',
+    'click .map-select li': 'selectScale'
   },
 
   initialize: function() {
