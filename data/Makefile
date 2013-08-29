@@ -46,13 +46,13 @@ shp/pa_counties_trimmed.shp: shp/PaCounty2013_02.shp
 	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT COUNTY_NAM as county, COUNTY_NUM as county_num FROM PaCounty2013_02 WHERE COUNTY_NUM IN ('09', '15', '67', '46', '23')" shp/pa_counties_trimmed.shp shp/PaCounty2013_02.shp
 
 shp/pa_munis_trimmed.shp: shp/PaMunicipalities2013_03.shp
-	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUNICIPAL1 as muni, c.COUNTY_NAM as county FROM PaMunicipalities2013_03 LEFT JOIN 'shp/PaCounty2013_02.dbf'.PaCounty2013_02 c ON PaMunicipalities2013_03.COUNTY = c.COUNTY_NUM WHERE COUNTY IN ('09', '15', '67', '46', '23')" shp/pa_munis_trimmed.shp shp/PaMunicipalities2013_03.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUNICIPAL1 as muni, c.COUNTY_NAM as county, CAST(MSLINK as character(15)) + '-pa' as code FROM PaMunicipalities2013_03 LEFT JOIN 'shp/PaCounty2013_02.dbf'.PaCounty2013_02 c ON PaMunicipalities2013_03.COUNTY = c.COUNTY_NUM WHERE COUNTY IN ('09', '15', '67', '46', '23')" shp/pa_munis_trimmed.shp shp/PaMunicipalities2013_03.shp
 
 shp/nj_counties_trimmed.shp: shp/nj_counties.shp
 	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT COUNTY as county FROM nj_counties WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_counties_trimmed.shp shp/nj_counties.shp
 
 shp/nj_munis_trimmed.shp: shp/nj_munis.shp
-	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUN as muni, COUNTY as county FROM nj_munis WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_munis_trimmed.shp shp/nj_munis.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUN as muni, COUNTY as county, CAST(MUN_CODE as character(15)) + '-nj' as code FROM nj_munis WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_munis_trimmed.shp shp/nj_munis.shp
 
 shp/us.shp: shp/ne_50m_admin_1_states_provinces_lakes_shp.shp
 	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG: 4326" -sql "SELECT iso_3166_2 as abbrev, name FROM ne_50m_admin_1_states_provinces_lakes_shp WHERE sr_adm0_a3 = 'USA'" shp/us.shp shp/ne_50m_admin_1_states_provinces_lakes_shp.shp
@@ -89,7 +89,7 @@ json/munis.json: shp/pa_munis_trimmed.shp shp/pa_counties_trimmed.shp shp/nj_mun
 	ogr2ogr -update -append shp/counties.shp shp/nj_counties_trimmed.shp -nln counties
 	ogr2ogr shp/munis.shp shp/pa_munis_trimmed.shp
 	ogr2ogr -update -append shp/munis.shp shp/nj_munis_trimmed.shp -nln munis
-	topojson -o json/munis.json -q 1000 --id-property=muni,county -p county_name=county,muni_name=muni -- shp/munis.shp shp/counties.shp
+	topojson -o json/munis.json -q 1000 --id-property=code,county -p county_name=county,muni_name=muni -- shp/munis.shp shp/counties.shp
 
 json/us.json: shp/us.shp
 	topojson -o json/us.json -q 1000 --id-property=name -p -- shp/us.shp
