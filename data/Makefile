@@ -14,7 +14,10 @@ zip/pa_municipalities.zip:
 	curl -o zip/pa_municipalities.zip http://www.pasda.psu.edu/data/padot/boundary_layers/PaMunicipalities2013_03.zip
 
 zip/nj_boundaries.zip:
-	curl -o zip/nj_boundaries.zip https://njgin.state.nj.us/oit/gis/download/bounds_nj_shp.zip	
+	curl -o zip/nj_boundaries.zip https://njgin.state.nj.us/oit/gis/download/bounds_nj_shp.zip
+
+zip/national_boundaries.zip:
+	curl -L -o zip/national_boundaries.zip http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_1_states_provinces_lakes_shp.zip
 
 shp/PhiladelphiaCouncilDistricts_2000.shp: zip/districts.zip
 	unzip zip/districts.zip -d shp
@@ -32,6 +35,9 @@ shp/nj_munis.shp: zip/nj_boundaries.zip
 shp/PhiladelphiaPoliticalWards201302/PhiladelphiaPoliticalWards201302.shp: zip/wards.zip
 	unzip zip/wards.zip -d shp
 
+shp/ne_50m_admin_1_states_provinces_lakes_shp.shp: zip/national_boundaries.zip
+	unzip zip/national_boundaries.zip -d shp
+
 shp/munis_for_dstk.shp: shp/nj_munis.shp shp/PaMunicipalities2013_03.shp
 	ogr2ogr shp/munis_for_dstk.shp -t_srs "EPSG:4326" shp/PaMunicipalities2013_03.shp -sql "SELECT CAST(MUNICIPAL1 as character(50)) as muni, CAST(MSLINK as character(15)) + '-pa' as code FROM PaMunicipalities2013_03"
 	ogr2ogr -update -append -t_srs "EPSG:4326" shp/munis_for_dstk.shp shp/nj_munis.shp -nln munis_for_dstk -sql "SELECT CAST(MUN as character(50)) as muni, CAST(MUN_CODE as character(15)) + '-nj' as code FROM nj_munis"
@@ -47,6 +53,9 @@ shp/nj_counties_trimmed.shp: shp/nj_counties.shp
 
 shp/nj_munis_trimmed.shp: shp/nj_munis.shp
 	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG:4326" -sql "SELECT MUN as muni, COUNTY as county FROM nj_munis WHERE COUNTY IN ('SALEM', 'CAMDEN', 'BURLINGTON', 'GLOUCESTER')" shp/nj_munis_trimmed.shp shp/nj_munis.shp
+
+shp/us.shp: shp/ne_50m_admin_1_states_provinces_lakes_shp.shp
+	ogr2ogr -f "ESRI Shapefile" -t_srs "EPSG: 4326" -sql "SELECT iso_3166_2 as abbrev, name FROM ne_50m_admin_1_states_provinces_lakes_shp WHERE sr_adm0_a3 = 'USA'" shp/us.shp shp/ne_50m_admin_1_states_provinces_lakes_shp.shp
 
 csv/composite.txt:
 	curl -o composite.txt ftp://ftp.phila-records.com/CF%20DATA%20COMPOSITE%20AS%20OF%2003%2001%202013/CF%20DATA%20COMPOSITE%20AS%20OF%2003%2001%202013.txt
@@ -81,3 +90,6 @@ json/munis.json: shp/pa_munis_trimmed.shp shp/pa_counties_trimmed.shp shp/nj_mun
 	ogr2ogr shp/munis.shp shp/pa_munis_trimmed.shp
 	ogr2ogr -update -append shp/munis.shp shp/nj_munis_trimmed.shp -nln munis
 	topojson -o json/munis.json -q 1000 --id-property=muni,county -p county_name=county,muni_name=muni -- shp/munis.shp shp/counties.shp
+
+json/us.json: shp/us.shp
+	topojson -o json/us.json -q 1000 --id-property=name -p -- shp/us.shp
