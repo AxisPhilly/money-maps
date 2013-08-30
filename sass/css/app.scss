@@ -19,7 +19,6 @@ path {
   stroke: #999;
   stroke-opacity: 1;
   stroke-width: 1;
-  cursor: pointer;
 }
 
 .county-boundary {
@@ -30,22 +29,26 @@ path {
 }
 
 .region {
-  cursor: pointer;
   fill: rgb(247,247,247);
 
   &.break0 {
+    cursor: pointer;
     fill: rgb(217,217,217);
   }
   &.break1 {
+    cursor: pointer;
     fill: rgb(189,189,189);
   }
   &.break2 {
+    cursor: pointer;
     fill: rgb(150,150,150);
   }
   &.break3 {
+    cursor: pointer;
     fill: rgb(99,99,99);
   }
   &.break4 {
+    cursor: pointer;
     fill: rgb(37,37,37);
   }
 }
@@ -71,6 +74,10 @@ path {
   font-size: 14px;
   box-shadow: none;
   margin-top: 22px;
+}
+
+.panel-view {
+  min-height: 400px;
 }
 
 .panel-header {
