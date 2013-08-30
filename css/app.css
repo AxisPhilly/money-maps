@@ -22,18 +22,19 @@ path {
   stroke-opacity: 1;
   stroke-width: 1.5; }
 
-.ward, .county, .muni {
-  cursor: pointer; }
-  .ward.break0, .county.break0, .muni.break0 {
-    fill: #bfd3e6; }
-  .ward.break1, .county.break1, .muni.break1 {
-    fill: #9ebcda; }
-  .ward.break2, .county.break2, .muni.break2 {
-    fill: #8c96c6; }
-  .ward.break3, .county.break3, .muni.break3 {
-    fill: #8856a7; }
-  .ward.break4, .county.break4, .muni.break4 {
-    fill: #810f7c; }
+.region {
+  cursor: pointer;
+  fill: #f7f7f7; }
+  .region.break0 {
+    fill: #d9d9d9; }
+  .region.break1 {
+    fill: #bdbdbd; }
+  .region.break2 {
+    fill: #969696; }
+  .region.break3 {
+    fill: #636363; }
+  .region.break4 {
+    fill: #252525; }
 
 .district {
   fill: none;
@@ -42,6 +43,9 @@ path {
 
 #app-container {
   font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif; }
+
+.details {
+  display: none; }
 
 .share {
   border: none;

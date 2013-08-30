@@ -190,6 +190,7 @@ app.PanelView = app.BaseView.extend({
   },
 
   renderCandidateView: function(selectedYear) {
+    this.$el.find('.details').slideDown();
     var mostRecentYear = this.model.get('candidate').getMostRecentYear();
     var year = typeof selectedYear === 'string' ? selectedYear : mostRecentYear;
 
@@ -356,22 +357,18 @@ app.MapView = app.BaseView.extend({
 
   resize: function(view) {
     // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
-    // adjust things when the window size changes
     view.width = parseInt(d3.select('.map-container').style('width'));
     view.width = view.width - view.margin.left - view.margin.right;
     view.height = view.width * view.mapRatio;
 
-    // update projection
     view.projection
         .translate([view.width / 2, view.height / 2])
         .scale(view.width * view.model.get('scale'));
 
-    // resize the map container
     view.svg
         .style('width', view.width + 'px')
         .style('height', view.height + 'px');
 
-    // resize the map
     view.svg.selectAll('.region').attr('d', view.path);
     view.svg.selectAll('.boundary').attr('d', view.path);
     view.svg.selectAll('.district').attr('d', view.path);
@@ -412,7 +409,7 @@ app.MapView = app.BaseView.extend({
         .attr("class", function(d) { return 'region ' + quantize(data[d.id]); })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
-        .attr("data-location", function(d) { return d.id; })
+        .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
           that.getContributions(this, function(contributions) {
             app.contributions = new app.Contributions(contributions);

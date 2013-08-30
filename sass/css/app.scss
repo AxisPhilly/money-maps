@@ -29,23 +29,24 @@ path {
   stroke-width: 1.5;
 }
 
-.ward, .county, .muni {
+.region {
   cursor: pointer;
+  fill: rgb(247,247,247);
 
   &.break0 {
-    fill: rgb(191, 211, 230);
+    fill: rgb(217,217,217);
   }
   &.break1 {
-    fill: rgb(158, 188, 218);
+    fill: rgb(189,189,189);
   }
   &.break2 {
-    fill: rgb(140, 150, 198);
+    fill: rgb(150,150,150);
   }
   &.break3 {
-    fill: rgb(136, 86, 167);
+    fill: rgb(99,99,99);
   }
   &.break4 {
-    fill: rgb(129, 15, 124);
+    fill: rgb(37,37,37);
   }
 }
 
@@ -57,6 +58,10 @@ path {
 
 #app-container {
   font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+}
+
+.details {
+  display: none;
 }
 
 .share {

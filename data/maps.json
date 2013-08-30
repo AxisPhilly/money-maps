@@ -17,7 +17,7 @@
     "geography": "muni",
     "meshes": ["munis", "counties"],
     "topo-url": "data/munis.json",
-    "topo-objects": "counties"
+    "topo-objects": "munis"
   },
   {
     "name": "state",
