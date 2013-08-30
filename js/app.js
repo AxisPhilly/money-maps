@@ -191,11 +191,15 @@ app.PanelView = app.BaseView.extend({
 
   renderCandidateView: function(selectedYear) {
     this.$el.find('.details').slideDown();
-    var mostRecentYear = this.model.get('candidate').getMostRecentYear();
-    var year = typeof selectedYear === 'string' ? selectedYear : mostRecentYear;
+    
+    var year = this.model.get('yearSelect').get('year');
 
-    this.model.get('yearSelect').set('year', Number(year));
-    this.redrawYear();
+    if(this.model.changed.candidate) {
+      var mostRecentYear = this.model.get('candidate').getMostRecentYear();
+      year = typeof selectedYear === 'string' ? selectedYear : mostRecentYear;
+      this.model.get('yearSelect').set('year', Number(year));
+      this.redrawYear();
+    }
 
     this.candidateView = new app.CandidateView({
       model: this.model.get('candidate'),
