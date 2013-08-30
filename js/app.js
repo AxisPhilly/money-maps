@@ -338,7 +338,7 @@ app.CandidateView = app.BaseView.extend({
 app.MapView = app.BaseView.extend({
   initialize: function() {
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
-    this.width = parseInt(d3.select('.map-container').style('width'));
+    this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
     this.mapRatio = 0.85;
     this.height = this.width * this.mapRatio;
@@ -357,7 +357,7 @@ app.MapView = app.BaseView.extend({
 
   resize: function(view) {
     // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
-    view.width = parseInt(d3.select('.map-container').style('width'));
+    view.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     view.width = view.width - view.margin.left - view.margin.right;
     view.height = view.width * view.mapRatio;
 
