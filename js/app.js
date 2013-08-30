@@ -420,10 +420,12 @@ app.MapView = app.BaseView.extend({
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
-          that.getContributions(this, function(contributions) {
-            app.contributions = new app.Contributions(contributions);
-            app.contributionView = new app.ContributionView({ collection: app.contributions });
-          });
+          if(!d3.select(this).classed('undefined')) {
+            that.getContributions(this, function(contributions) {
+              app.contributions = new app.Contributions(contributions);
+              app.contributionView = new app.ContributionView({ collection: app.contributions });
+            });
+          }
         });
 
     _.each(this.model.get('meshes'), function(mesh) {
