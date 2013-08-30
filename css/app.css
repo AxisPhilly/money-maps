@@ -62,8 +62,26 @@ path {
   min-height: 400px; }
 
 .panel-header {
-  background-color: #ddd;
+  background-color: #eee;
   padding: 12px 10px; }
+  .panel-header .details .row {
+    padding: 20px 0 0 0; }
+  .panel-header .map-select {
+    list-style-type: none;
+    margin-bottom: 0; }
+    .panel-header .map-select li {
+      display: inline-block; }
+      .panel-header .map-select li a, .panel-header .map-select li a:active, .panel-header .map-select li a:visited {
+        color: #222;
+        display: inline-block;
+        font-size: 16px;
+        padding: 5px 18px;
+        background: #ddd; }
+        .panel-header .map-select li a.active, .panel-header .map-select li a:active.active, .panel-header .map-select li a:visited.active {
+          background-color: #571076;
+          color: #fff; }
+      .panel-header .map-select li a:hover {
+        background-color: #A062BB; }
   .panel-header .chosen-container {
     padding: 0; }
   .panel-header .chosen-default, .panel-header .chosen-container-active.chosen-with-drop .chosen-single {
@@ -74,7 +92,7 @@ path {
   .panel-header .chosen-single, .panel-header .chosen-single span {
     font-size: 24px;
     padding: 0;
-    width: 240px;
+    width: 280px;
     border: none;
     background: none;
     box-shadow: none;
@@ -124,6 +142,9 @@ path {
   height: 300px;
   max-height: 500px;
   overflow: auto; }
+  .contributions .placeholder {
+    font-size: 15px;
+    font-style: italic; }
   .contributions table {
     margin: 0 auto;
     border: 0;

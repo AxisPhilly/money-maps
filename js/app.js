@@ -180,6 +180,11 @@ app.PanelView = app.BaseView.extend({
       .find('select')
       .chosen({ disable_search_threshold: 15 });
 
+    if(this.model.get('mapName')) {
+      var map = this.model.get('mapName');
+      this.$el.find('.map-select .' + map).addClass('active');
+    }
+
     // if year was provided on initalization, which is the case for sharable links
     var year = this.model.get('yearSelect').get('year');
     if(this.model.get('candidate')) { this.renderCandidateView(year); }
@@ -196,13 +201,14 @@ app.PanelView = app.BaseView.extend({
       var mostRecentYear = this.model.get('candidate').getMostRecentYear();
       year = typeof selectedYear === 'string' ? selectedYear : mostRecentYear;
       this.model.get('yearSelect').set('year', Number(year));
-      this.redrawYear();
     }
 
     this.candidateView = new app.CandidateView({
       model: this.model.get('candidate'),
       mapName: this.model.get('mapName')
     });
+
+    this.redrawYear();
 
     this.$el.find('.candidate').html(this.candidateView.render(year).el);
   },
@@ -216,6 +222,8 @@ app.PanelView = app.BaseView.extend({
 
   selectMap: function(e) {
     event.preventDefault();
+    $('.active').removeClass('active');
+    $(e.target).addClass('active');
     var mapName = $(e.target).data('mapname');
     this.model.set('mapName', mapName);
   },
@@ -259,7 +267,7 @@ app.CandidateSelectView = app.BaseView.extend({
   tagName: 'select',
 
   attributes: {
-    'data-placeholder': 'Select a candidate'
+    'data-placeholder': 'Select a councilperson'
   },
 
   render: function() {
@@ -465,7 +473,7 @@ app.ContributionView = app.BaseView.extend({
 
   initialize: function() {
     this.template = _.template($('#contribution-view-template').html());
-    $('.contributions').html(this.render().el);
+    $('.contributions .table-container').html(this.render().el);
   },
 
   render: function() {

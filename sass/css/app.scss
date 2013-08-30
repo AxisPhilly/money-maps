@@ -81,8 +81,38 @@ path {
 }
 
 .panel-header {
-  background-color: #ddd;
+  background-color: #eee;
   padding: 12px 10px;
+
+  .details .row {
+    padding: 20px 0 0 0;
+  }
+
+  .map-select {
+    list-style-type: none;
+    margin-bottom: 0;
+
+    li {
+      display: inline-block;
+
+      a, a:active, a:visited {
+        color: #222;
+        display: inline-block;
+        font-size: 16px;
+        padding: 5px 18px;
+        background: #ddd;
+
+        &.active {
+          background-color: #571076;
+          color: #fff;
+        }
+      }
+
+      a:hover {
+        background-color: #A062BB;
+      }
+    }
+  }
 
   // Chosen overrides
   .chosen-container {
@@ -99,7 +129,7 @@ path {
   .chosen-single, .chosen-single span {
     font-size: 24px;
     padding: 0;
-    width: 240px;
+    width: 280px;
     border: none;
     background: none;
     box-shadow: none;
@@ -175,6 +205,11 @@ path {
   height: 300px;
   max-height: 500px;
   overflow: auto;
+
+  .placeholder {
+    font-size: 15px;
+    font-style: italic;
+  }
 
   table {
     margin: 0 auto;

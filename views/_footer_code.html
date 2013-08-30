@@ -1,47 +1,48 @@
 <!-- Templates -->
 <script type="text/template" id="panel-view-template">
   <div class="row">
-    <div class="panel-header four columns">
+    <div class="panel-header three columns">
       
       <div class="row">
         <div class="twelve columns">
-          <span class="column-header">Candidate</span>
+          <span class="column-header"></span>
           <div class="candidate-select-view"></div>
         </div>
       </div>
       
       <div class="details">
-
         <div class="row">
           <div class="year-select-view twelve columns"></div>
         </div>
 
         <div class="row">
           <div class="twelve columns">
+          <span class="column-header">View</span>
             <ul class="map-select">
-              <li><a href="#" data-mapname="city">City</a></li>
-              <li><a href="#" data-mapname="region">Region</a></li>
-              <li><a href="#" data-mapname="national">National</a></li>
+              <li><a href="#" class="city" data-mapname="city">City</a></li>
+              <li><a href="#" class="region" data-mapname="region">Region</a></li>
+              <li><a href="#" class="national" data-mapname="national">National</a></li>
             </ul>
           </div>
         </div>
-        
+
+        <div class="row">
+          <div class='contributions twelve columns'>
+            <span class="column-header">Donations</span>
+            <div class='table-container'><span class="placeholder">Click a region to show contributions from that region for the selected councilperson and year.</span></div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="twelve columns">
             <a class="radius button share" href="#">Share</a>
           </div>
         </div>
 
-        <div class="row">
-          <div class='contributions twelve columns'>
-            <div class='table-container'><em>Click a region to show contributions from that region for the selected candidate and year.</em></div>
-          </div>
-        </div>
-
       </div>
 
     </div>
-    <div class="candidate eight columns"></div>
+    <div class="candidate nine columns"></div>
   </div>
 </script>
 <script type="text/template" id="year-select-view-template">
