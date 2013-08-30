@@ -213,10 +213,7 @@ app.PanelView = app.BaseView.extend({
 
   selectMap: function(e) {
     event.preventDefault();
-
     var mapName = $(e.target).data('mapname');
-    console.log(mapName);
-
     this.model.set('mapName', mapName);
   },
 
@@ -323,8 +320,6 @@ app.CandidateView = app.BaseView.extend({
 
   render: function(year) {
     this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
-    
-    console.log(this.options.mapName);
 
     var map = app.maps.findWhere({ name: this.options.mapName });
 
@@ -336,30 +331,54 @@ app.CandidateView = app.BaseView.extend({
     });
 
     return this;
-  },
-
-  close: function() {
-    this.$el.children().fadeOut(300);
-    this.$el.slideUp(function(){
-      this.remove();
-    });
   }
 });
 
 app.MapView = app.BaseView.extend({
+  initialize: function() {
+    this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
+    this.width = parseInt(d3.select('.map-container').style('width'));
+    this.width = this.width - this.margin.left - this.margin.right;
+    this.mapRatio = 0.85;
+    this.height = this.width * this.mapRatio;
+
+    this.projection = d3.geo.mercator()
+          .center(this.model.get('center'))
+          .scale(this.width * this.model.get('scale'))
+          .translate([this.width / 2, this.height / 2]);
+    
+    this.path = d3.geo.path()
+          .projection(this.projection);
+
+    var that = this;
+    d3.select(window).on('resize', function() { that.resize(that); });
+  },
+
+  resize: function(view) {
+    // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
+    // adjust things when the window size changes
+    view.width = parseInt(d3.select('.map-container').style('width'));
+    view.width = view.width - view.margin.left - view.margin.right;
+    view.height = view.width * view.mapRatio;
+
+    // update projection
+    view.projection
+        .translate([view.width / 2, view.height / 2])
+        .scale(view.width * view.model.get('scale'));
+
+    // resize the map container
+    view.svg
+        .style('width', view.width + 'px')
+        .style('height', view.height + 'px');
+
+    // resize the map
+    view.svg.selectAll('.region').attr('d', view.path);
+    view.svg.selectAll('.boundary').attr('d', view.path);
+    view.svg.selectAll('.district').attr('d', view.path);
+  },
+
   render: function(year) {
     this.$el.empty();
-
-    var width = 360,
-        height = 429;
-
-    var projection = d3.geo.mercator()
-          .center(this.model.get('center'))
-          .scale(this.model.get('scale'))
-          .translate([width / 2, height / 2]);
-    
-    var path = d3.geo.path()
-          .projection(projection);
 
     var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
         max = _.max(data);
@@ -367,8 +386,6 @@ app.MapView = app.BaseView.extend({
     if(this.model.get('name') === 'state') {
       var fData = d3.map();
 
-      // TODO: Is there a way to modify the values of the topojson
-      // IDs so we don't have to do this everytime?
       _.each(data, function(value, i) {
         fData.set(i.toUpperCase(), value);
       });
@@ -380,19 +397,19 @@ app.MapView = app.BaseView.extend({
       .domain([0, max])
       .range(d3.range(5).map(function(i) { return "break" + i; }));
 
-    var svg = d3.select(this.el).append('svg')
-          .attr('width', width)
-          .attr('height', height);
+    this.svg = d3.select(this.el).append('svg')
+          .attr('width', this.width)
+          .attr('height', this.height);
 
     var topo = this.model.get('topo');
     var that = this;
 
-    svg.append("g")
+    this.svg.append("g")
       .selectAll("path")
         .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
-        .attr("d", path)
-        .attr("class", function(d) { return 'ward ' + quantize(data[d.id]); })
+        .attr("d", this.path)
+        .attr("class", function(d) { return 'region ' + quantize(data[d.id]); })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id; })
@@ -404,17 +421,17 @@ app.MapView = app.BaseView.extend({
         });
 
     _.each(this.model.get('meshes'), function(mesh) {
-      svg.append("g")
+      this.svg.append("g")
         .append("path")
           .datum(topojson.mesh(topo, topo.objects[mesh], function(a, b) { return a !== b; }))
-          .attr("d", path)
+          .attr("d", this.path)
           .attr("class", "boundary");
     }, this);
 
     // Add district outline if councilperson is a district councilperson
     if(this.options.candidate.get('district') && this.model.get('name') === 'city') {
       var distNum = this.options.candidate.get('district');
-      svg.append("g")
+      this.svg.append("g")
         .selectAll("path")
           .data(function() {
             // We only want to draw the district of the selected councilperson
@@ -427,7 +444,7 @@ app.MapView = app.BaseView.extend({
             return topojson.feature(topo, active).features;
           })
         .enter().append('path')
-          .attr('d', path)
+          .attr('d', this.path)
           .attr('class', 'district');
     }
 
