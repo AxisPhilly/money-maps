@@ -1,0 +1,42 @@
+[
+  {
+    "name": "city",
+    "title": "Philadelphia",
+    "center": [-75.1182, 40.0032],
+    "scale": 64000,
+    "geography": "ward",
+    "meshes": ["wards"],
+    "topo-url": "data/wards_w_districts.json",
+    "topo-objects": "wards"
+  },
+  {
+    "name": "region",
+    "title": "Regional",
+    "center": [-75.1282, 40.0032],
+    "scale": 15000,
+    "geography": "muni",
+    "meshes": ["munis", "counties"],
+    "topo-url": "data/munis.json",
+    "topo-objects": "counties"
+  },
+  {
+    "name": "state",
+    "title": "Pennsylvania",
+    "center": [-77.590, 41.02],
+    "scale": 3600,
+    "geography": "county",
+    "meshes": ["counties"],
+    "topo-url": "data/counties.json",
+    "topo-objects": "counties"
+  },
+  {
+    "name": "national",
+    "title": "U.S.",
+    "center": [-77.590, 41.02],
+    "scale": 1000,
+    "geography": "state",
+    "meshes": ["us"],
+    "topo-url": "data/us.json",
+    "topo-objects": "us"
+  }
+]

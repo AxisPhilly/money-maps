@@ -87,6 +87,20 @@ app.Contributions = Backbone.Collection.extend({
   }
 });
 
+app.Map = Backbone.Model.extend({
+  getTopo: function(callback) {
+    var that = this;
+    d3.json(this.get('topo-url'), function(data){
+      that.set('topo', data);
+      callback();
+    });
+  }
+});
+
+app.Maps = Backbone.Collection.extend({
+  model: app.Map
+});
+
 app.Panel = Backbone.Model.extend({});
 
 app.Panels = Backbone.Collection.extend({
@@ -138,7 +152,7 @@ app.PanelView = app.BaseView.extend({
     'click .forward': 'updateYear',
     'click .backward': 'updateYear',
     'click .share': 'share',
-    'click .map-select li': 'selectScale'
+    'click .map-select li': 'selectMap'
   },
 
   initialize: function() {
@@ -147,7 +161,7 @@ app.PanelView = app.BaseView.extend({
     this.shareView = new app.ShareView({});
     this.model.on('change:candidate', this.setYear, this);
     this.model.on('change:candidate', this.showShare, this);
-    this.model.on('change:scale', this.renderCandidateView, this);
+    this.model.on('change:mapName', this.renderCandidateView, this);
 
     var selected;
     if (this.model.get('candidate')) {
@@ -184,7 +198,7 @@ app.PanelView = app.BaseView.extend({
 
     this.candidateView = new app.CandidateView({
       model: this.model.get('candidate'),
-      scale: this.model.get('scale')
+      mapName: this.model.get('mapName')
     });
 
     this.$el.find('.candidate').html(this.candidateView.render(year).el);
@@ -197,12 +211,13 @@ app.PanelView = app.BaseView.extend({
     this.model.get('candidate').fetch();
   },
 
-  selectScale: function(e) {
+  selectMap: function(e) {
     event.preventDefault();
 
-    var scale = $(e.target).data('scale');
+    var mapName = $(e.target).data('mapname');
+    console.log(mapName);
 
-    this.model.set('scale', scale);
+    this.model.set('mapName', mapName);
   },
 
   redrawYear: function() {
@@ -303,27 +318,22 @@ app.CandidateView = app.BaseView.extend({
 
   initialize: function() {
     this.template = _.template($('#candidate-view-template').html());
-    
-    this.scaleMap = {
-      city: new app.CityView({ model: this.model }),
-      region: new app.RegionView({ model: this.model }),
-      state: new app.StateView({ model: this.model }),
-      national: new app.NationalView({ model: this.model })
-    };
-
     this.model.on('change', this.render, this);
   },
 
   render: function(year) {
     this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
+    
+    console.log(this.options.mapName);
 
-    var activeView = this.scaleMap[this.options.scale];
+    var map = app.maps.findWhere({ name: this.options.mapName });
 
-    this.$el.find('.map-container').html(activeView.renderMap(year).el);
+    var that = this;
 
-    //this.$el.find('.map-container').html(this.cityView.renderMap(year).el);
-    //this.$el.find('.state .map-container').html(this.stateView.renderMap(year).el);
-    //this.$el.find('.national .table-container').html(this.nationalView.renderTable(year).el);
+    map.getTopo(function() {
+      that.mapView = new app.MapView({ model: map, candidate: that.model });
+      that.$el.find('.map-container').html(that.mapView.render(year).el);
+    });
 
     return this;
   },
@@ -336,45 +346,54 @@ app.CandidateView = app.BaseView.extend({
   }
 });
 
-app.CityView = app.BaseView.extend({
-  initialize: function() {
-    this.width = 360;
-    this.height = 429;
-    this.projection = d3.geo.mercator()
-          .center([-75.1182, 40.0032])
-          .scale(64000)
-          .translate([this.width / 2, this.height / 2]);
-    this.path = d3.geo.path()
-          .projection(this.projection);
-  },
-
-  renderTitle: function() {
-
-  },
-
-  renderMap: function(year) {
+app.MapView = app.BaseView.extend({
+  render: function(year) {
     this.$el.empty();
 
-    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].ward : {},
+    var width = 360,
+        height = 429;
+
+    var projection = d3.geo.mercator()
+          .center(this.model.get('center'))
+          .scale(this.model.get('scale'))
+          .translate([width / 2, height / 2]);
+    
+    var path = d3.geo.path()
+          .projection(projection);
+
+    var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
         max = _.max(data);
+
+    if(this.model.get('name') === 'state') {
+      var fData = d3.map();
+
+      // TODO: Is there a way to modify the values of the topojson
+      // IDs so we don't have to do this everytime?
+      _.each(data, function(value, i) {
+        fData.set(i.toUpperCase(), value);
+      });
+
+      data = fData;
+    }
 
     var quantize = d3.scale.quantize()
       .domain([0, max])
       .range(d3.range(5).map(function(i) { return "break" + i; }));
 
     var svg = d3.select(this.el).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height);
+          .attr('width', width)
+          .attr('height', height);
 
+    var topo = this.model.get('topo');
     var that = this;
 
     svg.append("g")
       .selectAll("path")
-        .data(topojson.feature(app.philly, app.philly.objects.wards).features)
+        .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
-        .attr("d", this.path)
+        .attr("d", path)
         .attr("class", function(d) { return 'ward ' + quantize(data[d.id]); })
-        .attr("data-slug", this.model.get('slug'))
+        .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id; })
         .on("click", function() {
@@ -384,218 +403,35 @@ app.CityView = app.BaseView.extend({
           });
         });
 
-    svg.append("g")
-      .append("path")
-        .datum(topojson.mesh(app.philly, app.philly.objects.wards, function(a, b) { return a !== b; }))
-        .attr("d", this.path)
-        .attr("class", "boundary");
+    _.each(this.model.get('meshes'), function(mesh) {
+      svg.append("g")
+        .append("path")
+          .datum(topojson.mesh(topo, topo.objects[mesh], function(a, b) { return a !== b; }))
+          .attr("d", path)
+          .attr("class", "boundary");
+    }, this);
 
-    if(this.model.get('district')) {
-      var distNum = this.model.get('district');
+    // Add district outline if councilperson is a district councilperson
+    if(this.options.candidate.get('district') && this.model.get('name') === 'city') {
+      var distNum = this.options.candidate.get('district');
       svg.append("g")
         .selectAll("path")
           .data(function() {
             // We only want to draw the district of the selected councilperson
             var active = { type: "GeometryCollection", geometries: [] };
-            for(var i=0; i<app.philly.objects.districts.geometries.length; i++) {
-              if(app.philly.objects.districts.geometries[i].id == distNum) {
-                active.geometries.push(app.philly.objects.districts.geometries[i]);
+            for(var i=0; i<topo.objects.districts.geometries.length; i++) {
+              if(topo.objects.districts.geometries[i].id == distNum) {
+                active.geometries.push(topo.objects.districts.geometries[i]);
               }
             }
-            return topojson.feature(app.philly, active).features;
+            return topojson.feature(topo, active).features;
           })
         .enter().append('path')
-          .attr('d', this.path)
+          .attr('d', path)
           .attr('class', 'district');
-
     }
 
     return this;
-  }
-});
-
-app.RegionView = app.BaseView.extend({
-  tagName: 'div',
-
-  initialize: function() {
-    this.width = 650;
-    this.height = 450;
-    this.projection = d3.geo.mercator()
-          .center([-75.1282, 40.0032])
-          .scale(15000)
-          .translate([this.width / 2, this.height / 2]);
-    this.path = d3.geo.path()
-          .projection(this.projection);
-  },
-
-  renderMap: function(year) {
-    this.$el.empty();
-
-    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].muni : {},
-        max = _.max(data);
-
-    var quantize = d3.scale.quantize()
-      .domain([0, max])
-      .range(d3.range(5).map(function(i) { return "break" + i; }));
-
-    var svg = d3.select(this.el).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height);
-
-    svg.append("g")
-      .selectAll("path")
-        .data(topojson.feature(app.region, app.region.objects.munis).features)
-      .enter().append("path")
-        .attr("d", this.path)
-        .attr("class", function(d) { return 'muni ' + quantize(data[d.id]); })
-        .attr("data-slug", this.model.get('slug'))
-        .attr("data-year", year)
-        .attr("data-location", function(d) { return d.id; });
-
-    svg.append("g")
-      .append("path")
-        .datum(topojson.mesh(app.region, app.region.objects.munis, function(a, b) { return a !== b; }))
-        .attr("d", this.path)
-        .attr("class", "boundary");
-
-    svg.append("g")
-      .append("path")
-        .datum(topojson.mesh(app.region, app.region.objects.counties, function(a, b) { return a !== b; }))
-        .attr("d", this.path)
-        .attr("class", "county-boundary");
-
-    return this;
-  }
-});
-
-app.StateView = app.BaseView.extend({
-  tagName: 'div',
-
-  initialize: function() {
-    this.width = 360;
-    this.height = 245;
-    this.projection = d3.geo.mercator()
-          .center([-77.590, 41.02])
-          .scale(3600)
-          .translate([this.width / 2, this.height / 2]);
-    this.path = d3.geo.path()
-          .projection(this.projection);
-  },
-
-  renderMap: function(year) {
-    this.$el.empty();
-
-    var data = this.model.get('contributions')[year] ? this.model.get('contributions')[year].county : {},
-        max = _.max(data),
-        fData = d3.map();
-
-        // TODO: Is there a way to modify the values of the topojson
-        // IDs so we don't have to do this everytime?
-        _.each(data, function(value, i) {
-          fData.set(i.toUpperCase(), value);
-        });
-
-    var quantize = d3.scale.quantize()
-      .domain([0, max])
-      .range(d3.range(5).map(function(i) { return "break" + i; }));
-
-    var svg = d3.select(this.el).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height);
-
-    var that = this;
-
-    svg.append("g")
-      .selectAll("path")
-        .data(topojson.feature(app.counties, app.counties.objects.counties).features)
-      .enter().append("path")
-        .attr("d", this.path)
-        .attr("class", function(d) { return "county " + quantize(fData.get(d.id)); })
-        .attr("data-slug", this.model.get('slug'))
-        .attr("data-year", year)
-        .attr("data-location", function(d) { return d.id.toLowerCase(); })
-        .on("click", function() {
-          that.getContributions(this, function(contributions) {
-            app.contributions = new app.Contributions(contributions);
-            app.contributionView = new app.ContributionView({ collection: app.contributions });
-          });
-        });
-
-    svg.append("g")
-      .append("path")
-        .datum(topojson.mesh(app.counties, app.counties.objects.counties, function(a, b) { return a !== b; }))
-        .attr("d", this.path)
-        .attr("class", "boundary");
-
-    return this;
-  }
-});
-
-app.NationalView = app.BaseView.extend({
-  tagName: 'table',
-
-  renderMap: function(year) {
-    if(this.model.get('contributions')[year]) {
-      var stateList = _.chain(this.model.get('contributions')[year].state)
-        .map(function(value, state) {
-          return { state: state, total: value };
-        })
-        .sortBy(function(item) {
-          return -item.total;
-        })
-        .map(function(item) {
-          var abbrv = states[item.state].toLowerCase();
-          return new app.NationalViewItem({ data: {
-            state: item.state,
-            abbrv: abbrv,
-            total: item.total.formatMoney(),
-            slug: this.model.get('slug'),
-            year: year
-          }}).render().el;
-        }, this).value();
-
-      this.$el.html(stateList);
-
-      return this;
-    }
-  }
-});
-
-app.NationalViewItem = app.BaseView.extend({
-  tagName: 'tr',
-
-  events: {
-    'click td': 'prepGetContributions'
-  },
-
-  attributes: function() {
-    return {
-      'data-slug': this.options.data.slug,
-      'data-year': this.options.data.year,
-      'data-location': this.options.data.abbrv
-    };
-  },
-
-  initialize: function() {
-    this.template = _.template($('#national-view-template').html());
-  },
-
-  render: function() {
-    this.$el.html(this.template(this.options.data));
-    
-    // ughhhh....
-    var that = this;
-    window.setTimeout(function() { that.delegateEvents(); }, 1);
-    
-    return this;
-  },
-
-  prepGetContributions: function(event) {
-    event.stopPropagation();
-    this.getContributions($(event.currentTarget).parent(), function(contributions) {
-      app.contributions = new app.Contributions(contributions);
-      app.contributionView = new app.ContributionView({ collection: app.contributions });
-    });
   }
 });
 
@@ -651,18 +487,10 @@ app.Router = Backbone.Router.extend({
     d3.json('data/candidates.json', function(data){
       app.candidates = new app.Candidates(data);
 
-      d3.json('data/counties.json', function(data) {
-        app.counties = data;
+      d3.json('data/maps.json', function(data){
+        app.maps = new app.Maps(data);
 
-        d3.json('data/wards_w_districts.json', function(data) {
-          app.philly = data;
-
-          d3.json('data/munis.json', function(data){
-            app.region = data;
-
-            Backbone.history.start({ pushState:false, silent:false });
-          });
-        });
+        Backbone.history.start({ pushState:false, silent:false });
       });
     });
 
@@ -708,7 +536,7 @@ app.Router = Backbone.Router.extend({
       app.panels = new app.Panels(new app.Panel({
         candidates: app.candidates,
         yearSelect: new app.YearSelect({ year: 2012 }),
-        scale: 'city'
+        mapName: 'city'
       }));
 
       $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);

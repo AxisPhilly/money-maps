@@ -17,10 +17,10 @@
       <div class="row">
         <div class="twelve columns">
           <ul class="map-select">
-            <li><a href="#" data-scale="city">City</a></li>
-            <li><a href="#" data-scale="region">Region</a></li>
-            <li><a href="#" data-scale="state">State</a></li>
-            <li><a href="#" data-scale="national">National</a></li>
+            <li><a href="#" data-mapname="city">City</a></li>
+            <li><a href="#" data-mapname="region">Region</a></li>
+            <li><a href="#" data-mapname="state">State</a></li>
+            <li><a href="#" data-mapname="national">National</a></li>
           </ul>
         </div>
       </div>
@@ -53,17 +53,6 @@
       <div class='map-container'></div>
     </div>
   </div>
-</script>
-<script type="text/template" id="national-view-template">
-  <td class="stateface">
-    <span class="stateface stateface-{{= abbrv }}"></span>
-  </td>
-  <td class="state-title">
-    {{= state }}
-  </td>
-  <td class="total">
-    ${{= total }}
-  </td>
 </script>
 <script type="text/template" id="contribution-view-template">
   <tr>
