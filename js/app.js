@@ -326,10 +326,15 @@ app.CandidateView = app.BaseView.extend({
 
     var that = this;
 
-    map.getTopo(function() {
+    if(!map.get('topo')) {
+      map.getTopo(function() {
+        that.mapView = new app.MapView({ model: map, candidate: that.model });
+        that.$el.find('.map-container').html(that.mapView.render(year).el);
+      });
+    } else {
       that.mapView = new app.MapView({ model: map, candidate: that.model });
       that.$el.find('.map-container').html(that.mapView.render(year).el);
-    });
+    }
 
     return this;
   }
