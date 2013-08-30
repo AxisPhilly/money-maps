@@ -158,9 +158,7 @@ app.PanelView = app.BaseView.extend({
   initialize: function() {
     this.template = _.template($('#panel-view-template').html());
     this.yearSelectView = new app.YearSelectView({ model: this.model.get('yearSelect') });
-    this.shareView = new app.ShareView({});
     this.model.on('change:candidate', this.setYear, this);
-    this.model.on('change:candidate', this.showShare, this);
     this.model.on('change:mapName', this.renderCandidateView, this);
 
     var selected;
@@ -248,7 +246,9 @@ app.PanelView = app.BaseView.extend({
   share: function() {
     event.preventDefault();
 
-    var slug = '#' + this.model.get('candidate').get('initials') + '-' + this.model.get('yearSelect').get('year');
+    var slug = '#' + this.model.get('candidate').get('initials') +
+               '-' + this.model.get('yearSelect').get('year') +
+               '-' + this.model.get('mapName');
 
     $('#shareModal').find('.link').html(location.origin + slug);
     $('#shareModal').foundation('reveal', 'open');
@@ -476,35 +476,6 @@ app.ContributionView = app.BaseView.extend({
   }
 });
 
-app.ShareView = app.BaseView.extend({
-  events: {
-    'click #share-custom': 'shareCustom'
-  },
-
-  // Generate sharable link based on active panels
-  shareCustom: function(event) {
-    event.preventDefault();
-    var candidateList = [];
-
-    $('.candidates').children().each(function(index, candidate){
-      var $panel = $(candidate),
-          initials = $panel.find('.panel-header').data('initials'),
-          year = $panel.find('.year').text();
-
-      candidateList.push(initials + '-' + year);
-    });
-
-    var urlHash = _.reduce(candidateList, function(memo, candidate){
-      return memo + candidate + ',';
-    }, '');
-
-    location.hash = '';
-    location.hash = urlHash;
-    $('#shareModal').find('.link').html(location.origin + location.hash);
-    $('#shareModal').foundation('reveal', 'open');
-  }
-});
-
 app.Router = Backbone.Router.extend({
   initialize: function() {
     d3.json('data/candidates.json', function(data){
@@ -533,8 +504,10 @@ app.Router = Backbone.Router.extend({
       var candidateList = candidates.split(',');
 
       _.each(candidateList, function(candidate) {
-        var initials = candidate.split('-')[0],
-            year = candidate.split('-')[1],
+        var parts = candidate.split('-'),
+            initials = parts[0],
+            year = parts[1],
+            map = parts[2],
             model = app.candidates.find(function(c) { return c.get('initials') == initials; });
 
         if (model) {
@@ -544,7 +517,8 @@ app.Router = Backbone.Router.extend({
               app.panels = new app.Panels(new app.Panel({
                 candidate: model,
                 candidates: app.candidates,
-                yearSelect: new app.YearSelect({ year: year })
+                yearSelect: new app.YearSelect({ year: year }),
+                mapName: map
               }));
 
               $('#app-container').append(new app.PanelView({ model: app.panels.at(0) }).render().el);
