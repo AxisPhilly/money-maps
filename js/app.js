@@ -213,19 +213,20 @@ app.PanelView = app.BaseView.extend({
     this.$el.find('.candidate').html(this.candidateView.render(year).el);
   },
 
-  selectCandidate: function(e) {
+  selectCandidate: function(event) {
     var slug = this.$el.find(':selected').val();
     this.model.set('candidate', this.model.get('candidates').findWhere({ slug: slug }));
     this.model.get('candidate').on('sync', this.renderCandidateView, this);
     this.model.get('candidate').fetch();
     if(app.contributionView) { app.contributionView.reset(); }
+    this.$el.find('.candidate').addClass('loading');
   },
 
-  selectMap: function(e) {
+  selectMap: function(event) {
     event.preventDefault();
     $('.active').removeClass('active');
-    $(e.target).addClass('active');
-    var mapName = $(e.target).data('mapname');
+    $(event.target).addClass('active');
+    var mapName = $(event.target).data('mapname');
     this.model.set('mapName', mapName);
   },
 
@@ -349,6 +350,8 @@ app.CandidateView = app.BaseView.extend({
       that.$el.find('.map-container').html(that.mapView.render(year).el);
     }
 
+    this.$el.removeClass('loading');
+
     return this;
   }
 });
@@ -430,6 +433,7 @@ app.MapView = app.BaseView.extend({
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
           if(!d3.select(this).classed('undefined')) {
+            $('.contributions .table-container').addClass('loading');
             that.getContributions(this, function(contributions) {
               app.contributions = new app.Contributions(contributions);
               app.contributionView = new app.ContributionView({ collection: app.contributions });
@@ -478,8 +482,6 @@ app.ContributionView = app.BaseView.extend({
   },
 
   render: function() {
-    $('.contributions .table-container').addClass('loading');
-
     var items = this.collection.format().map(function(c) {
       return (this.template(c.attributes));
     }, this);

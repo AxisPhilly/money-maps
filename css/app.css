@@ -61,6 +61,11 @@ path {
 .panel-view {
   min-height: 400px; }
 
+.candidate {
+  min-height: 200px; }
+  .candidate.loading {
+    background: url('../img/loading.gif') no-repeat center; }
+
 .map-container {
   max-height: 600px; }
 
@@ -79,7 +84,8 @@ path {
         display: inline-block;
         font-size: 16px;
         padding: 5px 18px;
-        background: #ddd; }
+        background: #ddd;
+        cursor: pointer; }
         .panel-header .map-select li a.active, .panel-header .map-select li a:active.active, .panel-header .map-select li a:visited.active {
           background-color: #571076;
           color: #fff; }

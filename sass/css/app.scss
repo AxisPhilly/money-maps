@@ -80,6 +80,14 @@ path {
   min-height: 400px;
 }
 
+.candidate {
+  min-height: 200px;
+
+  &.loading {
+    background: url('../img/loading.gif') no-repeat center;
+  }
+}
+
 .map-container {
   max-height: 600px;
 }
@@ -105,6 +113,7 @@ path {
         font-size: 16px;
         padding: 5px 18px;
         background: #ddd;
+        cursor: pointer;
 
         &.active {
           background-color: #571076;
