@@ -5,7 +5,6 @@
       
       <div class="row">
         <div class="twelve columns">
-          <span class="column-header"></span>
           <div class="candidate-select-view"></div>
         </div>
       </div>
@@ -50,6 +49,13 @@
     <span><a class="arrow backward {{ if(backward) { }} active {{ } }}" data-direction="backward" data-status="{{ if(backward) { }}active{{ } }}">&larr;</a></span> 
   <span class="year selector">{{= year }}</span>
     <span><a class="arrow forward {{ if(forward) { }} active {{ } }}" data-direction="forward" data-status="{{ if(forward) { }}active{{ } }}">&rarr;</a></span>
+</script>
+<script type="text/template" id="candidate-select-view-template">
+  <span class="column-header">Candidate</span>
+  <select data-placeholder="Select a councilperson">
+    <option></option>
+  </select>
+  <span class="title"></span>
 </script>
 <script type="text/template" id="candidate-view-template">
   <div class='data row'>

@@ -253,7 +253,7 @@ app.PanelView = app.BaseView.extend({
     this.$el.find('.share').addClass('active');
   },
 
-  share: function() {
+  share: function(event) {
     event.preventDefault();
 
     var slug = '#' + this.model.get('candidate').get('initials') +
@@ -266,29 +266,40 @@ app.PanelView = app.BaseView.extend({
 });
 
 app.CandidateSelectView = app.BaseView.extend({
-  tagName: 'select',
+  tagName: 'div',
 
-  attributes: {
-    'data-placeholder': 'Select a councilperson'
+  initialize: function() {
+    this.template = _.template($('#candidate-select-view-template').html());
+  },
+
+  events: {
+    'change': 'renderTitle'
   },
 
   render: function() {
-    // Insert a blank option first so we can have a placeholder value
-    this.$el.append('<option></option>');
-
     if(this.options.active) {
       var selectedSlug = this.options.active;
     }
 
+    this.$el.html(this.template({}));
+
     this.collection.each(function(candidate) {
       if(candidate.get('slug') === selectedSlug) {
-        this.$el.append(new app.SelectItemView({ model: candidate, active: true }).render().el);
+        this.$el.find('select').append(new app.SelectItemView({ model: candidate, active: true }).render().el);
+        this.$el.find('.title').html(candidate.get('title'));
       } else {
-        this.$el.append(new app.SelectItemView({ model: candidate }).render().el);
+        this.$el.find('select').append(new app.SelectItemView({ model: candidate }).render().el);
       }
     }, this);
 
     return this;
+  },
+
+  renderTitle: function(event) {
+    var slug = $(event.target).val(),
+        candidate = app.candidates.findWhere({ slug: slug });
+    
+    this.$el.find('.title').html(candidate.get('title'));
   }
 });
 
