@@ -218,6 +218,7 @@ app.PanelView = app.BaseView.extend({
     this.model.set('candidate', this.model.get('candidates').findWhere({ slug: slug }));
     this.model.get('candidate').on('sync', this.renderCandidateView, this);
     this.model.get('candidate').fetch();
+    if(app.contributionView) { app.contributionView.reset(); }
   },
 
   selectMap: function(e) {
@@ -357,7 +358,7 @@ app.MapView = app.BaseView.extend({
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
     this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
-    this.mapRatio = 0.85;
+    this.mapRatio = 0.70;
     this.height = this.width * this.mapRatio;
 
     this.projection = d3.geo.mercator()
@@ -477,12 +478,23 @@ app.ContributionView = app.BaseView.extend({
   },
 
   render: function() {
+    $('.contributions .table-container').addClass('loading');
+
     var items = this.collection.format().map(function(c) {
       return (this.template(c.attributes));
     }, this);
 
     this.$el.append(items);
+
+    $('.contributions .table-container').removeClass('loading');
+
     return this;
+  },
+
+  reset: function() {
+    $('.contributions .table-container').html('<span class="placeholder">' +
+      'Click a region to show contributions from that region for the selected' +
+      ' councilperson and year.</span>');
   }
 });
 

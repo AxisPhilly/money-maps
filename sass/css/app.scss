@@ -80,6 +80,10 @@ path {
   min-height: 400px;
 }
 
+.map-container {
+  max-height: 600px;
+}
+
 .panel-header {
   background-color: #eee;
   padding: 12px 10px;
@@ -209,6 +213,11 @@ path {
   .placeholder {
     font-size: 15px;
     font-style: italic;
+  }
+
+  .table-container.loading {
+    min-height: 200px;
+    background: url('../img/loading.gif') no-repeat center;
   }
 
   table {

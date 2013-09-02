@@ -61,6 +61,9 @@ path {
 .panel-view {
   min-height: 400px; }
 
+.map-container {
+  max-height: 600px; }
+
 .panel-header {
   background-color: #eee;
   padding: 12px 10px; }
@@ -145,6 +148,9 @@ path {
   .contributions .placeholder {
     font-size: 15px;
     font-style: italic; }
+  .contributions .table-container.loading {
+    min-height: 200px;
+    background: url('../img/loading.gif') no-repeat center; }
   .contributions table {
     margin: 0 auto;
     border: 0;
