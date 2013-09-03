@@ -1,14 +1,8 @@
- @font-face {
-     font-family: 'StateFaceRegular';
-     src: url('../font/stateface-regular-webfont.eot');
-     src: url('../font/stateface-regular-webfont.eot?#iefix') format('embedded-opentype'),
-          url('../font/stateface-regular-webfont.woff') format('woff'),
-          url('../font/stateface-regular-webfont.ttf') format('truetype'),
-          url('../font/stateface-regular-webfont.svg#StateFaceRegular') format('svg');
-     font-weight: normal;
-     font-style: normal;
- }
+#app-container {
+  font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+}
 
+// SVG
 path {
   fill: rgb(237, 248, 251);
   stroke-width: 0;
@@ -29,27 +23,8 @@ path {
 }
 
 .region {
-  fill: rgb(247,247,247);
-
-  &.break0 {
+  &.active {
     cursor: pointer;
-    fill: rgb(217,217,217);
-  }
-  &.break1 {
-    cursor: pointer;
-    fill: rgb(189,189,189);
-  }
-  &.break2 {
-    cursor: pointer;
-    fill: rgb(150,150,150);
-  }
-  &.break3 {
-    cursor: pointer;
-    fill: rgb(99,99,99);
-  }
-  &.break4 {
-    cursor: pointer;
-    fill: rgb(37,37,37);
   }
 }
 
@@ -59,9 +34,7 @@ path {
   stroke-width: 1px;
 }
 
-#app-container {
-  font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
-}
+// /SVG
 
 .details {
   display: none;
@@ -76,140 +49,143 @@ path {
   margin-top: 22px;
 }
 
-.panel-view {
-  min-height: 400px;
-}
-
-.candidate {
+.map-view {
   min-height: 200px;
 
   &.loading {
     background: url('../img/loading.gif') no-repeat center;
   }
-}
 
-.map-container {
-  max-height: 600px;
-}
-
-.panel-header {
-  background-color: #eee;
-  padding: 12px 10px;
-
-  .details .row {
-    padding: 20px 0 0 0;
+  .map-container {
+    max-height: 500px;
   }
 
-  .map-select {
-    list-style-type: none;
-    margin-bottom: 0;
+  .map-header {
+    padding: 10px;
 
-    li {
-      display: inline-block;
+    .map-legend {
+      ul {
+        list-style-type: none;
+        margin: 0;
+      }
 
-      a, a:active, a:visited {
-        color: #222;
+      li.key {
         display: inline-block;
-        font-size: 16px;
-        padding: 5px 18px;
-        background: #ddd;
-        cursor: pointer;
+        border-top-width: 15px;
+        border-top-style: solid;
+        font-size: .6em;
+        width: 18%;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+}
 
-        &.active {
-          background-color: #571076;
-          color: #fff;
+.panel-view {
+  min-height: 400px;
+
+  .panel-header {
+    background-color: #eee;
+    padding: 12px 10px;
+
+    .details .row {
+      padding: 20px 0 0 0;
+    }
+
+    .map-select {
+      list-style-type: none;
+      margin-bottom: 0;
+
+      li {
+        display: inline-block;
+
+        a, a:active, a:visited {
+          color: #222;
+          display: inline-block;
+          font-size: 16px;
+          padding: 5px 18px;
+          background: #ddd;
+          cursor: pointer;
+
+          &.active {
+            background-color: #571076;
+            color: #fff;
+          }
+        }
+
+        a:hover {
+          background-color: #A062BB;
         }
       }
+    }
 
-      a:hover {
-        background-color: #A062BB;
+    // Chosen overrides
+    .chosen-container {
+      padding: 0;
+    }
+
+    .chosen-default, .chosen-container-active.chosen-with-drop .chosen-single {
+      color: #444;   
+      border: none;
+      background: none;
+      box-shadow: none;
+    }
+
+    .chosen-single, .chosen-single span {
+      font-size: 24px;
+      padding: 0;
+      width: 280px;
+      border: none;
+      background: none;
+      box-shadow: none;
+      font-weight: bold;
+    }
+
+    .chosen-drop {
+      width: 240px;
+      border: none;
+      background: none;
+      box-shadow: none;
+      background: #ccc;
+    }
+
+    .chosen-results .active-result {
+      font-size: 16px;
+    }
+
+    .year-select-view {
+      .backward, .forward {
+        color: #fff;
+
+        &.active {
+          color: #0a4662;
+          cursor: pointer;
+        }
       }
     }
-  }
 
-  // Chosen overrides
-  .chosen-container {
-    padding: 0;
-  }
-
-  .chosen-default, .chosen-container-active.chosen-with-drop .chosen-single {
-    color: #444;   
-    border: none;
-    background: none;
-    box-shadow: none;
-  }
-
-  .chosen-single, .chosen-single span {
-    font-size: 24px;
-    padding: 0;
-    width: 280px;
-    border: none;
-    background: none;
-    box-shadow: none;
-    font-weight: bold;
-  }
-
-  .chosen-drop {
-    width: 240px;
-    border: none;
-    background: none;
-    box-shadow: none;
-    background: #ccc;
-  }
-
-  .chosen-results .active-result {
-    font-size: 16px;
-  }
-
-  .year-select-view {
-    .backward, .forward {
-      color: #fff;
-
-      &.active {
-        color: #0a4662;
-        cursor: pointer;
-      }
-    }
-  }
-
-  .selector {
-    font-size: 24px;
-  }
-
-  .column-header {
-    display: block;
-    color: #444;
-    text-transform: uppercase;
-    font-size: 14px;
-    font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
-    letter-spacing: 2px;
-  }
-
-  .title {
-    display: block;
-    font-size: 12px;
-  }
-
-  .arrow {
-    font-size: 22px;
-    font-weight: bold;
-  }
-
-  .close {
-    width: 20px;
-    cursor: pointer;
-    background-color: #777;
-    border-radius: 11px;
-    padding: 4px 4px 6px 4px;
-    line-height: 11px;
-    color: #fff;
-
-    &:hover {
-      background-color: #333;
+    .selector {
+      font-size: 24px;
     }
 
-    a {
-      color: #fff;
+    .column-header {
+      display: block;
+      color: #444;
+      text-transform: uppercase;
+      font-size: 14px;
+      font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+      letter-spacing: 2px;
+    }
+
+    .title {
+      display: block;
+      font-size: 12px;
+    }
+
+    .arrow {
+      font-size: 22px;
+      font-weight: bold;
     }
   }
 }
@@ -241,43 +217,5 @@ path {
     font-size: 14px;
     padding: 6px;
     border-bottom: 1px dashed #333;
-  }
-}
-
-.national {
-  table {
-    margin: 0 auto;
-    border: 0;
-    width: 100%;
-
-    td {
-      padding: 6px;
-      border-bottom: 1px dashed #333;
-    }
-
-    tr {
-      cursor: pointer;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-  }
-
-  td.stateface {
-    text-align: center;
-  }
-
-  .stateface { 
-    font-size: 28px;
-  }
-
-  .state-title {
-    font-size: 14px;
-    width: 50%;
-  }
-
-  .total {
-    font-size: 14px;
   }
 }

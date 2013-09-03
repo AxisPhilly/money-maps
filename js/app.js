@@ -159,7 +159,7 @@ app.PanelView = app.BaseView.extend({
     this.template = _.template($('#panel-view-template').html());
     this.yearSelectView = new app.YearSelectView({ model: this.model.get('yearSelect') });
     this.model.on('change:candidate', this.setYear, this);
-    this.model.on('change:mapName', this.renderCandidateView, this);
+    this.model.on('change:mapName', this.renderMapView, this);
 
     var selected;
     if (this.model.get('candidate')) {
@@ -187,12 +187,12 @@ app.PanelView = app.BaseView.extend({
 
     // if year was provided on initalization, which is the case for sharable links
     var year = this.model.get('yearSelect').get('year');
-    if(this.model.get('candidate')) { this.renderCandidateView(year); }
+    if(this.model.get('candidate')) { this.renderMapView(year); }
 
     return this;
   },
 
-  renderCandidateView: function(selectedYear) {
+  renderMapView: function(selectedYear) {
     this.$el.find('.details').slideDown();
     
     var year = this.model.get('yearSelect').get('year');
@@ -203,20 +203,28 @@ app.PanelView = app.BaseView.extend({
       this.model.get('yearSelect').set('year', Number(year));
     }
 
-    this.candidateView = new app.CandidateView({
-      model: this.model.get('candidate'),
-      mapName: this.model.get('mapName')
-    });
+    var that = this;
+    var map = app.maps.findWhere({ name: that.model.get('mapName') });
+
+    if(!map.get('topo')) {
+      map.getTopo(function() {
+        that.mapView = new app.MapView({ model: map, candidate: that.model.get('candidate'), el: '.map-view' });
+        that.mapView.render(year);
+      });
+    } else {
+      that.mapView = new app.MapView({ model: map, candidate: that.model.get('candidate'), el: '.map-view' });
+      that.mapView.render(year);
+    }
 
     this.redrawYear();
 
-    this.$el.find('.candidate').html(this.candidateView.render(year).el);
+    return this;
   },
 
   selectCandidate: function(event) {
     var slug = this.$el.find(':selected').val();
     this.model.set('candidate', this.model.get('candidates').findWhere({ slug: slug }));
-    this.model.get('candidate').on('sync', this.renderCandidateView, this);
+    this.model.get('candidate').on('sync', this.renderMapView, this);
     this.model.get('candidate').fetch();
     if(app.contributionView) { app.contributionView.reset(); }
     this.$el.find('.candidate').addClass('loading');
@@ -246,7 +254,7 @@ app.PanelView = app.BaseView.extend({
 
     var direction = $(event.target).data('direction');
     this.model.get('yearSelect').validateDirection(this.model.get('candidate'), direction);
-    this.$el.find('.candidate').html(this.candidateView.render(this.model.get('yearSelect').get('year')).el);
+    this.mapView.render(this.model.get('yearSelect').get('year'));
   },
 
   showShare: function() {
@@ -331,48 +339,15 @@ app.YearSelectView = app.BaseView.extend({
   }
 });
 
-app.CandidateView = app.BaseView.extend({
-  tagName: 'div',
-  className: 'twelve columns',
-
-  events: {
-    'click .close a': 'close'
-  },
-
-  initialize: function() {
-    this.template = _.template($('#candidate-view-template').html());
-    this.model.on('change', this.render, this);
-  },
-
-  render: function(year) {
-    this.$el.html(this.template($.extend({}, this.model.toJSON(), { year: year })));
-
-    var map = app.maps.findWhere({ name: this.options.mapName });
-
-    var that = this;
-
-    if(!map.get('topo')) {
-      map.getTopo(function() {
-        that.mapView = new app.MapView({ model: map, candidate: that.model });
-        that.$el.find('.map-container').html(that.mapView.render(year).el);
-      });
-    } else {
-      that.mapView = new app.MapView({ model: map, candidate: that.model });
-      that.$el.find('.map-container').html(that.mapView.render(year).el);
-    }
-
-    this.$el.removeClass('loading');
-
-    return this;
-  }
-});
-
 app.MapView = app.BaseView.extend({
+  tagName: 'div',
+  className: 'map twelve columns',
+
   initialize: function() {
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
     this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
-    this.mapRatio = 0.70;
+    this.mapRatio = 0.60;
     this.height = this.width * this.mapRatio;
 
     this.projection = d3.geo.mercator()
@@ -385,6 +360,8 @@ app.MapView = app.BaseView.extend({
 
     var that = this;
     d3.select(window).on('resize', function() { that.resize(that); });
+
+    this.model.on('change', this.render, this);
   },
 
   resize: function(view) {
@@ -407,7 +384,15 @@ app.MapView = app.BaseView.extend({
   },
 
   render: function(year) {
-    this.$el.empty();
+    this
+      .renderMap(year)
+      .renderLegend();
+
+    return this;
+  },
+
+  renderMap: function(year) {
+    this.$el.find('.map-container').empty();
 
     var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
         max = _.max(data);
@@ -422,11 +407,11 @@ app.MapView = app.BaseView.extend({
       data = fData;
     }
 
-    var quantize = d3.scale.quantize()
+    this.quantize = d3.scale.quantize()
       .domain([0, max])
-      .range(d3.range(5).map(function(i) { return "break" + i; }));
+      .range(colorbrewer.Blues[5]);
 
-    this.svg = d3.select(this.el).append('svg')
+    this.svg = d3.select(this.el).select('.map-container').append('svg')
           .attr('width', this.width)
           .attr('height', this.height);
 
@@ -438,12 +423,17 @@ app.MapView = app.BaseView.extend({
         .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
         .attr("d", this.path)
-        .attr("class", function(d) { return 'region ' + quantize(data[d.id]); })
+        .attr("class", function(d) {
+          var className = 'region';
+          if (data[d.id]) { className = className + ' active'; }
+          return className;
+        })
+        .style("fill", function(d) { return that.quantize(data[d.id]); })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
         .on("click", function() {
-          if(!d3.select(this).classed('undefined')) {
+          if(d3.select(this).classed('active')) {
             $('.contributions .table-container').addClass('loading');
             that.getContributions(this, function(contributions) {
               app.contributions = new app.Contributions(contributions);
@@ -487,6 +477,37 @@ app.MapView = app.BaseView.extend({
     }
 
     return this;
+  },
+
+  renderLegend: function() {
+    this.$el.find('.map-legend').empty();
+
+    var formats = {
+      percent: d3.format('$')
+    };
+
+    this.legend = d3.select(this.el).select('.map-legend')
+      .append('ul')
+        .attr('class', 'list-inline');
+
+    var keys = this.legend.selectAll('li.key')
+        .data(this.quantize.range());
+
+    var that = this;
+
+    keys.enter().append('li')
+        .attr('class', 'key')
+        .style('border-top-color', String)
+        .text(function(d) {
+            var r = that.quantize.invertExtent(d);
+            return formats.percent(r[0]);
+        });
+
+    return this;
+  },
+
+  renderTitle: function() {
+
   }
 });
 

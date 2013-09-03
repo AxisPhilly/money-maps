@@ -41,7 +41,17 @@
       </div>
 
     </div>
-    <div class="candidate nine columns"></div>
+    <div class="map-view nine columns">
+      <div class="map-header row">
+        <div class="map-title six columns"></div>
+        <div class="map-legend six columns"></div>
+      </div>
+      <div class='row'>
+        <div class='twelve columns'>
+          <div class='map-container'></div>
+        </div>
+      </div>
+    </div>
   </div>
 </script>
 <script type="text/template" id="year-select-view-template">
@@ -56,13 +66,6 @@
     <option></option>
   </select>
   <span class="title"></span>
-</script>
-<script type="text/template" id="candidate-view-template">
-  <div class='data row'>
-    <div class='city twelve columns'>
-      <div class='map-container'></div>
-    </div>
-  </div>
 </script>
 <script type="text/template" id="contribution-view-template">
   <tr>
@@ -92,6 +95,7 @@
   <script type="text/javascript" src="js/lib/topojson.js"></script>
   <script type="text/javascript" src="js/lib/moment.min.js"></script>
   <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
+  <script type="text/javascript" src="js/lib/d3.colorbrewer.js"></script>
   <script type="text/javascript" src="js/lib/states.js"></script>
 <% } %>
 
