@@ -455,9 +455,15 @@ app.MapView = app.BaseView.extend({
     _.each(this.model.get('meshes'), function(mesh) {
       this.svg.append("g")
         .append("path")
-          .datum(topojson.mesh(topo, topo.objects[mesh], function(a, b) { return a !== b; }))
+          .datum(topojson.mesh(topo, topo.objects[mesh], function(a, b) { return a; }))
           .attr("d", this.path)
-          .attr("class", "boundary");
+          .attr("class", function(d) {
+            var className = "boundary";
+            if(that.model.get('name') === 'region' && mesh === 'counties') {
+              className = className + ' county';
+            }
+            return className;
+          });
     }, this);
 
     // Add district outline if councilperson is a district councilperson
