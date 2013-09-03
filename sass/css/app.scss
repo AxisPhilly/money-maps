@@ -224,7 +224,7 @@ path {
 
   .table-container {
     height: 250px;
-    overflow: auto;
+    overflow-y: auto;
 
     &.loading {
       background: url('../img/loading.gif') no-repeat center;
