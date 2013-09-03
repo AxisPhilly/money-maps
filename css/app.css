@@ -1,10 +1,6 @@
 #app-container {
   font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif; }
 
-path {
-  fill: #edf8fb;
-  stroke-width: 0; }
-
 .boundary {
   fill: none;
   stroke: #999;
@@ -16,8 +12,10 @@ path {
     stroke-opacity: 1;
     stroke-width: 1.1; }
 
-.region.active {
-  cursor: pointer; }
+.region {
+  fill: #eee; }
+  .region.active {
+    cursor: pointer; }
 
 .district {
   fill: none;
@@ -54,6 +52,11 @@ path {
       width: 18%;
       padding-left: 0;
       padding-right: 0; }
+    .map-view .map-header .map-title h3 {
+      color: #333;
+      font-size: 20px;
+      font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+      margin: 0; }
 
 .panel-view {
   min-height: 400px; }
@@ -122,18 +125,6 @@ path {
     .panel-view .panel-header .arrow {
       font-size: 22px;
       font-weight: bold; }
-    .panel-view .panel-header .close {
-      width: 20px;
-      cursor: pointer;
-      background-color: #777;
-      border-radius: 11px;
-      padding: 4px 4px 6px 4px;
-      line-height: 11px;
-      color: #fff; }
-      .panel-view .panel-header .close:hover {
-        background-color: #333; }
-      .panel-view .panel-header .close a {
-        color: #fff; }
 
 .contributions {
   max-height: 300px; }

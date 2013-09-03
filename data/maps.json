@@ -6,16 +6,18 @@
     "scale": 97,
     "geography": "ward",
     "meshes": ["wards"],
+    "legend-title": "Total by Political Ward",
     "topo-url": "data/wards_w_districts.json",
     "topo-objects": "wards"
   },
   {
     "name": "region",
-    "title": "Regional",
+    "title": "Philadelphia Region",
     "center": [-75.1282, 40.0032],
     "scale": 20,
     "geography": "muni",
     "meshes": ["munis", "counties"],
+    "legend-title" : "Total by Municipality",
     "topo-url": "data/munis.json",
     "topo-objects": "munis"
   },
@@ -31,11 +33,12 @@
   },
   {
     "name": "national",
-    "title": "U.S.",
+    "title": "United States",
     "center": [-95.7, 38.0213],
     "scale": 0.9,
     "geography": "state",
     "meshes": ["us"],
+    "legend-title": "Total by State",
     "topo-url": "data/us.json",
     "topo-objects": "us"
   }

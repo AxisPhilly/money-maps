@@ -386,7 +386,8 @@ app.MapView = app.BaseView.extend({
   render: function(year) {
     this
       .renderMap(year)
-      .renderLegend();
+      .renderLegend()
+      .renderTitle();
 
     return this;
   },
@@ -395,7 +396,10 @@ app.MapView = app.BaseView.extend({
     this.$el.find('.map-container').empty();
 
     var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
-        max = _.max(data);
+        max = _.max(data),
+        max = Math.round(max / 1000) * 1000;
+
+    this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
 
     if(this.model.get('name') === 'state') {
       var fData = d3.map();
@@ -407,7 +411,7 @@ app.MapView = app.BaseView.extend({
       data = fData;
     }
 
-    this.quantize = d3.scale.quantize()
+    this.scale = d3.scale.quantize()
       .domain([0, max])
       .range(colorbrewer.Blues[5]);
 
@@ -428,7 +432,7 @@ app.MapView = app.BaseView.extend({
           if (data[d.id]) { className = className + ' active'; }
           return className;
         })
-        .style("fill", function(d) { return that.quantize(data[d.id]); })
+        .style("fill", function(d) { return that.scale(data[d.id]); })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
@@ -483,7 +487,7 @@ app.MapView = app.BaseView.extend({
     this.$el.find('.map-legend').empty();
 
     var formats = {
-      percent: d3.format('$')
+      dollar: d3.format('$')
     };
 
     this.legend = d3.select(this.el).select('.map-legend')
@@ -491,7 +495,7 @@ app.MapView = app.BaseView.extend({
         .attr('class', 'list-inline');
 
     var keys = this.legend.selectAll('li.key')
-        .data(this.quantize.range());
+        .data(this.scale.range());
 
     var that = this;
 
@@ -499,15 +503,25 @@ app.MapView = app.BaseView.extend({
         .attr('class', 'key')
         .style('border-top-color', String)
         .text(function(d) {
-            var r = that.quantize.invertExtent(d);
-            return formats.percent(r[0]);
+            var r = that.scale.invertExtent(d);
+            return formats.dollar(r[0]);
         });
 
     return this;
   },
 
   renderTitle: function() {
+    this.$el.find('.map-title').empty();
 
+    this.title = d3.select(this.el).select('.map-title')
+      .append('h3')
+        .text(this.model.get('title'));
+
+    this.show_total = d3.select(this.el).select('.map-title')
+      .append('span')
+        .text('Total: $' + (Math.round(this.total / 100) * 100).formatMoney());
+
+    return this;
   }
 });
 

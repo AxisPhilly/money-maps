@@ -3,11 +3,6 @@
 }
 
 // SVG
-path {
-  fill: rgb(237, 248, 251);
-  stroke-width: 0;
-}
-
 .boundary {
   fill: none;
   stroke: #999;
@@ -23,6 +18,8 @@ path {
 }
 
 .region {
+  fill: #eee;
+
   &.active {
     cursor: pointer;
   }
@@ -77,6 +74,15 @@ path {
         width: 18%;
         padding-left: 0;
         padding-right: 0;
+      }
+    }
+
+    .map-title {
+      h3 {
+        color: #333;
+        font-size: 20px;
+        font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+        margin: 0;
       }
     }
   }
