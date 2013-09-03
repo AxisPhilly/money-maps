@@ -399,8 +399,6 @@ app.MapView = app.BaseView.extend({
         max = _.max(data),
         max = Math.round(max / 1000) * 1000;
 
-    this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
-
     if(this.model.get('name') === 'state') {
       var fData = d3.map();
 
@@ -410,6 +408,8 @@ app.MapView = app.BaseView.extend({
 
       data = fData;
     }
+
+    this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
 
     this.scale = d3.scale.quantize()
       .domain([0, max])
