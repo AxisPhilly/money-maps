@@ -215,18 +215,20 @@ path {
 }
 
 .contributions {
-  height: 300px;
-  max-height: 500px;
-  overflow: auto;
+  max-height: 300px;
 
   .placeholder {
     font-size: 15px;
     font-style: italic;
   }
 
-  .table-container.loading {
-    min-height: 200px;
-    background: url('../img/loading.gif') no-repeat center;
+  .table-container {
+    height: 250px;
+    overflow: auto;
+
+    &.loading {
+      background: url('../img/loading.gif') no-repeat center;
+    }
   }
 
   table {
