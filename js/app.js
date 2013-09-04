@@ -347,7 +347,7 @@ app.MapView = app.BaseView.extend({
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
     this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
-    this.mapRatio = 0.60;
+    this.mapRatio = 0.50;
     this.height = this.width * this.mapRatio;
 
     this.projection = d3.geo.mercator()
@@ -364,25 +364,6 @@ app.MapView = app.BaseView.extend({
     this.model.on('change', this.render, this);
   },
 
-  resize: function(view) {
-    // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
-    view.width = parseInt(d3.select('.map-container').style('width'), 0.0);
-    view.width = view.width - view.margin.left - view.margin.right;
-    view.height = view.width * view.mapRatio;
-
-    view.projection
-        .translate([view.width / 2, view.height / 2])
-        .scale(view.width * view.model.get('scale'));
-
-    view.svg
-        .style('width', view.width + 'px')
-        .style('height', view.height + 'px');
-
-    view.svg.selectAll('.region').attr('d', view.path);
-    view.svg.selectAll('.boundary').attr('d', view.path);
-    view.svg.selectAll('.district').attr('d', view.path);
-  },
-
   render: function(year) {
     this
       .renderMap(year)
@@ -395,9 +376,7 @@ app.MapView = app.BaseView.extend({
   renderMap: function(year) {
     this.$el.find('.map-container').empty();
 
-    var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
-        max = _.max(data),
-        max = Math.round(max / 1000) * 1000;
+    var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {};
 
     if(this.model.get('name') === 'state') {
       var fData = d3.map();
@@ -410,10 +389,7 @@ app.MapView = app.BaseView.extend({
     }
 
     this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
-
-    this.scale = d3.scale.quantize()
-      .domain([0, max])
-      .range(colorbrewer.Blues[5]);
+    this.scale = this.createScale(data);
 
     this.svg = d3.select(this.el).select('.map-container').append('svg')
           .attr('width', this.width)
@@ -483,7 +459,7 @@ app.MapView = app.BaseView.extend({
     return this;
   },
 
-  renderLegend: function() {
+  /*renderLegend: function() {
     this.$el.find('.map-legend').empty();
 
     var formats = {
@@ -508,6 +484,49 @@ app.MapView = app.BaseView.extend({
         });
 
     return this;
+  },*/
+
+  renderLegend: function() {
+    this.$el.find('.map-legend').empty();
+
+    var that = this;
+
+    var x = d3.scale.linear()
+      .domain([0, _.max(this.scale.domain()) + 1000])
+      .range([0, 400]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .tickSize(13)
+        .tickValues(this.scale.domain());
+
+    var g = d3.select(this.el).select('.map-legend')
+      .append('svg')
+      .append('g')
+        .attr("class", "key")
+        .attr("transform", "translate(40,40)");
+
+    g.selectAll("rect")
+        .data(that.scale.range().map(function(d, i) {
+          return {
+            x0: i ? x(that.scale.domain()[i - 1]) : x.range()[0],
+            x1: i < that.scale.domain().length ? x(that.scale.domain()[i]) : x.range()[1],
+            z: d
+          };
+        }))
+      .enter().append("rect")
+        .attr("height", 8)
+        .attr("x", function(d) { return d.x0; })
+        .attr("width", function(d) { return d.x1 - d.x0; })
+        .style("fill", function(d) { return d.z; });
+
+    g.call(xAxis).append("text")
+        .attr("class", "caption")
+        .attr("y", -6)
+        .text("Total contributions");
+
+    return this;
   },
 
   renderTitle: function() {
@@ -522,7 +541,44 @@ app.MapView = app.BaseView.extend({
         .text('Total: $' + (Math.round(this.total / 100) * 100).formatMoney());
 
     return this;
-  }
+  },
+
+  createScale: function(data) {
+    var breaks = ss.jenks(_.values(data), 4),
+        roundBreaks = _.map(breaks, function(value) {
+          if (value < 1000) {
+            return Math.round(value / 100) * 100;
+          } else if (value >= 1000)
+            return Math.round(value / 1000) * 1000;
+        });
+
+    roundBreaks.unshift(0);
+
+    var scale = d3.scale.threshold()
+      .domain(roundBreaks)
+      .range(colorbrewer.Blues[6]);
+
+    return scale;
+  },
+
+  resize: function(view) {
+    // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
+    view.width = parseInt(d3.select('.map-container').style('width'), 0.0);
+    view.width = view.width - view.margin.left - view.margin.right;
+    view.height = view.width * view.mapRatio;
+
+    view.projection
+        .translate([view.width / 2, view.height / 2])
+        .scale(view.width * view.model.get('scale'));
+
+    view.svg
+        .style('width', view.width + 'px')
+        .style('height', view.height + 'px');
+
+    view.svg.selectAll('.region').attr('d', view.path);
+    view.svg.selectAll('.boundary').attr('d', view.path);
+    view.svg.selectAll('.district').attr('d', view.path);
+  },
 });
 
 app.ContributionView = app.BaseView.extend({

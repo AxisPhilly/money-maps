@@ -18,7 +18,7 @@
 }
 
 .region {
-  fill: #eee;
+  fill: #FBFBFD;
 
   &.active {
     cursor: pointer;
@@ -60,7 +60,38 @@
   .map-header {
     padding: 10px;
 
+    .map-title {
+      h3 {
+        color: #333;
+        font-size: 20px;
+        font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+        margin: 0;
+      }
+    }
+  }
+
+  .map-footer {
     .map-legend {
+      svg {
+        height: 70px;
+        width: 100%;
+      }
+
+      .key {
+        path {
+          display: none;
+        }
+
+        line {
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .tick.major {
+          font-size: 10px;
+        }
+      }
+
       ul {
         list-style-type: none;
         margin: 0;
@@ -74,15 +105,6 @@
         width: 18%;
         padding-left: 0;
         padding-right: 0;
-      }
-    }
-
-    .map-title {
-      h3 {
-        color: #333;
-        font-size: 20px;
-        font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
-        margin: 0;
       }
     }
   }
