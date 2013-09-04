@@ -491,15 +491,19 @@ app.MapView = app.BaseView.extend({
 
     var that = this;
 
+    var color = d3.scale.threshold()
+        .domain([0, 1, 2, 3, 4, 5, 6])
+        .range(["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#084594"]);
+
     var x = d3.scale.linear()
-      .domain([0, _.max(this.scale.domain()) + 1000])
-      .range([0, 400]);
+      .domain([0, 7])
+      .range([0, 100]);
 
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom")
         .tickSize(13)
-        .tickValues(this.scale.domain());
+        .tickValues(color.domain());
 
     var g = d3.select(this.el).select('.map-legend')
       .append('svg')
@@ -508,10 +512,10 @@ app.MapView = app.BaseView.extend({
         .attr("transform", "translate(40,40)");
 
     g.selectAll("rect")
-        .data(that.scale.range().map(function(d, i) {
+        .data(color.range().map(function(d, i) {
           return {
-            x0: i ? x(that.scale.domain()[i - 1]) : x.range()[0],
-            x1: i < that.scale.domain().length ? x(that.scale.domain()[i]) : x.range()[1],
+            x0: i ? x(color.domain()[i - 1]) : x.range()[0],
+            x1: i < color.domain().length ? x(color.domain()[i]) : x.range()[1],
             z: d
           };
         }))
