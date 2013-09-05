@@ -461,6 +461,8 @@ app.MapView = app.BaseView.extend({
   },
 
   renderLegend: function(data) {
+    // http://bl.ocks.org/mbostock/3014589 + parts of http://bl.ocks.org/mbostock/5144735
+
     this.$el.find('.map-legend').empty();
 
     var interpolators = {
