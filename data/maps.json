@@ -1,11 +1,12 @@
 [
   {
     "name": "city",
-    "title": "Philadelphia",
+    "title": "Philadelphia Wards",
     "center": [-75.1182, 40.0032],
     "scale": 97,
     "geography": "ward",
     "meshes": ["wards"],
+    "disabled": "",
     "legend-title": "Total by Political Ward",
     "topo-url": "data/wards_w_districts.json",
     "topo-objects": "wards"
@@ -15,6 +16,7 @@
     "title": "Philadelphia Region",
     "center": [-75.1282, 40.0032],
     "scale": 20,
+    "disabled": "2573-pa",
     "geography": "muni",
     "meshes": ["munis", "counties"],
     "legend-title" : "Total by Municipality",
@@ -27,6 +29,7 @@
     "center": [-77.590, 41.02],
     "scale": 10,
     "geography": "county",
+    "disabled": "Philadelphia",
     "meshes": ["counties"],
     "topo-url": "data/counties.json",
     "topo-objects": "counties"
@@ -37,6 +40,7 @@
     "center": [-95.7, 38.0213],
     "scale": 0.9,
     "geography": "state",
+    "disabled": "Pennsylvania",
     "meshes": ["us"],
     "legend-title": "Total by State",
     "topo-url": "data/us.json",

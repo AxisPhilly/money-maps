@@ -13,14 +13,21 @@
     stroke-width: 1.1; }
 
 .region {
-  fill: #eee; }
+  fill: #fff; }
   .region.active {
     cursor: pointer; }
+
+line {
+  stroke: #000;
+  shape-rendering: crispEdges; }
 
 .district {
   fill: none;
   stroke: red;
   stroke-width: 1px; }
+
+.disabled {
+  fill: url(#cross-hatch); }
 
 .details {
   display: none; }
@@ -41,6 +48,16 @@
     max-height: 500px; }
   .map-view .map-header {
     padding: 10px; }
+    .map-view .map-header .map-title h3 {
+      color: #333;
+      font-size: 20px;
+      font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+      margin: 0; }
+    .map-view .map-header .map-legend svg {
+      height: 70px;
+      width: 250px;
+      font-size: 14px;
+      float: right; }
     .map-view .map-header .map-legend ul {
       list-style-type: none;
       margin: 0; }
@@ -52,11 +69,6 @@
       width: 18%;
       padding-left: 0;
       padding-right: 0; }
-    .map-view .map-header .map-title h3 {
-      color: #333;
-      font-size: 20px;
-      font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
-      margin: 0; }
 
 .panel-view {
   min-height: 400px; }
@@ -90,7 +102,7 @@
       background: none;
       box-shadow: none; }
     .panel-view .panel-header .chosen-single, .panel-view .panel-header .chosen-single span {
-      font-size: 24px;
+      font-size: 22px;
       padding: 0;
       width: 280px;
       border: none;
@@ -111,7 +123,7 @@
         color: #0a4662;
         cursor: pointer; }
     .panel-view .panel-header .selector {
-      font-size: 24px; }
+      font-size: 22px; }
     .panel-view .panel-header .column-header {
       display: block;
       color: #444;

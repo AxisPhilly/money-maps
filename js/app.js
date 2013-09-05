@@ -358,29 +358,12 @@ app.MapView = app.BaseView.extend({
     this.path = d3.geo.path()
           .projection(this.projection);
 
+    this.colors = ["#eee", "orange"];
+
     var that = this;
     d3.select(window).on('resize', function() { that.resize(that); });
 
     this.model.on('change', this.render, this);
-  },
-
-  resize: function(view) {
-    // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
-    view.width = parseInt(d3.select('.map-container').style('width'), 0.0);
-    view.width = view.width - view.margin.left - view.margin.right;
-    view.height = view.width * view.mapRatio;
-
-    view.projection
-        .translate([view.width / 2, view.height / 2])
-        .scale(view.width * view.model.get('scale'));
-
-    view.svg
-        .style('width', view.width + 'px')
-        .style('height', view.height + 'px');
-
-    view.svg.selectAll('.region').attr('d', view.path);
-    view.svg.selectAll('.boundary').attr('d', view.path);
-    view.svg.selectAll('.district').attr('d', view.path);
   },
 
   render: function(year) {
@@ -395,11 +378,7 @@ app.MapView = app.BaseView.extend({
   renderMap: function(year) {
     this.$el.find('.map-container').empty();
 
-    var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {},
-        max = _.max(data),
-        max = Math.round(max / 1000) * 1000;
-
-    this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
+    var data = this.options.candidate.get('contributions')[year] ? this.options.candidate.get('contributions')[year][this.model.get('geography')] : {};
 
     if(this.model.get('name') === 'state') {
       var fData = d3.map();
@@ -411,9 +390,9 @@ app.MapView = app.BaseView.extend({
       data = fData;
     }
 
-    this.scale = d3.scale.quantize()
-      .domain([0, max])
-      .range(colorbrewer.Blues[5]);
+    this.data = data;
+    this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
+    this.scale = this.createScale(data);
 
     this.svg = d3.select(this.el).select('.map-container').append('svg')
           .attr('width', this.width)
@@ -429,10 +408,17 @@ app.MapView = app.BaseView.extend({
         .attr("d", this.path)
         .attr("class", function(d) {
           var className = 'region';
-          if (data[d.id]) { className = className + ' active'; }
+          if (data[d.id] && that.model.get('disabled') !== d.id) {
+            className = className + ' active';
+          }
           return className;
         })
-        .style("fill", function(d) { return that.scale(data[d.id]); })
+        .style("fill", function(d) {
+          if (that.model.get('disabled') === d.id) {
+            return 'url(#cross-hatch)';
+          }
+          return that.scale(data[d.id]);
+        })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
@@ -480,32 +466,105 @@ app.MapView = app.BaseView.extend({
           .attr('class', 'district');
     }
 
+    //patterns
+    this.svg
+      .append('defs')
+      .append('pattern')
+        .attr("id", "cross-hatch")
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 10)
+        .attr("height", 10)
+      .append('g')
+        .attr('style', "fill:none; stroke:#ddd; stroke-width:1");
+
+    this.svg.select('defs').select('pattern').select('g')
+      .append('path')
+        .attr('d', "M0,0 l10,10");
+    this.svg.select('defs').select('pattern').select('g')
+      .append('path')
+        .attr('d', "M10,0 l-10,10");
+
     return this;
   },
 
-  renderLegend: function() {
+  renderLegend: function(data) {
+    // http://bl.ocks.org/mbostock/3014589 + parts of http://bl.ocks.org/mbostock/5144735
+
     this.$el.find('.map-legend').empty();
 
-    var formats = {
-      dollar: d3.format('$')
+    var interpolators = {
+      "RGB": d3.interpolateRgb
     };
 
-    this.legend = d3.select(this.el).select('.map-legend')
-      .append('ul')
-        .attr('class', 'list-inline');
+    var width = 200,
+        height = '100%';
 
-    var keys = this.legend.selectAll('li.key')
-        .data(this.scale.range());
+    var y = d3.scale.ordinal()
+        .domain(d3.keys(interpolators))
+        .rangeRoundBands([0, 10], 0.1);
 
-    var that = this;
+    var values = d3.range(200 - 28);
 
-    keys.enter().append('li')
-        .attr('class', 'key')
-        .style('border-top-color', String)
-        .text(function(d) {
-            var r = that.scale.invertExtent(d);
-            return formats.dollar(r[0]);
-        });
+    var x = d3.scale.ordinal()
+        .domain(values)
+        .rangeRoundBands([14, width - 14]);
+
+    var color = d3.scale.linear()
+        .domain([0, values.length - 1])
+        .range(this.colors);
+
+    var svg = d3.select(".map-legend").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var g = svg.selectAll("g")
+        .data(d3.entries(interpolators))
+      .enter().append("g")
+        .attr("transform", function(d) { return "translate(0, 20)"; });
+
+    g.each(function(d) {
+      color.interpolate(d.value);
+
+      d3.select(this).selectAll("rect")
+        .data(values)
+      .enter().append("rect")
+        .attr("x", x)
+        .attr("width", x.rangeBand())
+        .attr("height", y.rangeBand)
+        .style("fill", color);
+    });
+
+    g.append("text")
+        .attr("class", "caption")
+        .attr("y", -6)
+        .attr("x", 15)
+        .text("Total Contribution Amount");
+
+    g.append("text")
+        .attr("class", "caption")
+        .attr("y", 30)
+        .attr("x", 7)
+        .text("$0");
+
+    g.append("text")
+        .attr("class", "caption")
+        .attr("y", 30)
+        .attr("x", 160)
+        .text("$" + this.scale.domain()[1].formatMoney());
+
+    g.append("svg:line")
+        .attr("x2", 0)
+        .attr("y2", 15)
+        .attr("dy", ".71em")
+        .attr("transform", "translate(15, 0)");
+
+    g.append("svg:line")
+        .attr("x2", 0)
+        .attr("y2", 15)
+        .attr("dy", ".71em")
+        .attr("transform", "translate(185, 0)");
 
     return this;
   },
@@ -522,7 +581,36 @@ app.MapView = app.BaseView.extend({
         .text('Total: $' + (Math.round(this.total / 100) * 100).formatMoney());
 
     return this;
-  }
+  },
+
+  createScale: function(data) {
+    data = _.omit(data, this.model.get('disabled'));
+
+    var scale = d3.scale.linear()
+      .domain([0, _.max(data)])
+      .range(this.colors);
+
+    return scale;
+  },
+
+  resize: function(view) {
+    // thanks http://eyeseast.github.io/visible-data/2013/08/26/responsive-d3/
+    view.width = parseInt(d3.select('.map-container').style('width'), 0.0);
+    view.width = view.width - view.margin.left - view.margin.right;
+    view.height = view.width * view.mapRatio;
+
+    view.projection
+        .translate([view.width / 2, view.height / 2])
+        .scale(view.width * view.model.get('scale'));
+
+    view.svg
+        .style('width', view.width + 'px')
+        .style('height', view.height + 'px');
+
+    view.svg.selectAll('.region').attr('d', view.path);
+    view.svg.selectAll('.boundary').attr('d', view.path);
+    view.svg.selectAll('.district').attr('d', view.path);
+  },
 });
 
 app.ContributionView = app.BaseView.extend({
