@@ -55,8 +55,9 @@ line {
       margin: 0; }
     .map-view .map-header .map-legend svg {
       height: 70px;
-      width: 100%;
-      font-size: 14px; }
+      width: 250px;
+      font-size: 14px;
+      float: right; }
     .map-view .map-header .map-legend ul {
       list-style-type: none;
       margin: 0; }
