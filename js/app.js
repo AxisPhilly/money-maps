@@ -232,6 +232,9 @@ app.PanelView = app.BaseView.extend({
 
   selectMap: function(event) {
     event.preventDefault();
+
+    if($(event.target).hasClass('active')) { return; }
+
     $('.active').removeClass('active');
     $(event.target).addClass('active');
     var mapName = $(event.target).data('mapname');
@@ -359,6 +362,7 @@ app.MapView = app.BaseView.extend({
           .projection(this.projection);
 
     this.colors = ["#eee", "orange"];
+    this.munis = ['1129-pa','1130-pa','1131-pa','1132-pa','1133-pa','1134-pa','1155-pa','1156-pa','1157-pa','1158-pa','1159-pa','1160-pa','1161-pa','1163-pa','1165-pa','1166-pa','1167-pa','1168-pa','1169-pa','1170-pa','1171-pa','1172-pa','1175-pa','1176-pa','1177-pa','1181-pa','1182-pa','1183-pa','1184-pa','1185-pa','1186-pa','1187-pa','1188-pa','1189-pa','1190-pa','1191-pa','1192-pa','1194-pa','1195-pa','1200-pa','1459-pa','1460-pa','1461-pa','1462-pa','1463-pa','1468-pa','1469-pa','1482-pa','1490-pa','1495-pa','1496-pa','1497-pa','1501-pa','1502-pa','1503-pa','1505-pa','1506-pa','1507-pa','1510-pa','1513-pa','1514-pa','1515-pa','1516-pa','1517-pa','1519-pa','1526-pa','1530-pa','1531-pa','1537-pa','1539-pa','1540-pa','1542-pa','1759-pa','1760-pa','1761-pa','1762-pa','2716-pa','2717-pa','2793-pa','3137-pa','368-pa','369-pa','370-pa','371-pa','372-pa','373-pa','386-pa','397-pa','398-pa','399-pa','400-pa','430-pa','2573-pa','2791-pa','1508-pa','1498-pa','1499-pa','1500-pa','1541-pa','1545-pa','1518-pa','1527-pa','1528-pa','1492-pa','394-pa','401-pa','419-pa','432-pa','402-pa','423-pa','396-pa','1487-pa','455-pa','433-pa','390-pa','1470-pa','412-pa','2794-pa','2795-pa','395-pa','1491-pa','403-pa','425-pa','1489-pa','410-pa','422-pa','411-pa','431-pa','456-pa','405-pa','1467-pa','427-pa','1494-pa','1483-pa','1484-pa','1520-pa','1521-pa','1162-pa','1466-pa','428-pa','452-pa','453-pa','454-pa','1464-pa','1465-pa','1493-pa','374-pa','414-pa','418-pa','451-pa','1458-pa','407-pa','408-pa','1523-pa','1522-pa','387-pa','420-pa','1485-pa','1486-pa','393-pa','389-pa','1524-pa','404-pa','2725-pa','392-pa','375-pa','406-pa','409-pa','1174-pa','1732-pa','1770-pa','2719-pa','2721-pa','1173-pa','1747-pa','1748-pa','1738-pa','1781-pa','1782-pa','1743-pa','1773-pa','1739-pa','1740-pa','2731-pa','1751-pa','1734-pa','1745-pa','2726-pa','1774-pa','1733-pa','1775-pa','2645-pa','1784-pa','2652-pa','1783-pa','1746-pa','2738-pa','1771-pa','1736-pa','1737-pa','1786-pa','1777-pa','1778-pa','1749-pa','1750-pa','1752-pa','2655-pa','2796-pa','1744-pa','1753-pa','2711-pa','1714-pa','1715-pa','1716-pa','1717-pa','1772-pa','1754-pa','1755-pa','1756-pa','2722-pa','1779-pa','1741-pa','1757-pa','1758-pa','1769-pa','1731-pa','2648-pa','1735-pa','1164-pa','2956-pa','2944-pa','2946-pa','2959-pa','2960-pa','2952-pa','2958-pa','2947-pa','2948-pa','2954-pa'];
 
     var that = this;
     d3.select(window).on('resize', function() { that.resize(that); });
@@ -388,6 +392,8 @@ app.MapView = app.BaseView.extend({
       });
 
       data = fData;
+    } else if (this.model.get('name') === 'region') {
+      data = _.pick(data, this.munis);
     }
 
     this.data = data;
@@ -635,8 +641,7 @@ app.ContributionView = app.BaseView.extend({
 
   reset: function() {
     $('.contributions .table-container').html('<span class="placeholder">' +
-      'Click a region to show contributions from that region for the selected' +
-      ' councilperson and year.</span>');
+      'Click a region to view contributions.</span>');
   }
 });
 
