@@ -469,14 +469,14 @@ app.MapView = app.BaseView.extend({
       "RGB": d3.interpolateRgb
     };
 
-    var width = 400,
+    var width = 300,
         height = '100%';
 
     var y = d3.scale.ordinal()
         .domain(d3.keys(interpolators))
         .rangeRoundBands([0, 10], 0.1);
 
-    var values = d3.range(400 - 28);
+    var values = d3.range(300 - 28);
 
     var x = d3.scale.ordinal()
         .domain(values)
@@ -522,7 +522,7 @@ app.MapView = app.BaseView.extend({
     g.append("text")
         .attr("class", "caption")
         .attr("y", 30)
-        .attr("x", 360)
+        .attr("x", 260)
         .text("$" + _.max(this.data).formatMoney());
 
     g.append("svg:line")
@@ -535,7 +535,7 @@ app.MapView = app.BaseView.extend({
         .attr("x2", 0)
         .attr("y2", 15)
         .attr("dy", ".71em")
-        .attr("transform", "translate(385, 0)");
+        .attr("transform", "translate(285, 0)");
 
     return this;
   },

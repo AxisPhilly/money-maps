@@ -13,7 +13,7 @@
     stroke-width: 1.1; }
 
 .region {
-  fill: #FBFBFD; }
+  fill: #fff; }
   .region.active {
     cursor: pointer; }
 
