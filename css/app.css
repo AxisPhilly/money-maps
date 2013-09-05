@@ -69,6 +69,9 @@ line {
       width: 250px;
       font-size: 14px;
       float: right; }
+      @media (max-width: 768px) {
+        .map-view .map-header .map-legend svg {
+          float: none; } }
     .map-view .map-header .map-legend ul {
       list-style-type: none;
       margin: 0; }

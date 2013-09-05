@@ -23,7 +23,7 @@ app.use('/img', express.static(__dirname + '/img'));
 app.use('/data', express.static(__dirname + '/data'));
 app.use('/font', express.static(__dirname + '/font'));
 
-var title = 'App Title | AxisPhilly';
+var title = 'The Money Maps | AxisPhilly';
 
 app.get('/', function(req, res){
   res.render('index', {
