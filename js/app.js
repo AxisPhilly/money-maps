@@ -2,6 +2,34 @@ if (typeof app === 'undefined' || !app) {
   var app = {};
 }
 
+app.showTooltip =  function(donationTotal, countyName) {
+  // var contents = app.getContents(hourId),
+  //     $hourPos = $('#' + hourId).offset();
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
+
+  if ($('#tooltip').length) {
+      $('#tooltip').html('<div id="county-name">'+countyName+'</div><div id="donation-total">$'+donationTotal+'</div>').show();
+      console.log("ONE");
+    } else {
+      console.log("TWO");
+      $('<div/>', {
+        'id': 'tooltip',
+        html: '<div id="county-name">'+countyName+'</div><div id="donation-total">$'+donationTotal+'</div>'
+      }).appendTo('#app-container').show();
+    }
+
+  // var offset = $('#chart').offset();
+  console.log(donationTotal);
+};
+
+app.hideTooltip = function() {
+  $('#tooltip').hide();
+  $(document).unbind('mousemove');
+};
+
 app.Candidate = Backbone.Model.extend({
   url: function() {
     return 'data/' + this.get('slug') + '.json';
@@ -347,7 +375,7 @@ app.MapView = app.BaseView.extend({
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
     this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
-    this.mapRatio = 0.60;
+    this.mapRatio = this.model.get('ratio');
     this.height = this.width * this.mapRatio;
 
     this.projection = d3.geo.mercator()
@@ -406,6 +434,11 @@ app.MapView = app.BaseView.extend({
         .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
         .attr("d", this.path)
+
+
+
+
+
         .attr("class", function(d) {
           var className = 'region';
           if (data[d.id] && that.model.get('disabled') !== d.id) {
@@ -430,8 +463,19 @@ app.MapView = app.BaseView.extend({
               app.contributionView = new app.ContributionView({ collection: app.contributions });
             });
           }
+        })
+        .on('mouseover', function(d) {
+          if(d3.select(this).classed('active')) {
+            app.showTooltip(data[d.id], d.id);
+            var posX = d3.event.pageX + 25 + "px";
+                posY = d3.event.pageY - 4 + "px";
+                $('#tooltip').css({ left: posX, top: posY });
+            d3.select(this).classed("selected", true);
+          }
+          else {
+            app.hideTooltip();
+          }
         });
-
     _.each(this.model.get('meshes'), function(mesh) {
       this.svg.append("g")
         .append("path")

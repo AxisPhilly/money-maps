@@ -1,3 +1,14 @@
+#tooltip {
+  position: absolute;
+  background-color: #fff;
+  height: 160px;
+  width: 280px;
+  padding: 14px;
+  -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  z-index: 10; }
+
 #app-container {
   font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif; }
 
