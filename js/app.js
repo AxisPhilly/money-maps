@@ -539,8 +539,8 @@ app.MapView = app.BaseView.extend({
     g.append("text")
         .attr("class", "caption")
         .attr("y", -6)
-        .attr("x", 15)
-        .text("Total Contribution Amount");
+        .attr("x", 12)
+        .text("Total Contributions ($)");
 
     g.append("text")
         .attr("class", "caption")
