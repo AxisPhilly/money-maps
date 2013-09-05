@@ -1,7 +1,7 @@
 [
   {
     "name": "city",
-    "title": "Philadelphia",
+    "title": "Philadelphia Wards",
     "center": [-75.1182, 40.0032],
     "scale": 97,
     "geography": "ward",

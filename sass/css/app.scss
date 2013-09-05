@@ -25,6 +25,11 @@
   }
 }
 
+line {
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
 .district {
   fill: none;
   stroke: red;
@@ -73,21 +78,7 @@
       svg {
         height: 70px;
         width: 100%;
-      }
-
-      .key {
-        path {
-          display: none;
-        }
-
-        line {
-          stroke: #000;
-          shape-rendering: crispEdges;
-        }
-
-        .tick.major {
-          font-size: 10px;
-        }
+        font-size: 14px;
       }
 
       ul {

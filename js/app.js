@@ -347,7 +347,7 @@ app.MapView = app.BaseView.extend({
     this.margin = { top: 10, left: 10, bottom: 10, right: 10 };
     this.width = parseInt(d3.select('.map-container').style('width'), 0.0);
     this.width = this.width - this.margin.left - this.margin.right;
-    this.mapRatio = 0.50;
+    this.mapRatio = 0.60;
     this.height = this.width * this.mapRatio;
 
     this.projection = d3.geo.mercator()
@@ -388,6 +388,7 @@ app.MapView = app.BaseView.extend({
       data = fData;
     }
 
+    this.data = data;
     this.total = _.reduce(_.values(data), function(memo, num){ return memo + num; }, 0);
     this.scale = this.createScale(data);
 
@@ -459,76 +460,80 @@ app.MapView = app.BaseView.extend({
     return this;
   },
 
-  /*renderLegend: function() {
+  renderLegend: function(data) {
     this.$el.find('.map-legend').empty();
 
-    var formats = {
-      dollar: d3.format('$')
+    var interpolators = {
+      "RGB": d3.interpolateRgb
     };
 
-    this.legend = d3.select(this.el).select('.map-legend')
-      .append('ul')
-        .attr('class', 'list-inline');
+    var width = 400,
+        height = '100%';
 
-    var keys = this.legend.selectAll('li.key')
-        .data(this.scale.range());
+    var y = d3.scale.ordinal()
+        .domain(d3.keys(interpolators))
+        .rangeRoundBands([0, 10], 0.1);
 
-    var that = this;
+    var values = d3.range(400 - 28);
 
-    keys.enter().append('li')
-        .attr('class', 'key')
-        .style('border-top-color', String)
-        .text(function(d) {
-            var r = that.scale.invertExtent(d);
-            return formats.dollar(r[0]);
-        });
+    var x = d3.scale.ordinal()
+        .domain(values)
+        .rangeRoundBands([14, width - 14]);
 
-    return this;
-  },*/
+    var color = d3.scale.linear()
+        .domain([0, values.length - 1])
+        .range(["#eee", "blue"]);
 
-  renderLegend: function() {
-    this.$el.find('.map-legend').empty();
+    var svg = d3.select(".map-legend").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-    var that = this;
+    var g = svg.selectAll("g")
+        .data(d3.entries(interpolators))
+      .enter().append("g")
+        .attr("transform", function(d) { return "translate(0, 20)"; });
 
-    var color = d3.scale.threshold()
-        .domain([0, 1, 2, 3, 4, 5, 6])
-        .range(["#f7fbff", "#deebf7", "#c6dbef", "#9ecae1", "#6baed6", "#4292c6", "#2171b5", "#084594"]);
+    g.each(function(d) {
+      color.interpolate(d.value);
 
-    var x = d3.scale.linear()
-      .domain([0, 7])
-      .range([0, 100]);
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom")
-        .tickSize(13)
-        .tickValues(color.domain());
-
-    var g = d3.select(this.el).select('.map-legend')
-      .append('svg')
-      .append('g')
-        .attr("class", "key")
-        .attr("transform", "translate(40,40)");
-
-    g.selectAll("rect")
-        .data(color.range().map(function(d, i) {
-          return {
-            x0: i ? x(color.domain()[i - 1]) : x.range()[0],
-            x1: i < color.domain().length ? x(color.domain()[i]) : x.range()[1],
-            z: d
-          };
-        }))
+      d3.select(this).selectAll("rect")
+        .data(values)
       .enter().append("rect")
-        .attr("height", 8)
-        .attr("x", function(d) { return d.x0; })
-        .attr("width", function(d) { return d.x1 - d.x0; })
-        .style("fill", function(d) { return d.z; });
+        .attr("x", x)
+        .attr("width", x.rangeBand())
+        .attr("height", y.rangeBand)
+        .style("fill", color);
+    });
 
-    g.call(xAxis).append("text")
+    g.append("text")
         .attr("class", "caption")
         .attr("y", -6)
-        .text("Total contributions");
+        .attr("x", 15)
+        .text("Total Contribution Amount");
+
+    g.append("text")
+        .attr("class", "caption")
+        .attr("y", 30)
+        .attr("x", 7)
+        .text("$0");
+
+    g.append("text")
+        .attr("class", "caption")
+        .attr("y", 30)
+        .attr("x", 360)
+        .text("$" + _.max(this.data).formatMoney());
+
+    g.append("svg:line")
+        .attr("x2", 0)
+        .attr("y2", 15)
+        .attr("dy", ".71em")
+        .attr("transform", "translate(15, 0)");
+
+    g.append("svg:line")
+        .attr("x2", 0)
+        .attr("y2", 15)
+        .attr("dy", ".71em")
+        .attr("transform", "translate(385, 0)");
 
     return this;
   },
@@ -548,19 +553,9 @@ app.MapView = app.BaseView.extend({
   },
 
   createScale: function(data) {
-    var breaks = ss.jenks(_.values(data), 4),
-        roundBreaks = _.map(breaks, function(value) {
-          if (value < 1000) {
-            return Math.round(value / 100) * 100;
-          } else if (value >= 1000)
-            return Math.round(value / 1000) * 1000;
-        });
-
-    roundBreaks.unshift(0);
-
-    var scale = d3.scale.threshold()
-      .domain(roundBreaks)
-      .range(colorbrewer.Blues[6]);
+    var scale = d3.scale.linear()
+      .domain([0, _.max(data)])
+      .range(['#eee', 'blue']);
 
     return scale;
   },

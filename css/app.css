@@ -17,6 +17,10 @@
   .region.active {
     cursor: pointer; }
 
+line {
+  stroke: #000;
+  shape-rendering: crispEdges; }
+
 .district {
   fill: none;
   stroke: red;
@@ -48,14 +52,8 @@
       margin: 0; }
     .map-view .map-header .map-legend svg {
       height: 70px;
-      width: 100%; }
-    .map-view .map-header .map-legend .key path {
-      display: none; }
-    .map-view .map-header .map-legend .key line {
-      stroke: #000;
-      shape-rendering: crispEdges; }
-    .map-view .map-header .map-legend .key .tick.major {
-      font-size: 10px; }
+      width: 100%;
+      font-size: 14px; }
     .map-view .map-header .map-legend ul {
       list-style-type: none;
       margin: 0; }
