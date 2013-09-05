@@ -26,6 +26,9 @@ line {
   stroke: red;
   stroke-width: 1px; }
 
+.disabled {
+  fill: url(#cross-hatch); }
+
 .details {
   display: none; }
 
@@ -98,7 +101,7 @@ line {
       background: none;
       box-shadow: none; }
     .panel-view .panel-header .chosen-single, .panel-view .panel-header .chosen-single span {
-      font-size: 24px;
+      font-size: 22px;
       padding: 0;
       width: 280px;
       border: none;
@@ -119,7 +122,7 @@ line {
         color: #0a4662;
         cursor: pointer; }
     .panel-view .panel-header .selector {
-      font-size: 24px; }
+      font-size: 22px; }
     .panel-view .panel-header .column-header {
       display: block;
       color: #444;

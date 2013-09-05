@@ -36,6 +36,10 @@ line {
   stroke-width: 1px;
 }
 
+.disabled {
+  fill: url(#cross-hatch);
+}
+
 // /SVG
 
 .details {
@@ -153,7 +157,7 @@ line {
     }
 
     .chosen-single, .chosen-single span {
-      font-size: 24px;
+      font-size: 22px;
       padding: 0;
       width: 280px;
       border: none;
@@ -186,7 +190,7 @@ line {
     }
 
     .selector {
-      font-size: 24px;
+      font-size: 22px;
     }
 
     .column-header {

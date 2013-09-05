@@ -358,6 +358,8 @@ app.MapView = app.BaseView.extend({
     this.path = d3.geo.path()
           .projection(this.projection);
 
+    this.colors = ["#eee", "orange"];
+
     var that = this;
     d3.select(window).on('resize', function() { that.resize(that); });
 
@@ -406,10 +408,17 @@ app.MapView = app.BaseView.extend({
         .attr("d", this.path)
         .attr("class", function(d) {
           var className = 'region';
-          if (data[d.id]) { className = className + ' active'; }
+          if (data[d.id] && that.model.get('disabled') !== d.id) {
+            className = className + ' active';
+          }
           return className;
         })
-        .style("fill", function(d) { return that.scale(data[d.id]); })
+        .style("fill", function(d) {
+          if (that.model.get('disabled') === d.id) {
+            return 'url(#cross-hatch)';
+          }
+          return that.scale(data[d.id]);
+        })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
         .attr("data-location", function(d) { return d.id.toLowerCase(); })
@@ -457,6 +466,26 @@ app.MapView = app.BaseView.extend({
           .attr('class', 'district');
     }
 
+    //patterns
+    this.svg
+      .append('defs')
+      .append('pattern')
+        .attr("id", "cross-hatch")
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 10)
+        .attr("height", 10)
+      .append('g')
+        .attr('style', "fill:none; stroke:#ddd; stroke-width:1");
+
+    this.svg.select('defs').select('pattern').select('g')
+      .append('path')
+        .attr('d', "M0,0 l10,10");
+    this.svg.select('defs').select('pattern').select('g')
+      .append('path')
+        .attr('d', "M10,0 l-10,10");
+
     return this;
   },
 
@@ -484,7 +513,7 @@ app.MapView = app.BaseView.extend({
 
     var color = d3.scale.linear()
         .domain([0, values.length - 1])
-        .range(["#eee", "blue"]);
+        .range(this.colors);
 
     var svg = d3.select(".map-legend").append("svg")
         .attr("width", width)
@@ -523,7 +552,7 @@ app.MapView = app.BaseView.extend({
         .attr("class", "caption")
         .attr("y", 30)
         .attr("x", 260)
-        .text("$" + _.max(this.data).formatMoney());
+        .text("$" + this.scale.domain()[1].formatMoney());
 
     g.append("svg:line")
         .attr("x2", 0)
@@ -555,9 +584,11 @@ app.MapView = app.BaseView.extend({
   },
 
   createScale: function(data) {
+    data = _.omit(data, this.model.get('disabled'));
+
     var scale = d3.scale.linear()
       .domain([0, _.max(data)])
-      .range(['#eee', 'blue']);
+      .range(this.colors);
 
     return scale;
   },
