@@ -691,7 +691,7 @@ app.MapView = app.BaseView.extend({
     view.svg.selectAll('.region').attr('d', view.path);
     view.svg.selectAll('.boundary').attr('d', view.path);
     view.svg.selectAll('.district').attr('d', view.path);
-  },
+  }
 });
 
 app.ContributionView = app.BaseView.extend({
