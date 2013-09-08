@@ -1,9 +1,10 @@
 [
   {
     "name": "city",
-    "title": "Philadelphia Wards",
+    "title": "Contributions by Political Ward",
     "center": [-75.1182, 40.0032],
     "scale": 97,
+    "ratio": 0.60,
     "geography": "ward",
     "meshes": ["wards"],
     "disabled": "",
@@ -13,9 +14,10 @@
   },
   {
     "name": "region",
-    "title": "Philadelphia Region",
+    "title": "Contributions by Municipality",
     "center": [-75.1282, 40.0032],
     "scale": 20,
+    "ratio": 0.60,
     "disabled": "2573-pa",
     "geography": "muni",
     "meshes": ["munis", "counties"],
@@ -25,9 +27,10 @@
   },
   {
     "name": "state",
-    "title": "Pennsylvania",
+    "title": "Contributions by County",
     "center": [-77.590, 41.02],
     "scale": 10,
+    "ratio": 0.60,
     "geography": "county",
     "disabled": "Philadelphia",
     "meshes": ["counties"],
@@ -36,9 +39,10 @@
   },
   {
     "name": "national",
-    "title": "United States",
+    "title": "Contributions by State",
     "center": [-95.7, 38.0213],
     "scale": 0.9,
+    "ratio": 0.60,
     "geography": "state",
     "disabled": "Pennsylvania",
     "meshes": ["us"],

@@ -440,11 +440,6 @@ app.MapView = app.BaseView.extend({
         .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
         .attr("d", this.path)
-
-
-
-
-
         .attr("class", function(d) {
           var className = 'region';
           if (data[d.id] && that.model.get('disabled') !== d.id) {
