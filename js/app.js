@@ -18,8 +18,8 @@ app.showTooltip =  function(donationTotal, name) {
   var money = donationTotal ? donationTotal.formatMoney() : '0',
       html = '<div id="county-name">' + name + '</div>' +
             '<div id="donation-total">$' + money + '</div>';
-  
-  if (donationTotal !== 0) {
+
+  if (money !== '0') {
     html += '<em>Click the region to see contributions from this area</em>';
   }
 
