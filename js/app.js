@@ -2,7 +2,12 @@ if (typeof app === 'undefined' || !app) {
   var app = {};
 }
 
-app.showTooltip =  function(donationTotal, countyName) {
+// http://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+app.showTooltip =  function(donationTotal, name) {
   // var contents = app.getContents(hourId),
   //     $hourPos = $('#' + hourId).offset();
 
@@ -10,14 +15,22 @@ app.showTooltip =  function(donationTotal, countyName) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
 
+  var money = donationTotal ? donationTotal.formatMoney() : '0',
+      html = '<div id="county-name">' + name + '</div>' +
+            '<div id="donation-total">$' + money + '</div>';
+  
+  if (donationTotal !== 0) {
+    html += '<em>Click the region to see contributions from this area</em>';
+  }
+
   if ($('#tooltip').length) {
-      $('#tooltip').html('<div id="county-name">'+countyName+'</div><div id="donation-total">$'+donationTotal+'</div>').show();
+      $('#tooltip').html(html).show();
       console.log("ONE");
     } else {
       console.log("TWO");
       $('<div/>', {
         'id': 'tooltip',
-        html: '<div id="county-name">'+countyName+'</div><div id="donation-total">$'+donationTotal+'</div>'
+        html: html
       }).appendTo('#app-container').show();
     }
 
@@ -28,6 +41,16 @@ app.showTooltip =  function(donationTotal, countyName) {
 app.hideTooltip = function() {
   $('#tooltip').hide();
   $(document).unbind('mousemove');
+};
+
+app.getTooltipTitle = function(id, mapName) {
+  if(mapName === 'city') {
+    return 'Ward ' + id;
+  } else if(mapName === 'region') {
+    return toTitleCase($('#' + id).data('title')) + ' County';
+  } else if(mapName === 'national') {
+    return id;
+  }
 };
 
 app.Candidate = Backbone.Model.extend({
@@ -440,10 +463,13 @@ app.MapView = app.BaseView.extend({
         .data(topojson.feature(topo, topo.objects[this.model.get('topo-objects')]).features)
       .enter().append("path")
         .attr("d", this.path)
+        .attr("id", function(d) { return d.id; })
         .attr("class", function(d) {
           var className = 'region';
           if (data[d.id] && that.model.get('disabled') !== d.id) {
             className = className + ' active';
+          } else if (that.model.get('disabled') === d.id) {
+            className = className + ' disabled';
           }
           return className;
         })
@@ -452,6 +478,14 @@ app.MapView = app.BaseView.extend({
             return 'url(#cross-hatch)';
           }
           return that.scale(data[d.id]);
+        })
+        .attr("data-title", function(d) {
+          if (that.model.get('name') === 'region') {
+            var geom = _.findWhere(topo.objects.munis.geometries, { id: d.id });
+            return geom.properties.muni_name + ', ' + geom.properties.county_name;
+          } else {
+            return d.id;
+          }
         })
         .attr("data-slug", this.options.candidate.get('slug'))
         .attr("data-year", year)
@@ -466,17 +500,19 @@ app.MapView = app.BaseView.extend({
           }
         })
         .on('mouseover', function(d) {
-          if(d3.select(this).classed('active')) {
-            app.showTooltip(data[d.id], d.id);
+          if(!d3.select(this).classed('disabled')) {
+            var name = app.getTooltipTitle(d.id, that.model.get('name'));
+            app.showTooltip(data[d.id], name);
             var posX = d3.event.pageX + 25 + "px";
                 posY = d3.event.pageY - 4 + "px";
                 $('#tooltip').css({ left: posX, top: posY });
             d3.select(this).classed("selected", true);
           }
-          else {
-            app.hideTooltip();
-          }
+        })
+        .on('mouseout', function(d) {
+          app.hideTooltip();
         });
+
     _.each(this.model.get('meshes'), function(mesh) {
       this.svg.append("g")
         .append("path")
