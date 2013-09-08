@@ -36,6 +36,8 @@ line {
   fill: none;
   stroke: red;
   stroke-width: 1px; }
+  .district.inset {
+    shape-rendering: crispEdges; }
 
 .disabled {
   fill: url(#cross-hatch); }
@@ -66,7 +68,7 @@ line {
       margin: 0; }
     .map-view .map-header .map-legend svg {
       height: 70px;
-      width: 250px;
+      width: 350px;
       font-size: 14px;
       float: right; }
       @media (max-width: 768px) {

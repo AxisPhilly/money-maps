@@ -603,7 +603,7 @@ app.MapView = app.BaseView.extend({
     var g = svg.selectAll("g")
         .data(d3.entries(interpolators))
       .enter().append("g")
-        .attr("transform", function(d) { return "translate(0, 20)"; });
+        .attr("transform", function(d) { return "translate(120, 20)"; });
 
     g.each(function(d) {
       color.interpolate(d.value);
@@ -646,6 +646,24 @@ app.MapView = app.BaseView.extend({
         .attr("y2", 15)
         .attr("dy", ".71em")
         .attr("transform", "translate(185, 0)");
+
+    if(this.options.candidate.get('district') && this.model.get('name') === 'city') {
+      svg.append('g')
+          .attr('id', 'inset')
+        .append('rect')
+          .attr('x', 10)
+          .attr('y', 20)
+          .attr('width', 80)
+          .attr('height', 10)
+          .attr("class", 'district inset');
+
+      svg.select('#inset')
+        .append('text')
+        .attr("class", "caption")
+        .attr("y", 14)
+        .attr("x", 10)
+        .text(this.options.candidate.get('title'));
+    }
 
     return this;
   },

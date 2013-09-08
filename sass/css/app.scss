@@ -46,6 +46,10 @@ line {
   fill: none;
   stroke: red;
   stroke-width: 1px;
+
+  &.inset {
+    shape-rendering: crispEdges;
+  }
 }
 
 .disabled {
@@ -93,7 +97,7 @@ line {
     .map-legend {
       svg {
         height: 70px;
-        width: 250px;
+        width: 350px;
         font-size: 14px;
         float: right;
 
