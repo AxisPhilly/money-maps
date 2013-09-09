@@ -11,7 +11,7 @@
 }
 
 #app-container {
-  font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
+  font-family: "franklin-gothic-urw", "helvetica neue", helvetica, sans-serif;
 }
 
 // SVG
@@ -78,18 +78,15 @@ line {
     background: url('../img/loading.gif') no-repeat center;
   }
 
-  .map-container {
-    max-height: 500px;
-  }
+  // .map-container {
+  //   max-height: 1500px;
+  // }
 
   .map-header {
-    padding: 10px;
+    // padding: 10px;
 
     .map-title {
       h3 {
-        color: #333;
-        font-size: 20px;
-        font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
         margin: 0;
       }
     }
@@ -129,9 +126,10 @@ line {
 
 .panel-view {
   min-height: 400px;
+  height: 100%;
 
   .panel-header {
-    background-color: #eee;
+    // background-color: #eee;
     padding: 12px 10px;
 
     .details .row {
@@ -219,8 +217,7 @@ line {
       color: #444;
       text-transform: uppercase;
       font-size: 14px;
-      font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
-      letter-spacing: 2px;
+      font-family: "franklin-gothic-urw-cond", "helvetica neue", helvetica, sans-serif;
     }
 
     .title {
@@ -236,7 +233,7 @@ line {
 }
 
 .contributions {
-  max-height: 300px;
+  // max-height: 300px;
 
   .placeholder {
     font-size: 15px;
@@ -244,7 +241,7 @@ line {
   }
 
   .table-container {
-    height: 250px;
+    // height: 250px;
     overflow-y: auto;
 
     &.loading {
@@ -263,4 +260,128 @@ line {
     padding: 6px;
     border-bottom: 1px dashed #333;
   }
+}
+
+
+
+
+
+
+
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+}
+
+#status-message {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background-color: rgba(0,0,0,0.5);
+  color: #fff;
+  text-align: center;
+  padding: 12px;
+  font-size: 18px;
+  display: none;
+}
+
+.column-wrapper {
+  width: 620px;
+}
+
+.left-column {
+    width: 210px;
+    float: left;
+}
+
+.right-column {
+    width: 210px;
+    float: left;
+}
+
+.normal-weight {
+  font-weight: normal;
+}
+
+#left-sidebar {
+  width: 30%; 
+  height: auto;
+  position: absolute; 
+  min-width: 320px; 
+  max-width: 400px;   
+  background-color: #fff;
+  overflow-x: hidden;
+  top: 0px;
+  bottom: 0px;
+  border-right: 1px #ccc solid;
+    .section {
+      margin-top: 1.618em;
+      padding: 0 40px;
+      #tree-selection-details{
+        p {
+          font-size: 13px;
+        }
+      }
+      ul {
+        margin-left: 1em;
+        list-style-type: none;
+      }
+      li {
+        font-size: 13px;
+      }
+      border-bottom: 1px #eee solid;
+    }
+    .section:last-child {
+      border-bottom: 0;
+    }    
+}
+
+#user-account {
+  float: right;
+  font-size: 13px;
+  #account-name {
+    margin-left: 6px;    
+    font-weight: 600;
+  }
+}
+
+#logo {
+  float: left;
+}
+
+
+#map-box {
+  position: absolute; 
+  top: 0px;
+  right: 0px; 
+  bottom: 0px; 
+  left: 30%;  
+  width: auto; 
+  height: auto;
+}
+
+#wrapper {
+  width: 100%; 
+  height: auto;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;  
+  top: 60px;
+  position: absolute;
+}
+
+#header {
+  padding: 12px 40px;
+  background-color: #eee;
+  height: 60px;
+  position: fixed;
+  display: block;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  border-bottom: 1px solid #cccccc;
 }
