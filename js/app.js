@@ -169,10 +169,19 @@ app.BaseView = Backbone.View.extend({
 
     $.ajax({
       url: url,
+      type: 'GET',
+      crossDomain: true,
+      dataType: 'json',
+      contentType: 'application/json; charset=utf-8',
       success: function(resp){
+        console.log(resp);
         if(callback && typeof callback === 'function') {
+          console.log('callback');
           callback(resp);
         }
+      },
+      error: function(resp, status, error) {
+        console.log(resp, status, error);
       }
     });
   },

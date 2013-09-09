@@ -35,6 +35,7 @@ module.exports = function(grunt) {
             'js/lib/backbone.js',
             'js/lib/states.js',
             'js/lib/moment.min.js',
+            'js/lib/jQuery.XDomainRequest.js',
             'js/lib/topojson.js',
             'js/lib/d3.v3.min.js',
           ]
