@@ -615,7 +615,8 @@ app.MapView = app.BaseView.extend({
         .attr("width", x.rangeBand())
         .attr("height", y.rangeBand)
         .attr("style", function(d) {
-          return 'fill:' + color + ';';
+          var fill = color(d);
+          return 'fill:' + fill + ';';
         });
     });
 
