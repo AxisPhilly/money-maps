@@ -473,11 +473,11 @@ app.MapView = app.BaseView.extend({
           }
           return className;
         })
-        .style("fill", function(d) {
+        .attr("style", function(d) {
           if (that.model.get('disabled') === d.id) {
-            return 'url(#cross-hatch)';
+            return 'fill: url(#cross-hatch)' + ';';
           }
-          return that.scale(data[d.id]);
+          return 'fill: ' + that.scale(data[d.id]) + ';';
         })
         .attr("data-title", function(d) {
           if (that.model.get('name') === 'region') {
@@ -614,7 +614,9 @@ app.MapView = app.BaseView.extend({
         .attr("x", x)
         .attr("width", x.rangeBand())
         .attr("height", y.rangeBand)
-        .style("fill", color);
+        .attr("style", function(d) {
+          return 'fill:' + color + ';';
+        });
     });
 
     g.append("text")
@@ -703,8 +705,8 @@ app.MapView = app.BaseView.extend({
         .scale(view.width * view.model.get('scale'));
 
     view.svg
-        .style('width', view.width + 'px')
-        .style('height', view.height + 'px');
+        .attr('width', view.width + 'px')
+        .attr('height', view.height + 'px');
 
     view.svg.selectAll('.region').attr('d', view.path);
     view.svg.selectAll('.boundary').attr('d', view.path);
