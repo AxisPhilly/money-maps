@@ -1,4 +1,4 @@
-/**! @preserve Copyright (c) 2012, Michael Bostock  https://github.com/mbostock/topojson/blob/master/LICENSE */
+/*! @preserve Copyright (c) 2012, Michael Bostock  https://github.com/mbostock/topojson/blob/master/LICENSE */
 
 topojson = (function() {
 
