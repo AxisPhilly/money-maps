@@ -89,6 +89,8 @@ line {
     .panel-view .panel-header .details .row {
       padding: 20px 0 20px 0;
       border-bottom: 1px solid #eee; }
+      .panel-view .panel-header .details .row:last-child {
+        border-bottom: none; }
     .panel-view .panel-header .map-select {
       list-style-type: none;
       margin-bottom: 10px;
