@@ -1,15 +1,3 @@
-#tooltip {
-  position: absolute;
-  background-color: #fff;
-  height: 160px;
-  width: 280px;
-  padding: 14px;
-  -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);  
-  z-index: 10;
-}
-
 #app-container {
   font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif;
 }
@@ -262,5 +250,33 @@ line {
     font-size: 14px;
     padding: 6px;
     border-bottom: 1px dashed #333;
+  }
+}
+
+#tooltip {
+  position: absolute;
+  background-color: #fff;
+  max-width: 200px;
+  padding: 14px;
+  -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);  
+  z-index: 10;
+  font-size: 14px;
+
+  .name {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .total {
+    font-size: 14px;
+  }
+
+  .note {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 13px;
   }
 }

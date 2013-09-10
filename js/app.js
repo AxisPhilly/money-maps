@@ -8,34 +8,26 @@ function toTitleCase(str) {
 }
 
 app.showTooltip =  function(donationTotal, name) {
-  // var contents = app.getContents(hourId),
-  //     $hourPos = $('#' + hourId).offset();
-
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
 
   var money = donationTotal ? donationTotal.formatMoney() : '0',
-      html = '<div id="county-name">' + name + '</div>' +
-            '<div id="donation-total">$' + money + '</div>';
+      html = '<div class="name">' + name + '</div>' +
+            '<div class="total"><strong>Total:</strong> $' + money + '</div>';
 
   if (money !== '0') {
-    html += '<em>Click the region to see contributions from this area</em>';
+    html += '<span class="note">Click for a list of individual contributions.</span>';
   }
 
   if ($('#tooltip').length) {
       $('#tooltip').html(html).show();
-      console.log("ONE");
     } else {
-      console.log("TWO");
       $('<div/>', {
         'id': 'tooltip',
         html: html
       }).appendTo('#app-container').show();
     }
-
-  // var offset = $('#chart').offset();
-  console.log(donationTotal);
 };
 
 app.hideTooltip = function() {
@@ -172,11 +164,8 @@ app.BaseView = Backbone.View.extend({
       type: 'GET',
       crossDomain: true,
       dataType: 'json',
-      contentType: 'application/json; charset=utf-8',
       success: function(resp){
-        console.log(resp);
         if(callback && typeof callback === 'function') {
-          console.log('callback');
           callback(resp);
         }
       },
