@@ -66,6 +66,10 @@ line {
 
   &.active {
     display: inline-block;
+
+    @media(max-width: 850px) {
+      display: none;
+    }
   }
 }
 
@@ -97,7 +101,6 @@ line {
         height: 70px;
         width: 350px;
         font-size: 14px;
-        float: right;
 
         @media(max-width: 768px) {
           float: none;
@@ -149,6 +152,16 @@ line {
       li {
         display: inline-block;
 
+        @media(max-width: 1090px) {
+          display: block;
+          margin: 5px;
+
+          a {
+            text-align: center;
+            width: 100px;
+          }
+        }
+
         a, a:active, a:visited {
           color: #222;
           display: inline-block;
@@ -177,6 +190,7 @@ line {
     // Chosen overrides
     .chosen-container {
       padding: 0;
+      width: 100%
     }
 
     .chosen-default, .chosen-container-active.chosen-with-drop .chosen-single {
@@ -187,9 +201,8 @@ line {
     }
 
     .chosen-single, .chosen-single span {
-      font-size: 22px;
+      font-size: 18px;
       padding: 0;
-      width: 280px;
       border: none;
       background: none;
       box-shadow: none;

@@ -227,7 +227,7 @@ app.PanelView = app.BaseView.extend({
     this.$el.find('.candidate-select-view')
       .append(this.candidateSelectView.render().el)
       .find('select')
-      .chosen({ disable_search_threshold: 15 });
+      .chosen({ disable_search_threshold: 15, width: '100%' });
 
     if(this.model.get('mapName')) {
       var map = this.model.get('mapName');
