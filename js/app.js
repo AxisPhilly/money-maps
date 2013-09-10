@@ -7,7 +7,7 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-app.showTooltip =  function(donationTotal, name) {
+app.showTooltip =  function(donationTotal, name, disabled) {
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
@@ -16,8 +16,10 @@ app.showTooltip =  function(donationTotal, name) {
       html = '<div class="name">' + name + '</div>' +
             '<div class="total"><strong>Total:</strong> $' + money + '</div>';
 
-  if (money !== '0') {
+  if (money !== '0' && !disabled) {
     html += '<span class="note">Click for a list of individual contributions.</span>';
+  } else if (disabled) {
+    html += '<span class="note">Zoom in for details.</span>';
   }
 
   if ($('#tooltip').length) {
@@ -499,14 +501,12 @@ app.MapView = app.BaseView.extend({
           }
         })
         .on('mouseover', function(d) {
-          if(!d3.select(this).classed('disabled')) {
-            var name = app.getTooltipTitle(d.id, that.model.get('name'));
-            app.showTooltip(data[d.id], name);
-            var posX = d3.event.pageX + 25 + "px";
-                posY = d3.event.pageY - 4 + "px";
-                $('#tooltip').css({ left: posX, top: posY });
-            d3.select(this).classed("selected", true);
-          }
+          var name = app.getTooltipTitle(d.id, that.model.get('name'));
+          app.showTooltip(data[d.id], name, d3.select(this).classed('disabled'));
+          var posX = d3.event.pageX + 25 + "px";
+              posY = d3.event.pageY - 4 + "px";
+              $('#tooltip').css({ left: posX, top: posY });
+          d3.select(this).classed("selected", true);
         })
         .on('mouseout', function(d) {
           app.hideTooltip();
@@ -677,9 +677,17 @@ app.MapView = app.BaseView.extend({
       .append('h3')
         .text(this.model.get('title'));
 
+    var totalText = {
+      'city': 'Total raised in city',
+      'region': 'Total raised in region',
+      'national': 'Total raised in year'
+    };
+
+    var total = totalText[this.model.get('name')];
+
     this.show_total = d3.select(this.el).select('.map-title')
       .append('span')
-        .text('Total: $' + (Math.round(this.total / 100) * 100).formatMoney());
+        .text(total + ': $' + (Math.round(this.total / 100) * 100).formatMoney());
 
     return this;
   },
