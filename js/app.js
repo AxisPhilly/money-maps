@@ -266,6 +266,7 @@ app.PanelView = app.BaseView.extend({
     }
 
     this.redrawYear();
+    this.showShare();
 
     return this;
   },

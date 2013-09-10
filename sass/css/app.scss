@@ -52,11 +52,21 @@ line {
 
 .share {
   border: none;
-  border-radius: 10px;
+  border-radius: 2px;
   font-weight: normal;
-  font-size: 14px;
+  font-size: 16px;
   box-shadow: none;
-  margin-top: 22px;
+  color: #333;
+  background-color: #ddd;
+  display: none;
+
+  &:hover {
+    background-color: #333;
+  }
+
+  &.active {
+    display: inline-block;
+  }
 }
 
 .map-view {
@@ -285,5 +295,15 @@ line {
     display: inline-block;
     margin-top: 10px;
     font-size: 13px;
+  }
+}
+
+#shareModal {
+  font-family: "proxima-nova", "helvetica neue", helvetica, sans-serif; 
+
+  .link {
+    background-color: #FFDB58;
+    padding: 5px;
+    font-size: 15px;
   }
 }
