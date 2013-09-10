@@ -78,13 +78,15 @@ line {
 .panel-view {
   min-height: 400px; }
   .panel-view .panel-header {
-    background-color: #eee;
+    border-right: 1px solid #eee;
     padding: 12px 10px; }
     .panel-view .panel-header .details .row {
-      padding: 20px 0 0 0; }
+      padding: 20px 0 20px 0;
+      border-bottom: 1px solid #eee; }
     .panel-view .panel-header .map-select {
       list-style-type: none;
-      margin-bottom: 0; }
+      margin-bottom: 10px;
+      margin-top: 10px; }
       .panel-view .panel-header .map-select li {
         display: inline-block; }
         .panel-view .panel-header .map-select li a, .panel-view .panel-header .map-select li a:active, .panel-view .panel-header .map-select li a:visited {
@@ -99,6 +101,9 @@ line {
             color: #fff; }
         .panel-view .panel-header .map-select li a:hover {
           background-color: #A062BB; }
+    .panel-view .panel-header .candidate-select-view {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee; }
     .panel-view .panel-header .chosen-container {
       padding: 0; }
     .panel-view .panel-header .chosen-default, .panel-view .panel-header .chosen-container-active.chosen-with-drop .chosen-single {
@@ -149,7 +154,7 @@ line {
     font-size: 15px;
     font-style: italic; }
   .contributions .table-container {
-    height: 250px;
+    max-height: 250px;
     overflow-y: auto; }
     .contributions .table-container.loading {
       background: url('../img/loading.gif') no-repeat center; }
