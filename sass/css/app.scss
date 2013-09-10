@@ -70,6 +70,10 @@ line {
     @media(max-width: 850px) {
       display: none;
     }
+
+    @media(max-width: 360px) {
+      display: inline-block;
+    }
   }
 }
 

@@ -602,7 +602,7 @@ app.MapView = app.BaseView.extend({
     var g = svg.selectAll("g")
         .data(d3.entries(interpolators))
       .enter().append("g")
-        .attr("transform", function(d) { return "translate(120, 20)"; });
+        .attr("transform", function(d) { return "translate(0, 20)"; });
 
     g.each(function(d) {
       color.interpolate(d.value);
@@ -653,7 +653,7 @@ app.MapView = app.BaseView.extend({
       svg.append('g')
           .attr('id', 'inset')
         .append('rect')
-          .attr('x', 10)
+          .attr('x', 230)
           .attr('y', 20)
           .attr('width', 80)
           .attr('height', 10)
@@ -663,7 +663,7 @@ app.MapView = app.BaseView.extend({
         .append('text')
         .attr("class", "caption")
         .attr("y", 14)
-        .attr("x", 10)
+        .attr("x", 230)
         .text(this.options.candidate.get('title'));
     }
 
