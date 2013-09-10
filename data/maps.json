@@ -15,9 +15,9 @@
   {
     "name": "region",
     "title": "Contributions by Municipality",
-    "center": [-75.1282, 40.0032],
-    "scale": 20,
-    "ratio": 0.60,
+    "center": [-75.1282, 39.8532],
+    "scale": 21,
+    "ratio": 0.75,
     "disabled": "2573-pa",
     "geography": "muni",
     "meshes": ["munis", "counties"],
