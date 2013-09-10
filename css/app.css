@@ -148,7 +148,7 @@ line {
     .panel-view .panel-header .chosen-results .active-result {
       font-size: 16px; }
     .panel-view .panel-header .year-select-view .backward, .panel-view .panel-header .year-select-view .forward {
-      color: #fff; }
+      color: #bbb; }
       .panel-view .panel-header .year-select-view .backward.active, .panel-view .panel-header .year-select-view .forward.active {
         color: #0a4662;
         cursor: pointer; }
