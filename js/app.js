@@ -227,9 +227,13 @@ app.PanelView = app.BaseView.extend({
     this.$el.html(this.template({}));
 
     this.$el.find('.candidate-select-view')
-      .append(this.candidateSelectView.render().el)
-      .find('select')
-      .chosen({ disable_search_threshold: 15, width: '100%' });
+      .append(this.candidateSelectView.render().el);
+
+      if (!navigator.userAgent.match(/iPad/i)) {
+        this.$el.find('.candidate-select-view')
+          .find('select')
+          .chosen({ disable_search_threshold: 15, width: '100%' });
+      }
 
     if(this.model.get('mapName')) {
       var map = this.model.get('mapName');
