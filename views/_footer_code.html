@@ -27,12 +27,12 @@
             <div class='table-container'><span class="placeholder">Click a region to view contributions.</span></div>
           </div>
       </div>
-
     </div>
   </div>
   <div id="map-box"> 
     <div class="map-view">
       <div class="map-header">
+     
         <div class="map-title">
           <h3>The Money Maps</h3>
           <div class="byline"><span class="byline-author">by <a href="http://axisphilly.org/author/casey/" title="Posts by author" rel="author">Casey Thomas</a> and <a href="http://axisphilly.org/author/jeff/" title="Posts by author" rel="author">Jeff Frankl</a><span class="byline-date">, September 9th, 2013</span></span></div>
@@ -52,10 +52,12 @@
             </em>
           </p>
         </div>
-        <div class="map-legend"></div>
-        <div class="map-share">
-          <a class="button share" href="#">Share</a>
-        </div>
+        <div class="map-secondary">
+          <div class="map-share">
+            <a class="button share" href="#">Share</a>
+          </div>
+          <div class="map-legend"></div>
+        </div>         
       </div>
       <div class='map-container'></div>
     </div>
@@ -107,6 +109,21 @@
   <script type="text/javascript" src="js/lib/simplestatistics.js"></script>
   <script type="text/javascript" src="js/lib/states.js"></script>
 <% } %>
+
+  <script>
+    var navigation = responsiveNav("#nav", {
+      animate: true,        // Boolean: Use CSS3 transitions, true or false
+      transition: 400,      // Integer: Speed of the transition, in milliseconds
+      label: "Menu",        // String: Label for the navigation toggle
+      insert: "before",      // String: Insert the toggle before or after the navigation
+      customToggle: "",     // Selector: Specify the ID of a custom toggle
+      openPos: "relative",  // String: Position of the opened nav, relative or static
+      jsClass: "js",        // String: 'JS enabled' class which is added to <html> el
+      init: function(){},   // Function: Init callback
+      open: function(){},   // Function: Open callback
+      close: function(){}   // Function: Close callback
+    });
+  </script>
 
 <!-- Init Foundation and Fast Click-->
 <script type="text/javascript">

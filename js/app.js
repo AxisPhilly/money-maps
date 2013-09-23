@@ -621,12 +621,6 @@ app.MapView = app.BaseView.extend({
 
     g.append("text")
         .attr("class", "caption")
-        .attr("y", -6)
-        .attr("x", 12)
-        .text("Total Contributions ($)");
-
-    g.append("text")
-        .attr("class", "caption")
         .attr("y", 30)
         .attr("x", 7)
         .text("$0");
@@ -634,7 +628,8 @@ app.MapView = app.BaseView.extend({
     g.append("text")
         .attr("class", "caption")
         .attr("y", 30)
-        .attr("x", 160)
+        .attr("x", 190)
+        .attr("text-anchor", "end")
         .text("$" + this.scale.domain()[1].formatMoney());
 
     g.append("svg:line")
